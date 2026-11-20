@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>hendy.greendata · Datos ambientales del Perú</title>
+<meta name="description" content="Calidad del aire, lluvia y radiación UV en ciudades del Perú, explicados de forma simple. Un proyecto de Hendy Huayana, ingeniera ambiental.">
+<meta property="og:title" content="hendy.greendata · Datos ambientales del Perú">
+<meta property="og:description" content="Calidad del aire, lluvia y radiación UV en ciudades del Perú, explicados de forma simple.">
+<meta property="og:url" content="https://hendyhuayana.github.io/greendata/">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://hendyhuayana.github.io/greendata/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231f6f50'/%3E%3Cpath d='M9 22c0-8 6-13 14-13 0 8-5 14-13 14' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="vendor/leaflet.css">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f8f6;
+    --surface: #ffffff;
+    --surface-2: #eef3ef;
+    --line: #dde5df;
+    --grid: #e6ebe7;
+    --ink: #13201a;
+    --ink-2: #4a5a52;
+    --muted: #6b7a72;
+    --brand: #1f6f50;
+    --brand-ink: #ffffff;
+    --rain: #2a78d6;
+    --pm: #2a78d6;
+    --ref: #8a958f;
+    --good: #0ca30c;
+    --warning: #fab219;
+    --serious: #ec835a;
+    --critical: #d03b3b;
+    --ring: #ffffff;
+    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #101412;
+      --surface: #1a1f1c;
+      --surface-2: #222925;
+      --line: #2e3732;
+      --grid: #2a322d;
+      --ink: #eef2ef;
+      --ink-2: #c1cbc5;
+      --muted: #94a19a;
+      --brand: #3fae80;
+      --brand-ink: #0b1510;
+      --rain: #3987e5;
+      --pm: #3987e5;
+      --ref: #7d8a83;
+      --ring: #1a1f1c;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #101412; --surface: #1a1f1c; --surface-2: #222925; --line: #2e3732; --grid: #2a322d;
+    --ink: #eef2ef; --ink-2: #c1cbc5; --muted: #94a19a; --brand: #3fae80; --brand-ink: #0b1510;
+    --rain: #3987e5; --pm: #3987e5; --ref: #7d8a83; --ring: #1a1f1c; --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55; font-size: 16px;
+  }
+  a { color: var(--brand); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+
+  /* Header */
+  header.top { padding: 28px 0 8px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.15rem; letter-spacing: -.01em; }
+  .logo { width: 34px; height: 34px; border-radius: 9px; background: var(--brand); display: grid; place-items: center; flex: none; }
+  .logo svg { width: 22px; height: 22px; }
+  .brand .dot { color: var(--brand); }
+  h1 { font-size: clamp(1.6rem, 4.5vw, 2.4rem); line-height: 1.15; margin: 22px 0 8px; letter-spacing: -.02em; max-width: 22ch; text-wrap: balance; }
+  .lede { color: var(--ink-2); margin: 0 0 20px; max-width: 62ch; }
+
+  /* City picker */
+  .picker { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 4px 0 18px; }
+  .picker label { font-size: .9rem; color: var(--ink-2); }
+  select {
+    font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line);
+    border-radius: 10px; padding: 9px 36px 9px 12px; min-width: 220px; max-width: 100%;
+    appearance: none; -webkit-appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position: calc(100% - 18px) 55%, calc(100% - 13px) 55%;
+    background-size: 5px 5px; background-repeat: no-repeat;
+  }
+  .updated { font-size: .82rem; color: var(--muted); }
+
+  /* Layout */
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 16px; align-items: start; }
+  @media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 18px; min-width: 0; }
+  .card h2 { font-size: 1rem; margin: 0 0 2px; }
+  .card .sub { font-size: .85rem; color: var(--muted); margin: 0 0 14px; }
+
+  #map { height: 520px; border-radius: 10px; background: var(--surface-2); z-index: 0; }
+  @media (max-width: 860px) { #map { height: 360px; } }
+  .leaflet-container { font: inherit; }
+  .leaflet-control-attribution { font-size: .68rem; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; font-size: .82rem; color: var(--ink-2); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+  .stack { display: grid; gap: 16px; min-width: 0; }
+
+  /* Tiles */
+  .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  @media (max-width: 520px) { .tiles { grid-template-columns: minmax(0, 1fr); } }
+  .tile { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+  .tile .k { font-size: .78rem; color: var(--ink-2); }
+  .tile .v { font-size: 1.7rem; font-weight: 650; letter-spacing: -.02em; line-height: 1.2; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .tile .v small { font-size: .8rem; font-weight: 500; color: var(--muted); margin-left: 3px; }
+  .tile .note { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+
+  .status { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; font-weight: 600; margin-top: 6px; color: var(--ink); }
+  .sw { width: 10px; height: 10px; border-radius: 50%; flex: none; display: inline-block; }
+  .sw.sq { border-radius: 2px; }
+  .sw.tri { width: 0; height: 0; border-radius: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid currentColor; background: none !important; }
+
+  /* Charts */
+  .chart { position: relative; width: 100%; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart text { font-size: 11px; fill: var(--muted); font-family: inherit; }
+  .chart .lbl { fill: var(--ink-2); font-weight: 600; }
+  .tip {
+    position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font-size: .8rem;
+    padding: 6px 9px; border-radius: 8px; white-space: nowrap; transform: translate(-50%, -100%);
+    opacity: 0; transition: opacity .12s; z-index: 2; line-height: 1.35;
+  }
+  .tip b { font-weight: 650; }
+  .chart-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .78rem; color: var(--ink-2); margin-top: 8px; }
+  .chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .ln { width: 16px; height: 0; border-top: 2px solid var(--pm); display: inline-block; }
+  .ln.dash { border-top: 2px dashed var(--ref); }
+
+  details.table { margin-top: 10px; font-size: .82rem; }
+  details.table summary { cursor: pointer; color: var(--ink-2); }
+  details.table table { border-collapse: collapse; width: 100%; margin-top: 8px; font-variant-numeric: tabular-nums; }
+  details.table th, details.table td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line); }
+  details.table td.n, details.table th.n { text-align: right; }
+
+  /* Learn */
+  section.learn { margin: 40px 0 0; }
+  section.learn > h2 { font-size: 1.3rem; margin: 0 0 4px; letter-spacing: -.01em; }
+  section.learn > p { color: var(--ink-2); margin: 0 0 16px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .cards .card h3 { font-size: .98rem; margin: 0 0 6px; }
+  .cards .card p { margin: 0; color: var(--ink-2); font-size: .92rem; }
+
+  .msg { padding: 14px; border-radius: 10px; background: var(--surface-2); color: var(--ink-2); font-size: .92rem; }
+  .msg button { font: inherit; margin-top: 8px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .skeleton { height: 120px; border-radius: 10px; background: linear-gradient(90deg, var(--surface-2), var(--line), var(--surface-2)); background-size: 200% 100%; animation: sh 1.4s infinite linear; }
+  @keyframes sh { to { background-position: -200% 0; } }
+
+  footer { margin: 48px 0 0; padding: 24px 0 40px; border-top: 1px solid var(--line); font-size: .85rem; color: var(--muted); }
+  footer .links { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 8px 0 14px; }
+  footer p { margin: 6px 0; max-width: 80ch; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } .tip { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M5 18c0-7.5 5.5-12 13-12 0 7.5-4.6 12.6-12 12.4M5 18l6-6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span>hendy<span class="dot">.</span>greendata</span>
+    </div>
+    <h1>Datos ambientales del Perú, explicados simple</h1>
+    <p class="lede">¿Cómo está el aire en tu ciudad? ¿Va a llover esta semana? ¿Qué tan fuerte está el sol? Elige una ciudad en el mapa o en la lista y te lo explico con datos abiertos.</p>
+    <div class="picker">
+      <label for="city">Ciudad</label>
+      <select id="city" aria-label="Elegir ciudad"></select>
+      <span class="updated" id="updated" aria-live="polite"></span>
+    </div>
+  </header>
+
+  <main class="grid">
+    <div class="card">
+      <h2>Calidad del aire en el Perú</h2>
+      <p class="sub">Promedio de PM2.5 en las últimas 24 horas. Toca un punto para ver la ciudad.</p>
+      <div id="map" role="application" aria-label="Mapa de ciudades del Perú coloreadas por calidad del aire"></div>
+      <div class="legend" id="map-legend"></div>
+    </div>
+
+    <div class="stack">
+      <div class="card" id="now">
+        <h2 id="city-title">Cargando datos…</h2>
+        <p class="sub" id="city-sub">&nbsp;</p>
+        <div id="tiles"><div class="skeleton"></div></div>
+      </div>
+
+      <div class="card">
+        <h2>Partículas finas (PM2.5), 48 horas</h2>
+        <p class="sub">Últimas 24 h y pronóstico de las próximas 24 h, en µg/m³.</p>
+        <div class="chart" id="pm-chart"><div class="skeleton"></div></div>
+        <div class="chart-legend">
+          <span><i class="ln"></i>PM2.5 por hora</span>
+          <span><i class="ln dash"></i>Guía OMS (15) y ECA Perú (50), promedio 24 h</span>
+        </div>
+        <details class="table"><summary>Ver como tabla</summary><div id="pm-table"></div></details>
+      </div>
+
+      <div class="card">
+        <h2>Lluvia de los próximos 7 días</h2>
+        <p class="sub">Precipitación acumulada por día, en milímetros.</p>
+        <div class="chart" id="rain-chart"><div class="skeleton"></div></div>
+        <details class="table"><summary>Ver como tabla</summary><div id="rain-table"></div></details>
+      </div>
+    </div>
+  </main>
+
+  <section class="learn" aria-labelledby="learn-h">
+    <h2 id="learn-h">Aprende en 1 minuto</h2>
+    <p>Lo que hay detrás de cada número.</p>
+    <div class="cards">
+      <div class="card">
+        <h3>¿Qué es el PM2.5?</h3>
+        <p>Partículas de menos de 2.5 micras, unas 30 veces más finas que un cabello. Entran hasta los pulmones y la sangre. Vienen del tráfico, la quema de residuos y de bosques, la industria y el polvo.</p>
+      </div>
+      <div class="card">
+        <h3>OMS vs. ECA Perú</h3>
+        <p>La guía de la OMS (2021) recomienda no superar 15 µg/m³ de PM2.5 en promedio de 24 h. El Estándar de Calidad Ambiental del Perú (D.S. 003-2017-MINAM) fija 50 µg/m³. Estar bajo el ECA no significa que el aire sea del todo sano.</p>
+      </div>
+      <div class="card">
+        <h3>¿Por qué el UV es tan alto en los Andes?</h3>
+        <p>Por la altitud y la cercanía al ecuador: en Cusco o Puno hay menos atmósfera que filtre el sol, y el índice UV llega a 11 o más (extremo). Usa protector, lentes y sombrero, incluso si está nublado.</p>
+      </div>
+      <div class="card">
+        <h3>Lluvias y El Niño</h3>
+        <p>En la costa norte, varios días seguidos con lluvias intensas pueden causar huaicos e inundaciones, sobre todo en años de El Niño. Sigue siempre los avisos oficiales de SENAMHI e INDECI.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="brand" style="font-size:1rem"><span>hendy<span class="dot">.</span>greendata</span></div>
+    <div class="links">
+      <a href="https://www.tiktok.com/@hendy.greendata">TikTok</a>
+      <a href="https://hendyhuayana.github.io/">Sobre mí</a>
+      <a href="https://github.com/hendyhuayana">GitHub</a>
+      <a href="https://www.linkedin.com/in/hendy-huayana/">LinkedIn</a>
+    </div>
+    <p><strong>Fuentes:</strong> pronóstico del tiempo y calidad del aire de <a href="https://open-meteo.com/">Open-Meteo</a> (CC BY 4.0), que usa modelos meteorológicos y el servicio europeo de calidad del aire <a href="https://atmosphere.copernicus.eu/">Copernicus CAMS</a>. Mapa base © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, © <a href="https://carto.com/attributions">CARTO</a>.</p>
+    <p><strong>Importante:</strong> son estimaciones de modelos con una resolución de decenas de kilómetros, no mediciones de estaciones. No reflejan bien fuentes locales (una fábrica, una avenida) y no reemplazan la información oficial de SENAMHI, MINAM u OEFA. Proyecto personal y educativo.</p>
+  </footer>
+</div>
+
+<script src="vendor/leaflet.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var CITIES = [
+    { name: 'Tumbes', region: 'Tumbes', lat: -3.567, lon: -80.451 },
+    { name: 'Piura', region: 'Piura', lat: -5.194, lon: -80.632 },
+    { name: 'Chiclayo', region: 'Lambayeque', lat: -6.771, lon: -79.841 },
+    { name: 'Cajamarca', region: 'Cajamarca', lat: -7.164, lon: -78.510 },
+    { name: 'Trujillo', region: 'La Libertad', lat: -8.112, lon: -79.029 },
+    { name: 'Chimbote', region: 'Áncash', lat: -9.074, lon: -78.594 },
+    { name: 'Huaraz', region: 'Áncash', lat: -9.527, lon: -77.528 },
+    { name: 'Iquitos', region: 'Loreto', lat: -3.749, lon: -73.253 },
+    { name: 'Moyobamba', region: 'San Martín', lat: -6.034, lon: -76.972 },
+    { name: 'Pucallpa', region: 'Ucayali', lat: -8.379, lon: -74.554 },
+    { name: 'Huánuco', region: 'Huánuco', lat: -9.930, lon: -76.242 },
+    { name: 'Cerro de Pasco', region: 'Pasco', lat: -10.686, lon: -76.256 },
+    { name: 'La Oroya', region: 'Junín', lat: -11.519, lon: -75.900 },
+    { name: 'Lima', region: 'Lima', lat: -12.046, lon: -77.043 },
+    { name: 'Huancayo', region: 'Junín', lat: -12.065, lon: -75.205 },
+    { name: 'Ayacucho', region: 'Ayacucho', lat: -13.158, lon: -74.224 },
+    { name: 'Ica', region: 'Ica', lat: -14.068, lon: -75.729 },
+    { name: 'Cusco', region: 'Cusco', lat: -13.532, lon: -71.967 },
+    { name: 'Puerto Maldonado', region: 'Madre de Dios', lat: -12.593, lon: -69.189 },
+    { name: 'Arequipa', region: 'Arequipa', lat: -16.409, lon: -71.537 },
+    { name: 'Puno', region: 'Puno', lat: -15.840, lon: -70.022 },
+    { name: 'Moquegua', region: 'Moquegua', lat: -17.194, lon: -70.935 },
+    { name: 'Tacna', region: 'Tacna', lat: -18.006, lon: -70.246 }
+  ];
+  var WHO_PM25 = 15, ECA_PM25 = 50;
+  var TZ = 'America/Lima';
+
+  // Status: color never alone, always with shape + label
+  var PM_STATUS = [
+    { max: WHO_PM25, key: 'good', label: 'Buena', long: 'Dentro de la guía OMS', shape: 'circle' },
+    { max: ECA_PM25, key: 'warning', label: 'Moderada', long: 'Sobre la guía OMS, bajo el ECA', shape: 'tri' },
+    { max: Infinity, key: 'critical', label: 'Mala', long: 'Sobre el ECA Perú', shape: 'sq' }
+  ];
+  var UV_STATUS = [
+    { max: 2.99, key: 'good', label: 'Bajo' },
+    { max: 5.99, key: 'warning', label: 'Moderado' },
+    { max: 7.99, key: 'serious', label: 'Alto' },
+    { max: 10.99, key: 'critical', label: 'Muy alto' },
+    { max: Infinity, key: 'critical', label: 'Extremo' }
+  ];
+  function pmStatus(v) { for (var i = 0; i < PM_STATUS.length; i++) if (v <= PM_STATUS[i].max) return PM_STATUS[i]; }
+  function uvStatus(v) { for (var i = 0; i < UV_STATUS.length; i++) if (v <= UV_STATUS[i].max) return UV_STATUS[i]; }
+  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function fmt(v, d) { return v == null || isNaN(v) ? '–' : v.toLocaleString('es-PE', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); }
+  function swatch(st) {
+    var cls = st.shape === 'tri' ? 'sw tri' : st.shape === 'sq' ? 'sw sq' : 'sw';
+    var style = st.shape === 'tri' ? 'color:var(--' + st.key + ')' : 'background:var(--' + st.key + ')';
+    return '<i class="' + cls + '" style="' + style + '" aria-hidden="true"></i>';
+  }
+
+  // Current hour in Lima as "YYYY-MM-DDTHH"
+  function limaHour() {
+    var p = {};
+    new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23' })
+      .formatToParts(new Date()).forEach(function (x) { p[x.type] = x.value; });
+    return p.year + '-' + p.month + '-' + p.day + 'T' + p.hour;
+  }
+  var DAYS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+  function dayLabel(iso, i) {
+    if (i === 0) return 'Hoy';
+    var d = new Date(iso + 'T12:00:00Z');
+    return DAYS[d.getUTCDay()] + ' ' + d.getUTCDate();
+  }
+
+  // ---------- Data ----------
+  var state = { air: null, wx: null, idx: CITIES.findIndex(function (c) { return c.name === 'Lima'; }) };
+
+  function fetchJSON(url) {
+    return fetch(url).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  }
+  function load() {
+    var lat = CITIES.map(function (c) { return c.lat; }).join(',');
+    var lon = CITIES.map(function (c) { return c.lon; }).join(',');
+    var airUrl = 'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat + '&longitude=' + lon +
+      '&hourly=pm2_5,pm10&past_days=1&forecast_days=2&timezone=' + encodeURIComponent(TZ);
+    var wxUrl = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon +
+      '&daily=precipitation_sum,precipitation_probability_max,uv_index_max,temperature_2m_max,temperature_2m_min' +
+      '&forecast_days=7&timezone=' + encodeURIComponent(TZ);
+    return Promise.all([fetchJSON(airUrl), fetchJSON(wxUrl)]).then(function (res) {
+      var air = Array.isArray(res[0]) ? res[0] : [res[0]];
+      var wx = Array.isArray(res[1]) ? res[1] : [res[1]];
+      var now = limaHour();
+      state.air = air.map(function (a) { return summarizeAir(a.hourly, now); });
+      state.wx = wx.map(function (w) { return w.daily; });
+    });
+  }
+  function summarizeAir(h, now) {
+    var i = -1;
+    for (var k = 0; k < h.time.length; k++) if (h.time[k].slice(0, 13) <= now) i = k;
+    function mean24(arr) {
+      var vals = arr.slice(Math.max(0, i - 23), i + 1).filter(function (v) { return v != null; });
+      return vals.length >= 18 ? vals.reduce(function (s, v) { return s + v; }, 0) / vals.length : null;
+    }
+    var from = Math.max(0, i - 23), to = Math.min(h.time.length, i + 25);
+    return {
+      pm25: mean24(h.pm2_5), pm10: mean24(h.pm10),
+      series: h.time.slice(from, to).map(function (t, j) { return { t: t, v: h.pm2_5[from + j], past: from + j <= i }; }),
+      nowIndex: i - from
+    };
+  }
+
+  // ---------- Map ----------
+  var map, markers = [], tiles;
+  function initMap() {
+    map = L.map('map', { zoomControl: true, attributionControl: true, scrollWheelZoom: false })
+      .fitBounds([[-18.4, -81.4], [-0.1, -68.6]]);
+    setTiles();
+    if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { setTiles(); paintMarkers(); });
+    CITIES.forEach(function (c, i) {
+      var m = L.circleMarker([c.lat, c.lon], { radius: 8, weight: 2, fillOpacity: 1 }).addTo(map);
+      m.on('click', function () { select(i); });
+      m.bindTooltip(c.name, { direction: 'top', offset: [0, -8] });
+      markers.push(m);
+    });
+    document.getElementById('map-legend').innerHTML = PM_STATUS.map(function (s) {
+      return '<span>' + swatch({ key: s.key }) + s.label + ' · ' + s.long + '</span>';
+    }).join('') + '<span><i class="sw" style="background:var(--ref)" aria-hidden="true"></i>Sin datos</span>';
+  }
+  function setTiles() {
+    var dark = css('color-scheme') === 'dark';
+    if (tiles) map.removeLayer(tiles);
+    tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/' + (dark ? 'dark_all' : 'light_all') + '/{z}/{x}/{y}{r}.png', {
+      maxZoom: 12, subdomains: 'abcd',
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>'
+    }).addTo(map);
+  }
+  function paintMarkers() {
+    markers.forEach(function (m, i) {
+      var a = state.air && state.air[i];
+      var st = a && a.pm25 != null ? pmStatus(a.pm25) : null;
+      m.setStyle({
+        color: i === state.idx ? css('--ink') : css('--ring'),
+        weight: i === state.idx ? 3 : 2,
+        fillColor: st ? css('--' + st.key) : css('--ref'),
+        radius: i === state.idx ? 11 : 8
+      });
+      m.setTooltipContent(CITIES[i].name + (a && a.pm25 != null ? ': ' + fmt(a.pm25) + ' µg/m³' : ''));
+      if (i === state.idx) m.bringToFront();
+    });
+  }
+
+  // ---------- Panels ----------
+  function renderNow() {
+    var c = CITIES[state.idx], a = state.air[state.idx], w = state.wx[state.idx];
+    document.getElementById('city-title').textContent = c.name;
+    document.getElementById('city-sub').textContent = 'Región ' + c.region + ' · ahora y hoy';
+    var pmSt = a.pm25 != null ? pmStatus(a.pm25) : null;
+    var uv = w.uv_index_max[0], uvSt = uv != null ? uvStatus(uv) : null;
+    var rain = w.precipitation_sum[0], prob = w.precipitation_probability_max[0];
+    document.getElementById('tiles').innerHTML =
+      '<div class="tiles">' +
+        tile('PM2.5 · promedio 24 h', fmt(a.pm25), 'µg/m³',
+          pmSt ? '<span class="status">' + swatch(pmSt) + 'Aire ' + pmSt.label.toLowerCase() + '</span>' : '<span class="note">Sin datos suficientes</span>',
+          'PM10: ' + fmt(a.pm10) + ' µg/m³') +
+        tile('Índice UV máximo hoy', fmt(uv, 1), '',
+          uvSt ? '<span class="status">' + swatch({ key: uvSt.key }) + uvSt.label + '</span>' : '',
+          uv >= 8 ? 'Evita el sol de 10 a 16 h' : uv >= 3 ? 'Usa protector solar' : 'Protección mínima') +
+        tile('Lluvia hoy', fmt(rain, 1), 'mm',
+          '', 'Probabilidad máx.: ' + fmt(prob) + ' %' + ' · ' + fmt(w.temperature_2m_min[0]) + '° a ' + fmt(w.temperature_2m_max[0]) + '°C') +
+      '</div>';
+  }
+  function tile(k, v, unit, status, note) {
+    return '<div class="tile"><div class="k">' + k + '</div><div class="v">' + v + (unit ? '<small>' + unit + '</small>' : '') +
+      '</div>' + status + (note ? '<div class="note">' + note + '</div>' : '') + '</div>';
+  }
+
+  // Shared tooltip helper
+  function tipFor(box) {
+    var t = box.querySelector('.tip');
+    if (!t) { t = document.createElement('div'); t.className = 'tip'; t.setAttribute('role', 'status'); box.appendChild(t); }
+    return t;
+  }
+
+  function renderPM() {
+    var a = state.air[state.idx], box = document.getElementById('pm-chart');
+    var pts = a.series.filter(function (p) { return p.v != null; });
+    if (pts.length < 2) { box.innerHTML = '<div class="msg">No hay datos horarios de PM2.5 para esta ciudad.</div>'; document.getElementById('pm-table').innerHTML = ''; return; }
+    var W = Math.max(300, box.clientWidth || 560), H = W < 480 ? 200 : 220, m = { t: 14, r: 12, b: 26, l: 34 };
+    var iw = W - m.l - m.r, ih = H - m.t - m.b, n = a.series.length;
+    var maxV = Math.max(ECA_PM25 * 1.12, Math.max.apply(null, pts.map(function (p) { return p.v; })) * 1.1);
+    var step = maxV > 150 ? 50 : maxV > 80 ? 20 : 10;
+    maxV = Math.ceil(maxV / step) * step;
+    function x(i) { return m.l + (n === 1 ? 0 : i / (n - 1) * iw); }
+    function y(v) { return m.t + ih - v / maxV * ih; }
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="PM2.5 por hora en ' + esc(CITIES[state.idx].name) + '">';
+    for (var g = 0; g <= maxV; g += step) {
+      s += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y(g) + '" y2="' + y(g) + '" stroke="var(--grid)" stroke-width="1"/>' +
+           '<text x="' + (m.l - 6) + '" y="' + (y(g) + 4) + '" text-anchor="end">' + g + '</text>';
+    }
+    [[WHO_PM25, 'OMS 15'], [ECA_PM25, 'ECA 50']].forEach(function (r) {
+      s += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y(r[0]) + '" y2="' + y(r[0]) + '" stroke="var(--ref)" stroke-width="1.5" stroke-dasharray="4 4"/>' +
+           '<text x="' + (W - m.r) + '" y="' + (y(r[0]) - 5) + '" text-anchor="end">' + r[1] + '</text>';
+    });
+    // now marker
+    var nx = x(a.nowIndex);
+    s += '<line x1="' + nx + '" x2="' + nx + '" y1="' + m.t + '" y2="' + (m.t + ih) + '" stroke="var(--muted)" stroke-width="1"/>' +
+         '<text x="' + (nx + 4) + '" y="' + (m.t + 10) + '" class="lbl">Ahora</text>' +
+         '<text x="' + (nx - 4) + '" y="' + (m.t + 10) + '" text-anchor="end">pasado</text>';
+    // x labels every 6 h
+    a.series.forEach(function (p, i) {
+      if (+p.t.slice(11, 13) % (W < 480 ? 12 : 6) === 0) s += '<text x="' + x(i) + '" y="' + (H - 8) + '" text-anchor="middle">' + p.t.slice(11, 13) + 'h</text>';
+    });
+    // line: solid past, dashed forecast
+    function path(filter) {
+      var d = '', pen = false;
+      a.series.forEach(function (p, i) {
+        if (p.v == null || !filter(p, i)) { pen = false; return; }
+        d += (pen ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(p.v).toFixed(1); pen = true;
+      });
+      return d;
+    }
+    s += '<path d="' + path(function (p, i) { return i <= a.nowIndex; }) + '" fill="none" stroke="var(--pm)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+    s += '<path d="' + path(function (p, i) { return i >= a.nowIndex; }) + '" fill="none" stroke="var(--pm)" stroke-width="2" stroke-dasharray="2 4" stroke-linecap="round"/>';
+    s += '<line class="xh" x1="0" x2="0" y1="' + m.t + '" y2="' + (m.t + ih) + '" stroke="var(--ink-2)" stroke-width="1" opacity="0"/>' +
+         '<circle class="dot" r="5" fill="var(--pm)" stroke="var(--surface)" stroke-width="2" opacity="0"/>' +
+         '<rect x="' + m.l + '" y="' + m.t + '" width="' + iw + '" height="' + ih + '" fill="transparent" class="hit"/>';
+    s += '</svg>';
+    box.innerHTML = s;
+    var svg = box.querySelector('svg'), tip = tipFor(box), xh = svg.querySelector('.xh'), dot = svg.querySelector('.dot');
+    function move(ev) {
+      var r = svg.getBoundingClientRect(), sx = (ev.clientX - r.left) / r.width * W;
+      var i = Math.max(0, Math.min(n - 1, Math.round((sx - m.l) / iw * (n - 1))));
+      var p = a.series[i];
+      xh.setAttribute('x1', x(i)); xh.setAttribute('x2', x(i)); xh.setAttribute('opacity', 1);
+      if (p.v != null) { dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(p.v)); dot.setAttribute('opacity', 1); } else dot.setAttribute('opacity', 0);
+      tip.innerHTML = '<b>' + fmt(p.v, 1) + ' µg/m³</b><br>' + p.t.slice(8, 10) + '/' + p.t.slice(5, 7) + ' ' + p.t.slice(11, 16) + (i > a.nowIndex ? ' · pronóstico' : '');
+      tip.style.left = (x(i) / W * r.width) + 'px';
+      tip.style.top = ((p.v != null ? y(p.v) : m.t) / H * r.height - 10) + 'px';
+      tip.style.opacity = 1;
+    }
+    function leave() { tip.style.opacity = 0; xh.setAttribute('opacity', 0); dot.setAttribute('opacity', 0); }
+    svg.addEventListener('pointermove', move);
+    svg.addEventListener('pointerdown', move);
+    svg.addEventListener('pointerleave', leave);
+
+    document.getElementById('pm-table').innerHTML = '<table><thead><tr><th>Hora</th><th class="n">PM2.5 (µg/m³)</th><th>Tipo</th></tr></thead><tbody>' +
+      a.series.map(function (p, i) {
+        return '<tr><td>' + p.t.slice(8, 10) + '/' + p.t.slice(5, 7) + ' ' + p.t.slice(11, 16) + '</td><td class="n">' + fmt(p.v, 1) + '</td><td>' + (i > a.nowIndex ? 'Pronóstico' : 'Estimado') + '</td></tr>';
+      }).join('') + '</tbody></table>';
+  }
+
+  function renderRain() {
+    var w = state.wx[state.idx], box = document.getElementById('rain-chart');
+    var days = w.time.map(function (t, i) { return { t: t, label: dayLabel(t, i), v: w.precipitation_sum[i], p: w.precipitation_probability_max[i] }; });
+    var W = Math.max(300, box.clientWidth || 560), H = 200, m = { t: 22, r: 8, b: 26, l: 34 };
+    var iw = W - m.l - m.r, ih = H - m.t - m.b;
+    var maxRaw = Math.max.apply(null, days.map(function (d) { return d.v || 0; }));
+    var step = maxRaw > 50 ? 20 : maxRaw > 20 ? 10 : maxRaw > 8 ? 5 : maxRaw > 3 ? 2 : 1;
+    var maxV = Math.max(step * 2, Math.ceil(maxRaw * 1.1 / step) * step);
+    var bw = iw / days.length, barW = Math.min(36, bw - 2);
+    function y(v) { return m.t + ih - v / maxV * ih; }
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Lluvia diaria en ' + esc(CITIES[state.idx].name) + '">';
+    for (var g = 0; g <= maxV; g += step) {
+      s += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y(g) + '" y2="' + y(g) + '" stroke="var(--grid)" stroke-width="1"/>' +
+           '<text x="' + (m.l - 6) + '" y="' + (y(g) + 4) + '" text-anchor="end">' + g + '</text>';
+    }
+    var maxI = days.reduce(function (b, d, i) { return (d.v || 0) > (days[b].v || 0) ? i : b; }, 0);
+    days.forEach(function (d, i) {
+      var cx = m.l + bw * i + bw / 2, v = d.v || 0, h = v / maxV * ih, x0 = cx - barW / 2, yb = m.t + ih;
+      if (h > 0.5) {
+        var r = Math.min(4, h, barW / 2);
+        s += '<path d="M' + x0 + ' ' + yb + 'V' + (yb - h + r) + 'Q' + x0 + ' ' + (yb - h) + ' ' + (x0 + r) + ' ' + (yb - h) +
+             'H' + (x0 + barW - r) + 'Q' + (x0 + barW) + ' ' + (yb - h) + ' ' + (x0 + barW) + ' ' + (yb - h + r) + 'V' + yb + 'Z" fill="var(--rain)"/>';
+      }
+      if (i === maxI && v >= 0.1) s += '<text x="' + cx + '" y="' + (yb - h - 6) + '" text-anchor="middle" class="lbl">' + fmt(v, 1) + ' mm</text>';
+      s += '<text x="' + cx + '" y="' + (H - 8) + '" text-anchor="middle">' + d.label + '</text>';
+      s += '<rect class="hit" data-i="' + i + '" x="' + (m.l + bw * i) + '" y="' + m.t + '" width="' + bw + '" height="' + ih + '" fill="transparent"/>';
+    });
+    s += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + (m.t + ih) + '" y2="' + (m.t + ih) + '" stroke="var(--line)" stroke-width="1"/>';
+    s += '</svg>';
+    if (maxRaw < 0.1) s += '<div class="note" style="font-size:.85rem;color:var(--muted);margin-top:6px">No se espera lluvia esta semana.</div>';
+    box.innerHTML = s;
+    var svg = box.querySelector('svg'), tip = tipFor(box);
+    svg.querySelectorAll('.hit').forEach(function (el) {
+      function show() {
+        var i = +el.getAttribute('data-i'), d = days[i], r = svg.getBoundingClientRect();
+        var cx = m.l + bw * i + bw / 2, h = (d.v || 0) / maxV * ih;
+        tip.innerHTML = '<b>' + d.label + ': ' + fmt(d.v, 1) + ' mm</b><br>Probabilidad máx.: ' + fmt(d.p) + ' %';
+        tip.style.left = (cx / W * r.width) + 'px';
+        tip.style.top = ((m.t + ih - h) / H * r.height - 10) + 'px';
+        tip.style.opacity = 1;
+      }
+      el.addEventListener('pointerenter', show);
+      el.addEventListener('pointerdown', show);
+      el.addEventListener('pointerleave', function () { tip.style.opacity = 0; });
+    });
+    document.getElementById('rain-table').innerHTML = '<table><thead><tr><th>Día</th><th class="n">Lluvia (mm)</th><th class="n">Prob. máx. (%)</th><th class="n">UV máx.</th></tr></thead><tbody>' +
+      days.map(function (d, i) {
+        return '<tr><td>' + d.label + '</td><td class="n">' + fmt(d.v, 1) + '</td><td class="n">' + fmt(d.p) + '</td><td class="n">' + fmt(w.uv_index_max[i], 1) + '</td></tr>';
+      }).join('') + '</tbody></table>';
+  }
+
+  function select(i) {
+    state.idx = i;
+    document.getElementById('city').value = String(i);
+    try { localStorage.setItem('greendata-city', CITIES[i].name); } catch (e) {}
+    if (!state.air) return;
+    paintMarkers(); renderNow(); renderPM(); renderRain();
+  }
+
+  function showError() {
+    var html = '<div class="msg">No se pudieron cargar los datos. Revisa tu conexión e inténtalo de nuevo.<br><button type="button">Reintentar</button></div>';
+    document.getElementById('city-title').textContent = 'Sin conexión con los datos';
+    ['tiles', 'pm-chart', 'rain-chart'].forEach(function (id) { document.getElementById(id).innerHTML = html; });
+    document.querySelectorAll('.msg button').forEach(function (b) { b.addEventListener('click', start); });
+  }
+
+  function start() {
+    ['tiles', 'pm-chart', 'rain-chart'].forEach(function (id) { document.getElementById(id).innerHTML = '<div class="skeleton"></div>'; });
+    document.getElementById('city-title').textContent = 'Cargando datos…';
+    load().then(function () {
+      document.getElementById('updated').textContent = 'Actualizado: ' + new Date().toLocaleString('es-PE', { timeZone: TZ, day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' (hora de Lima)';
+      select(state.idx);
+    }).catch(function (e) { console.error(e); showError(); });
+  }
+
+  // ---------- Init ----------
+  var sel = document.getElementById('city');
+  sel.innerHTML = CITIES.map(function (c, i) { return { c: c, i: i }; })
+    .sort(function (a, b) { return a.c.name.localeCompare(b.c.name, 'es'); })
+    .map(function (o) { return '<option value="' + o.i + '">' + esc(o.c.name) + ' (' + esc(o.c.region) + ')</option>'; }).join('');
+  try {
+    var saved = localStorage.getItem('greendata-city');
+    var si = CITIES.findIndex(function (c) { return c.name === saved; });
+    if (si >= 0) state.idx = si;
+  } catch (e) {}
+  sel.value = String(state.idx);
+  sel.addEventListener('change', function () { select(+sel.value); });
+  var lastW = window.innerWidth, rt;
+  window.addEventListener('resize', function () {
+    if (window.innerWidth === lastW || !state.air) return;
+    lastW = window.innerWidth; clearTimeout(rt);
+    rt = setTimeout(function () { renderPM(); renderRain(); }, 150);
+  });
+  initMap();
+  paintMarkers();
+  start();
+})();
+</script>
+</body>
+</html>
