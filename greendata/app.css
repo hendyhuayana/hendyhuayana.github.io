@@ -366,3 +366,6 @@ select { background-color: #153d2c; border-color: rgba(255,255,255,.18); }
 @media (max-width: 1180px) { .nav nav a.xp-link { display: none; } .nav nav a.xp-short { display: inline-block; } }
 @media (max-width: 720px) { .nav nav a.xp-short { display: none; } }
 .xp:target { border-color: var(--lime); box-shadow: 0 0 0 2px var(--lime), var(--shadow); }
+
+.tags.focus { margin-top: 16px; }
+.tags.focus li { background: rgba(182,227,79,.12); border-color: rgba(182,227,79,.35); color: var(--lime); font-weight: 600; }
