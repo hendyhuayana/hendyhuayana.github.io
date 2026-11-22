@@ -358,4 +358,11 @@ select { background-color: #153d2c; border-color: rgba(255,255,255,.18); }
 .xp li::marker { color: var(--lime); }
 .xp a { margin-top: auto; color: var(--lime); font-weight: 600; font-size: .9rem; }
 @media (prefers-reduced-motion: reduce) { .xp { transition: none; } }
-@media (max-width: 860px) { .nav nav a[href="#cities"], .nav nav a[href="#rivers"] { display: none; } }
+
+
+/* Expertise links in the top bar */
+.nav nav a { white-space: nowrap; padding: 6px 8px; font-size: .86rem; }
+.nav nav a.xp-short { display: none; }
+@media (max-width: 1180px) { .nav nav a.xp-link { display: none; } .nav nav a.xp-short { display: inline-block; } }
+@media (max-width: 720px) { .nav nav a.xp-short { display: none; } }
+.xp:target { border-color: var(--lime); box-shadow: 0 0 0 2px var(--lime), var(--shadow); }
