@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>hendy.greendata · Observatorio ambiental del Perú</title>
+<title>Hendy in Green Data · Observatorio ambiental del Perú</title>
 <meta name="description" content="Observatorio ambiental del Perú con datos satelitales abiertos: El Niño costero, temperatura del mar, lluvias, ríos, vegetación y calidad del aire, actualizados en vivo. Por Hendy Huayana, ingeniera ambiental.">
 <meta name="author" content="Hendy Huayana">
-<meta property="og:title" content="hendy.greendata · Observatorio ambiental del Perú">
+<meta property="og:title" content="Hendy in Green Data · Observatorio ambiental del Perú">
 <meta property="og:description" content="El Niño costero, mar, lluvias, ríos, vegetación y aire del Perú con datos satelitales de NASA y Copernicus, en vivo.">
 <meta property="og:url" content="https://hendyhuayana.github.io/greendata/">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#0b1411">
+<meta name="theme-color" content="#0f2d1f">
 <link rel="canonical" href="https://hendyhuayana.github.io/greendata/">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2312b886'/%3E%3Cpath d='M9 23c0-8.5 6-14 15-14 0 8.5-5.2 14.4-13.6 14.2M9 23l7-7' fill='none' stroke='%230b1411' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23b6e34f'/%3E%3Cpath d='M9 23c0-8.5 6-14 15-14 0 8.5-5.2 14.4-13.6 14.2M9 23l7-7' fill='none' stroke='%230f2d1f' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 <link rel="preconnect" href="https://gibs.earthdata.nasa.gov" crossorigin>
 <link rel="stylesheet" href="vendor/leaflet.css">
 <link rel="stylesheet" href="app.css">
@@ -28,9 +28,9 @@
 
 <header class="nav">
   <div class="wrap nav-in">
-    <a class="brand" href="#top" aria-label="hendy.greendata, inicio">
+    <a class="brand" href="#top" aria-label="Hendy in Green Data, inicio">
       <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 18.5c0-7.8 5.6-12.8 13.8-12.8 0 7.8-4.8 13.2-12.5 13M5 18.5l6.3-6.3" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      <span>hendy<span class="dot">.</span>greendata</span>
+      <span class="wm" aria-hidden="true"><b>HENDY</b><i>in</i><b class="g">GREEN</b><b>DATA</b></span>
     </a>
     <nav aria-label="Secciones">
       <a href="#satelite">Satélite</a>
@@ -49,9 +49,10 @@
 
     <div class="hero-copy" id="top">
       <div class="wrap"><div class="copy-col">
-        <p class="eyebrow"><span class="live" aria-hidden="true"></span>Observatorio ambiental del Perú · datos satelitales en vivo</p>
-        <h1>El Perú visto desde el espacio, <em>explicado simple</em></h1>
+        <p class="eyebrow"><span class="live" aria-hidden="true"></span>🛰️ Observatorio ambiental del Perú · en vivo</p>
+        <h1 id="hero-h">¿Sabías que el Perú se puede ver <span class="hl">desde el espacio</span>?</h1>
         <p class="lede" id="hero-lede">Satélites de la NASA, Copernicus y NOAA, actualizados cada día. Mueve la línea blanca para comparar con hace un año.</p>
+        <span class="handle">@hendy.greendata</span>
       </div></div>
     </div>
 
@@ -101,8 +102,8 @@
   <!-- EL NIÑO -->
   <section class="wrap section" id="nino" aria-labelledby="nino-h">
     <div class="sec-head">
-      <p class="kicker">Océano y clima</p>
-      <h2 id="nino-h">El Niño costero, semana a semana desde 1981</h2>
+      <p class="kicker">🌊 Océano y clima</p>
+      <h2 id="nino-h">¿Qué tan fuerte es <span class="hl">El Niño</span> este año?</h2>
       <p class="sec-lede" id="nino-lede">Anomalía de la temperatura del mar: cuánto más caliente (o frío) está el océano respecto a lo normal.</p>
     </div>
     <div class="card">
@@ -130,9 +131,9 @@
   <!-- RIVERS -->
   <section class="wrap section" id="rios" aria-labelledby="rios-h">
     <div class="sec-head">
-      <p class="kicker">Agua</p>
-      <h2 id="rios-h">Caudal de los ríos: últimos 90 días y pronóstico a 30</h2>
-      <p class="sec-lede">Modelo hidrológico global GloFAS (Copernicus). Elige un río para ver su evolución.</p>
+      <p class="kicker">💧 Agua</p>
+      <h2 id="rios-h">¿Cuánta agua llevan <span class="hl">nuestros ríos</span>?</h2>
+      <p class="sec-lede">Caudal de los últimos 90 días y pronóstico a 30 días, del modelo hidrológico global GloFAS (Copernicus). Elige un río.</p>
     </div>
     <div class="river-grid" id="river-cards"><div class="skeleton"></div></div>
     <div class="card">
@@ -151,8 +152,8 @@
   <!-- CITIES -->
   <section class="wrap section" id="ciudades" aria-labelledby="ciu-h">
     <div class="sec-head">
-      <p class="kicker">Aire y clima</p>
-      <h2 id="ciu-h">Tu ciudad hoy: aire, sol y lluvia</h2>
+      <p class="kicker">🌬️ Aire y clima</p>
+      <h2 id="ciu-h">¿Cómo está el aire <span class="hl">en tu ciudad</span>?</h2>
       <div class="picker">
         <label for="city">Ciudad</label>
         <select id="city"></select>
@@ -184,9 +185,9 @@
   <!-- WORK WITH ME -->
   <section class="cta" id="trabajemos" aria-labelledby="cta-h">
     <div class="wrap">
-      <p class="kicker">Trabajemos juntos</p>
-      <h2 id="cta-h">Convierto datos satelitales en decisiones ambientales</h2>
-      <p class="sec-lede">Soy <strong>Hendy Huayana</strong>, ingeniera ambiental en Lima. Trabajo con teledetección, SIG y riesgo climático: evaluaciones de riesgo, flujos de alerta temprana y dashboards con datos satelitales y climáticos. Esta página es un ejemplo de lo que puedo construir para tu equipo.</p>
+      <p class="kicker">🌱 Trabajemos juntos</p>
+      <h2 id="cta-h">¿Y si tus datos ambientales <span class="hl">hablaran</span> así?</h2>
+      <p class="sec-lede">Soy <strong>Hendy Huayana</strong>, ingeniera ambiental en Lima. Trabajo con teledetección, SIG y riesgo climático: evaluaciones de riesgo, flujos de alerta temprana y dashboards con datos satelitales y climáticos. Convierto datos satelitales en decisiones ambientales, y esta página es un ejemplo de lo que puedo construir para tu equipo.</p>
       <div class="services">
         <div class="svc"><span class="svc-ico" aria-hidden="true">🛰️</span><h3>Monitoreo satelital</h3><p>Vegetación, agua, mar, nieve y calidad del aire con Google Earth Engine, Sentinel, Landsat, MODIS y GPM.</p></div>
         <div class="svc"><span class="svc-ico" aria-hidden="true">🌧️</span><h3>Riesgo climático y El Niño</h3><p>Mapas de susceptibilidad y riesgo multicriterio (AHP), umbrales de lluvia y alertas tempranas.</p><a href="https://github.com/hendyhuayana/ahp-risk-mapping">Ver proyecto AHP →</a></div>
@@ -205,7 +206,7 @@
 
 <footer class="footer">
   <div class="wrap">
-    <a class="brand" href="#top"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 18.5c0-7.8 5.6-12.8 13.8-12.8 0 7.8-4.8 13.2-12.5 13M5 18.5l6.3-6.3" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>hendy<span class="dot">.</span>greendata</span></a>
+    <a class="brand" href="#top"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 18.5c0-7.8 5.6-12.8 13.8-12.8 0 7.8-4.8 13.2-12.5 13M5 18.5l6.3-6.3" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="wm" aria-hidden="true"><b>HENDY</b><i>in</i><b class="g">GREEN</b><b>DATA</b></span></a>
     <div class="sources">
       <p><strong>Fuentes abiertas.</strong> Imágenes satelitales: <a href="https://www.earthdata.nasa.gov/engage/open-data-services-software/earthdata-developer-portal/gibs-api">NASA GIBS</a> (GHRSST MUR, GPM IMERG, MODIS, VIIRS, SMAP). Índices de El Niño: <a href="https://www.cpc.ncep.noaa.gov/data/indices/">NOAA CPC</a>, actualizados automáticamente cada semana. Caudales: <a href="https://open-meteo.com/en/docs/flood-api">GloFAS (Copernicus)</a> vía Open-Meteo. Aire y tiempo: <a href="https://open-meteo.com/">Open-Meteo</a> con <a href="https://atmosphere.copernicus.eu/">Copernicus CAMS</a> (CC BY 4.0). Límite del Perú: Natural Earth. Mapa base: Esri, HERE, Garmin, © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.</p>
       <p><strong>Importante.</strong> Son productos satelitales y modelos globales, no mediciones oficiales. No reemplazan los comunicados de ENFEN, SENAMHI, ANA, MINAM, OEFA o INDECI. Proyecto personal y educativo.</p>

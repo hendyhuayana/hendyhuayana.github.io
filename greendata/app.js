@@ -435,7 +435,8 @@
         '<div class="s">Pacífico central · ' + SEASON_ES[oni[0]] + ' ' + oni[1] + '</div>' +
         '<span class="badge">' + oniClass(oni[3]) + '</span>';
       if (record) {
-        $('hero-lede').innerHTML = 'El mar frente al norte del Perú está <strong>' + signed(last[1], 1) + ' °C</strong> más caliente de lo normal, el valor más alto desde que hay registro satelital (1981). Mueve la línea blanca y compáralo con hace un año.';
+        $('hero-h').innerHTML = '¿Sabías que el mar del Perú está <span class="hl">' + signed(last[1], 1) + ' °C</span> más caliente?';
+        $('hero-lede').innerHTML = 'Es el valor más alto desde que hay registro satelital (1981): <strong>El Niño costero</strong> en vivo. Arrastra la línea blanca y compáralo con hace un año.';
         $('nino-lede').innerHTML = 'El Niño 1+2 llegó a <strong>' + signed(recentMax[1], 1) + ' °C</strong> la semana del ' + dLong(recentMax[0]) + ', por encima del máximo de 1982-83 (' + signed(prev[1], 1) + ' °C). Anomalía semanal de la temperatura del mar respecto a lo normal.';
       }
       renderEnso();
