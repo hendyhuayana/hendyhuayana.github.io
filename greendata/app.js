@@ -788,6 +788,9 @@
   sel.addEventListener('change', function () { selectCity(+sel.value); });
 
   initMap();
+  document.querySelectorAll('a[data-layer]').forEach(function (el) {
+    el.addEventListener('click', function () { setLayer(el.getAttribute('data-layer')); });
+  });
   cityMarkers.addTo(map); riverMarkers.addTo(map);
   paintCityMarkers(); paintRiverMarkers();
   $('ov-cities').addEventListener('change', function (e) { e.target.checked ? cityMarkers.addTo(map) : map.removeLayer(cityMarkers); });
