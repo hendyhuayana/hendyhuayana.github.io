@@ -1,5 +1,5 @@
-/* hendy.greendata · Observatorio ambiental del Perú
- * Datos abiertos: NASA GIBS, NOAA CPC, Copernicus GloFAS y CAMS (vía Open-Meteo).
+/* hendy.greendata · Peru environmental observatory
+ * Open data: NASA GIBS, NOAA CPC, Copernicus GloFAS and CAMS (via Open-Meteo).
  */
 (function () {
   'use strict';
@@ -13,15 +13,16 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function fmt(v, d) {
     if (v == null || isNaN(v)) return '–';
-    return v.toLocaleString('es-PE', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 });
+    return v.toLocaleString('en-US', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 });
   }
   function signed(v, d) { return v == null ? '–' : (v > 0 ? '+' : v < 0 ? '−' : '') + fmt(Math.abs(v), d); }
   function iso(d) { return d.toISOString().slice(0, 10); }
   function utcToday() { var n = new Date(); return new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate())); }
-  var MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'set', 'oct', 'nov', 'dic'];
-  var DAYS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
-  function dShort(s) { var d = new Date(s + 'T12:00:00Z'); return d.getUTCDate() + ' ' + MONTHS[d.getUTCMonth()]; }
-  function dLong(s) { var d = new Date(s + 'T12:00:00Z'); return d.getUTCDate() + ' ' + MONTHS[d.getUTCMonth()] + ' ' + d.getUTCFullYear(); }
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  function dShort(s) { var d = new Date(s + 'T12:00:00Z'); return MONTHS[d.getUTCMonth()] + ' ' + d.getUTCDate(); }
+  function dHour(t) { return dShort(t.slice(0, 10)) + ', ' + t.slice(11, 16); }
+  function dLong(s) { var d = new Date(s + 'T12:00:00Z'); return MONTHS[d.getUTCMonth()] + ' ' + d.getUTCDate() + ', ' + d.getUTCFullYear(); }
   function fetchJSON(url, retried) {
     return fetch(url).then(function (r) {
       if (r.status === 429 && !retried) return new Promise(function (ok) { setTimeout(ok, 4000); }).then(function () { return fetchJSON(url, true); });
@@ -127,7 +128,7 @@
     if (o.now != null) {
       var nx = x(o.now).toFixed(1);
       s += '<line x1="' + nx + '" x2="' + nx + '" y1="' + m.t + '" y2="' + (m.t + ih) + '" stroke="var(--muted)"/>' +
-           '<text x="' + (+nx + 5) + '" y="' + (m.t + 4) + '" class="lbl">' + esc(o.nowLabel || 'Hoy') + '</text>';
+           '<text x="' + (+nx + 5) + '" y="' + (m.t + 4) + '" class="lbl">' + esc(o.nowLabel || 'Today') + '</text>';
     }
     (o.ann || []).forEach(function (a) {
       var ax = x(a.i), ay = y(a.v);
@@ -187,7 +188,7 @@
       s += '<rect class="hit" data-i="' + i + '" x="' + (m.l + bw * i) + '" y="' + m.t + '" width="' + bw + '" height="' + ih + '" fill="transparent"/>';
     });
     s += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + (m.t + ih) + '" y2="' + (m.t + ih) + '" stroke="var(--line)"/></svg>';
-    if (maxRaw < 0.1) s += '<p class="card-sub" style="margin:6px 0 0">No se espera lluvia esta semana.</p>';
+    if (maxRaw < 0.1) s += '<p class="card-sub" style="margin:6px 0 0">No rain expected this week.</p>';
     box.innerHTML = s;
     var svg = box.querySelector('svg'), tip = tipFor(box);
     svg.querySelectorAll('.hit').forEach(function (el) {
@@ -217,51 +218,51 @@
   // ---------------------------------------------------------------- satellite layers (NASA GIBS)
   var GIBS = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/';
   var GROUPS = [
-    { name: 'Mar', layers: ['sst_anom', 'sst', 'chl'] },
-    { name: 'Agua', layers: ['rain', 'soil', 'snow'] },
-    { name: 'Tierra', layers: ['true', 'ndvi', 'lst'] },
-    { name: 'Aire', layers: ['aod'] }
+    { name: 'Ocean', layers: ['sst_anom', 'sst', 'chl'] },
+    { name: 'Water', layers: ['rain', 'soil', 'snow'] },
+    { name: 'Land', layers: ['true', 'ndvi', 'lst'] },
+    { name: 'Air', layers: ['aod'] }
   ];
   var LAYERS = {
-    sst_anom: { label: 'El Niño (anomalía del mar)', id: 'GHRSST_L4_MUR_Sea_Surface_Temperature_Anomalies', z: 7, ext: 'png', lag: 2,
+    sst_anom: { label: 'El Niño (sea temperature anomaly)', id: 'GHRSST_L4_MUR_Sea_Surface_Temperature_Anomalies', z: 7, ext: 'png', lag: 2,
       legend: 'GHRSST_Sea_Surface_Temperature_Anomalies_H.svg',
-      info: '<b>Cuánto más caliente o frío está el mar que lo normal.</b> Rojo intenso = mar más caliente: la huella de El Niño frente a la costa. Azul = más frío.',
-      meta: 'GHRSST MUR L4 · NASA JPL · ~1 km · diario' },
-    sst: { label: 'Temperatura del mar', id: 'GHRSST_L4_MUR_Sea_Surface_Temperature', z: 7, ext: 'png', lag: 2,
+      info: '<b>How much warmer or colder the ocean is than normal.</b> Deep red = warmer water, the fingerprint of El Niño off the coast. Blue = colder.',
+      meta: 'GHRSST MUR L4 · NASA JPL · ~1 km · daily' },
+    sst: { label: 'Sea temperature', id: 'GHRSST_L4_MUR_Sea_Surface_Temperature', z: 7, ext: 'png', lag: 2,
       legend: 'GHRSST_Sea_Surface_Temperature_H.svg',
-      info: '<b>Temperatura de la superficie del océano.</b> La Corriente de Humboldt mantiene el mar peruano frío y rico en nutrientes; El Niño lo calienta.',
-      meta: 'GHRSST MUR L4 · NASA JPL · ~1 km · diario' },
-    chl: { label: 'Clorofila (fitoplancton)', id: 'VIIRS_NOAA20_Chlorophyll_a', z: 7, ext: 'png', lag: 1,
+      info: '<b>Sea surface temperature.</b> The Humboldt Current keeps Peru\'s ocean cold and nutrient-rich; El Niño warms it up.',
+      meta: 'GHRSST MUR L4 · NASA JPL · ~1 km · daily' },
+    chl: { label: 'Chlorophyll (phytoplankton)', id: 'VIIRS_NOAA20_Chlorophyll_a', z: 7, ext: 'png', lag: 1,
       legend: 'VIIRS_Chlorophyll_H.svg',
-      info: '<b>Fitoplancton en el mar, base de la cadena alimenticia de la anchoveta.</b> El afloramiento peruano es uno de los más productivos del mundo. Las nubes dejan huecos.',
-      meta: 'VIIRS NOAA-20 · NASA Ocean Biology · ~750 m · diario' },
-    rain: { label: 'Lluvia (GPM IMERG)', id: 'IMERG_Precipitation_Rate', z: 6, ext: 'png', lag: 2,
+      info: '<b>Phytoplankton, the base of the anchovy food web.</b> Peru\'s upwelling system is one of the most productive on Earth. Clouds leave gaps.',
+      meta: 'VIIRS NOAA-20 · NASA Ocean Biology · ~750 m · daily' },
+    rain: { label: 'Rainfall (GPM IMERG)', id: 'IMERG_Precipitation_Rate', z: 6, ext: 'png', lag: 2,
       legend: 'GPM_Precipitation_Rate_H.svg',
-      info: '<b>Lluvia estimada por la constelación de satélites GPM.</b> Útil para vigilar lluvias intensas en la costa norte y la sierra.',
-      meta: 'GPM IMERG · NASA / JAXA · ~10 km · diario' },
-    soil: { label: 'Humedad del suelo', id: 'SMAP_L4_Analyzed_Root_Zone_Soil_Moisture', z: 6, ext: 'png', lag: 4,
+      info: '<b>Rainfall estimated by the GPM satellite constellation.</b> Useful to track heavy rain on the northern coast and in the Andes.',
+      meta: 'GPM IMERG · NASA / JAXA · ~10 km · daily' },
+    soil: { label: 'Soil moisture', id: 'SMAP_L4_Analyzed_Root_Zone_Soil_Moisture', z: 6, ext: 'png', lag: 4,
       legend: 'SMAP_Analyzed_Soil_Moisture_H.svg',
-      info: '<b>Agua en el suelo hasta 1 m de profundidad.</b> Suelos saturados aumentan el riesgo de huaicos y deslizamientos cuando llueve.',
-      meta: 'SMAP L4 · NASA · ~9 km · diario' },
-    snow: { label: 'Nieve y glaciares', id: 'MODIS_Terra_NDSI_Snow_Cover', z: 8, ext: 'png', lag: 1,
+      info: '<b>Water in the top metre of soil.</b> Saturated soils raise the risk of debris flows and landslides when it rains.',
+      meta: 'SMAP L4 · NASA · ~9 km · daily' },
+    snow: { label: 'Snow & glaciers', id: 'MODIS_Terra_NDSI_Snow_Cover', z: 8, ext: 'png', lag: 1,
       legend: 'MODIS_NDSI_Snow_Cover_H.svg',
-      info: '<b>Cobertura de nieve en los Andes.</b> Perú tiene la mayor parte de los glaciares tropicales del mundo, y se están reduciendo. Acércate a la Cordillera Blanca.',
-      meta: 'MODIS Terra · NASA · 500 m · diario' },
-    true: { label: 'Color real', id: 'VIIRS_NOAA20_CorrectedReflectance_TrueColor', z: 9, ext: 'jpeg', lag: 1, legend: null,
-      info: '<b>El Perú como lo vería un astronauta.</b> Nubes, desiertos, la selva y, a veces, el humo de incendios. Acerca el mapa para ver detalle.',
-      meta: 'VIIRS NOAA-20 · NASA · 375 m · diario' },
-    ndvi: { label: 'Vegetación (NDVI)', id: 'MODIS_Terra_NDVI_8Day', z: 9, ext: 'png', lag: 2,
+      info: '<b>Snow cover in the Andes.</b> Peru holds most of the world\'s tropical glaciers, and they are shrinking. Zoom into the Cordillera Blanca.',
+      meta: 'MODIS Terra · NASA · 500 m · daily' },
+    true: { label: 'True color', id: 'VIIRS_NOAA20_CorrectedReflectance_TrueColor', z: 9, ext: 'jpeg', lag: 1, legend: null,
+      info: '<b>Peru as an astronaut would see it.</b> Clouds, deserts, the rainforest and sometimes wildfire smoke. Zoom in for detail.',
+      meta: 'VIIRS NOAA-20 · NASA · 375 m · daily' },
+    ndvi: { label: 'Vegetation (NDVI)', id: 'MODIS_Terra_NDVI_8Day', z: 9, ext: 'png', lag: 2,
       legend: 'MODIS_NDVI_H.svg',
-      info: '<b>Qué tan verde y vigorosa está la vegetación.</b> Contrasta la Amazonía con la costa desértica y los valles agrícolas.',
-      meta: 'MODIS Terra · NASA · 250 m · compuesto de 8 días' },
-    lst: { label: 'Temperatura del suelo', id: 'MODIS_Terra_Land_Surface_Temp_Day', z: 7, ext: 'png', lag: 1,
+      info: '<b>How green and healthy vegetation is.</b> Compare the Amazon with the desert coast and its irrigated valleys.',
+      meta: 'MODIS Terra · NASA · 250 m · 8-day composite' },
+    lst: { label: 'Land surface temperature', id: 'MODIS_Terra_Land_Surface_Temp_Day', z: 7, ext: 'png', lag: 1,
       legend: 'MODIS_Land_Surface_Temp_H.svg',
-      info: '<b>Qué tan caliente está la superficie del terreno de día</b>, no el aire. Las ciudades y los desiertos se calientan mucho más que la vegetación.',
-      meta: 'MODIS Terra · NASA · 1 km · diario' },
-    aod: { label: 'Aerosoles (humo y polvo)', id: 'MODIS_Combined_MAIAC_L2G_AerosolOpticalDepth', z: 7, ext: 'png', lag: 2,
+      info: '<b>How hot the ground surface gets during the day</b>, not the air. Cities and deserts heat up far more than vegetation.',
+      meta: 'MODIS Terra · NASA · 1 km · daily' },
+    aod: { label: 'Aerosols (smoke & dust)', id: 'MODIS_Combined_MAIAC_L2G_AerosolOpticalDepth', z: 7, ext: 'png', lag: 2,
       legend: 'MODIS_VIIRS_AOD_H.svg',
-      info: '<b>Partículas en la atmósfera: humo de incendios, polvo y contaminación.</b> En la temporada seca, el humo de la Amazonía puede cubrir el oriente.',
-      meta: 'MODIS MAIAC · NASA · 1 km · diario' }
+      info: '<b>Particles in the atmosphere: wildfire smoke, dust and pollution.</b> In the dry season, Amazon fire smoke can blanket eastern Peru.',
+      meta: 'MODIS MAIAC · NASA · 1 km · daily' }
   };
   var MAX_BACK = 60;
 
@@ -391,7 +392,7 @@
     var frames = 14, i = frames;
     sat.playing = true; $('compare').disabled = true;
     $('play-icon').setAttribute('d', 'M7 5h4v14H7zM13 5h4v14h-4z');
-    $('play').setAttribute('aria-label', 'Detener animación');
+    $('play').setAttribute('aria-label', 'Stop animation');
     function tick() {
       if (!sat.playing) return;
       i = i <= 0 ? frames : i - 1;
@@ -404,19 +405,19 @@
     if (!sat.playing) return;
     clearTimeout(sat.playing); sat.playing = null; $('compare').disabled = false;
     $('play-icon').setAttribute('d', 'M8 5v14l11-7z');
-    $('play').setAttribute('aria-label', 'Animar últimos 14 días');
+    $('play').setAttribute('aria-label', 'Animate the last 14 days');
     updateDates();
   }
 
   // ---------------------------------------------------------------- El Niño (NOAA CPC, updated weekly by GitHub Actions)
   var enso = null, ensoRange = 'all';
   var ONI_CLASS = [
-    { min: 2.0, label: 'El Niño muy fuerte' }, { min: 1.5, label: 'El Niño fuerte' }, { min: 1.0, label: 'El Niño moderado' },
-    { min: 0.5, label: 'El Niño débil' }, { min: -0.5, label: 'Neutral' }, { min: -1.0, label: 'La Niña débil' },
-    { min: -1.5, label: 'La Niña moderada' }, { min: -Infinity, label: 'La Niña fuerte' }
+    { min: 2.0, label: 'Very strong El Niño' }, { min: 1.5, label: 'Strong El Niño' }, { min: 1.0, label: 'Moderate El Niño' },
+    { min: 0.5, label: 'Weak El Niño' }, { min: -0.5, label: 'Neutral' }, { min: -1.0, label: 'Weak La Niña' },
+    { min: -1.5, label: 'Moderate La Niña' }, { min: -Infinity, label: 'Strong La Niña' }
   ];
   function oniClass(v) { for (var i = 0; i < ONI_CLASS.length; i++) if (v >= ONI_CLASS[i].min) return ONI_CLASS[i].label; }
-  var SEASON_ES = { DJF: 'dic–feb', JFM: 'ene–mar', FMA: 'feb–abr', MAM: 'mar–may', AMJ: 'abr–jun', MJJ: 'may–jul', JJA: 'jun–ago', JAS: 'jul–set', ASO: 'ago–oct', SON: 'set–nov', OND: 'oct–dic', NDJ: 'nov–ene' };
+  var SEASON_ES = { DJF: 'Dec–Feb', JFM: 'Jan–Mar', FMA: 'Feb–Apr', MAM: 'Mar–May', AMJ: 'Apr–Jun', MJJ: 'May–Jul', JJA: 'Jun–Aug', JAS: 'Jul–Sep', ASO: 'Aug–Oct', SON: 'Sep–Nov', OND: 'Oct–Dec', NDJ: 'Nov–Jan' };
 
   function loadEnso() {
     return fetchJSON('data/enso.json').then(function (d) {
@@ -426,24 +427,24 @@
       var recentMax = w.slice(-26).reduce(function (b, r) { return r[1] > b[1] ? r : b; }, w[w.length - 26]);
       var record = recentMax[1] > prev[1];
       var oni = d.oni.rows[d.oni.rows.length - 1];
-      $('kpi-n12').innerHTML = '<div class="k">Mar frente a la costa norte · Niño 1+2</div>' +
+      $('kpi-n12').innerHTML = '<div class="k">Ocean off northern Peru · Niño 1+2</div>' +
         '<div class="v">' + signed(last[1], 1) + '<small>°C</small></div>' +
-        '<div class="s">sobre lo normal · semana del ' + dShort(last[0]) + '</div>' +
-        (record ? '<span class="badge">▲ Récord desde 1981 (' + signed(recentMax[1], 1) + ' °C)</span>' : '');
-      $('kpi-oni').innerHTML = '<div class="k">Índice oficial de El Niño · ONI</div>' +
+        '<div class="s">above normal · week of ' + dShort(last[0]) + '</div>' +
+        (record ? '<span class="badge">▲ Record since 1981 (' + signed(recentMax[1], 1) + ' °C)</span>' : '');
+      $('kpi-oni').innerHTML = '<div class="k">Official El Niño index · ONI</div>' +
         '<div class="v">' + signed(oni[3], 2) + '<small>°C</small></div>' +
-        '<div class="s">Pacífico central · ' + SEASON_ES[oni[0]] + ' ' + oni[1] + '</div>' +
+        '<div class="s">Central Pacific · ' + SEASON_ES[oni[0]] + ' ' + oni[1] + '</div>' +
         '<span class="badge">' + oniClass(oni[3]) + '</span>';
       if (record) {
-        $('hero-h').innerHTML = '¿Sabías que el mar del Perú está <span class="hl">' + signed(last[1], 1) + ' °C</span> más caliente?';
-        $('hero-lede').innerHTML = 'Es el valor más alto desde que hay registro satelital (1981): <strong>El Niño costero</strong> en vivo. Arrastra la línea blanca y compáralo con hace un año.';
-        $('nino-lede').innerHTML = 'El Niño 1+2 llegó a <strong>' + signed(recentMax[1], 1) + ' °C</strong> la semana del ' + dLong(recentMax[0]) + ', por encima del máximo de 1982-83 (' + signed(prev[1], 1) + ' °C). Anomalía semanal de la temperatura del mar respecto a lo normal.';
+        $('hero-h').innerHTML = 'Did you know Peru\'s ocean is <span class="hl">' + signed(last[1], 1) + ' °C</span> warmer than normal?';
+        $('hero-lede').innerHTML = 'The highest value in the satellite record since 1981: <strong>coastal El Niño</strong>, live. Drag the white line to compare with one year ago.';
+        $('nino-lede').innerHTML = 'Niño 1+2 reached <strong>' + signed(recentMax[1], 1) + ' °C</strong> in the week of ' + dLong(recentMax[0]) + ', above the 1982-83 peak (' + signed(prev[1], 1) + ' °C). Weekly sea surface temperature anomaly relative to normal.';
       }
       renderEnso();
     }).catch(function (e) {
       console.error(e);
-      ['kpi-n12', 'kpi-oni'].forEach(function (id) { $(id).innerHTML = '<div class="k">El Niño</div><div class="s">No se pudieron cargar los índices.</div>'; });
-      $('enso-chart').innerHTML = '<div class="msg">No se pudieron cargar los índices de El Niño.</div>';
+      ['kpi-n12', 'kpi-oni'].forEach(function (id) { $(id).innerHTML = '<div class="k">El Niño</div><div class="s">Could not load the indices.</div>'; });
+      $('enso-chart').innerHTML = '<div class="msg">Could not load the El Niño indices.</div>';
     });
   }
 
@@ -461,7 +462,7 @@
       if (every) { if (yv !== lastY && yv % every === 0 && mo === 1) { ticks.push({ i: i, label: String(yv) }); lastY = yv; } }
       else if (r[0].slice(8, 10) <= '07' && (mo - 1) % 3 === 0) { ticks.push({ i: i, label: MONTHS[mo - 1] + (mo === 1 ? ' ' + yv : '') }); }
     });
-    var events = [['1982-09', '1983-09', '1983'], ['1997-03', '1998-09', '1997-98'], ['2017-01', '2017-06', 'Costero 2017'], ['2023-01', '2024-03', '2023'], ['2025-06', '2027-12', 'Hoy']];
+    var events = [['1982-09', '1983-09', '1983'], ['1997-03', '1998-09', '1997-98'], ['2017-01', '2017-06', 'Coastal 2017'], ['2023-01', '2024-03', '2023'], ['2025-06', '2027-12', 'Now']];
     var ann = [];
     events.forEach(function (ev) {
       var best = -1;
@@ -469,7 +470,7 @@
       if (best >= 0 && rows[best][1] >= 2) ann.push({ i: best, v: rows[best][1], label: ev[2] + ': ' + signed(rows[best][1], 1) + '°' });
     });
     lineChart($('enso-chart'), {
-      n: n, label: 'Anomalía semanal de temperatura del mar en las regiones Niño 1+2 y Niño 3.4',
+      n: n, label: 'Weekly sea surface temperature anomaly in the Niño 1+2 and Niño 3.4 regions',
       series: [
         { values: rows.map(function (r) { return r[1]; }), color: 'var(--warm)', width: n > 600 ? 1.4 : 2, diverging: true },
         { values: rows.map(function (r) { return r[2]; }), color: 'var(--ref)', width: 1.5, dash: '4 3' }
@@ -477,13 +478,13 @@
       xTicks: ticks, ann: ann, height: 300,
       tip: function (i) {
         var r = rows[i];
-        return '<b>Semana del ' + dLong(r[0]) + '</b><br><i class="sw" style="background:var(--warm)"></i>Niño 1+2: ' + signed(r[1], 1) + ' °C<br>' +
+        return '<b>Week of ' + dLong(r[0]) + '</b><br><i class="sw" style="background:var(--warm)"></i>Niño 1+2: ' + signed(r[1], 1) + ' °C<br>' +
           '<i class="sw" style="background:var(--ref)"></i>Niño 3.4: ' + signed(r[2], 1) + ' °C';
       }
     });
-    $('enso-table').innerHTML = '<table><thead><tr><th>Semana</th><th class="n">Niño 1+2 (°C)</th><th class="n">Niño 3.4 (°C)</th></tr></thead><tbody>' +
+    $('enso-table').innerHTML = '<table><thead><tr><th>Week</th><th class="n">Niño 1+2 (°C)</th><th class="n">Niño 3.4 (°C)</th></tr></thead><tbody>' +
       enso.weekly.rows.slice(-12).reverse().map(function (r) { return '<tr><td>' + dLong(r[0]) + '</td><td class="n">' + signed(r[1], 1) + '</td><td class="n">' + signed(r[2], 1) + '</td></tr>'; }).join('') +
-      '</tbody></table><p class="card-sub" style="margin-top:8px">Fuente: ' + esc(enso.source) + '. Actualizado: ' + dLong(enso.updated) + '.</p>';
+      '</tbody></table><p class="card-sub" style="margin-top:8px">Source: ' + esc(enso.source) + '. Updated: ' + dLong(enso.updated) + '.</p>';
   }
 
   document.querySelectorAll('#nino .seg button').forEach(function (b) {
@@ -528,22 +529,22 @@
       });
       renderRiverCards(); renderRiver(); paintRiverMarkers();
       var rising = rivers.filter(function (r) { return r.chg != null && r.chg > 10; }).length;
-      $('kpi-rivers').innerHTML = '<div class="k">Ríos con caudal en aumento</div>' +
-        '<div class="v">' + rising + '<small>de ' + rivers.length + '</small></div>' +
-        '<div class="s">Suben más de 10 % respecto a hace 7 días · GloFAS</div>';
+      $('kpi-rivers').innerHTML = '<div class="k">Rivers with rising discharge</div>' +
+        '<div class="v">' + rising + '<small>of ' + rivers.length + '</small></div>' +
+        '<div class="s">Up more than 10% vs. 7 days ago · GloFAS</div>';
     }).catch(function (e) {
       console.error(e);
-      $('river-cards').innerHTML = '<div class="msg">No se pudieron cargar los caudales. <button type="button" id="river-retry">Reintentar</button></div>';
+      $('river-cards').innerHTML = '<div class="msg">Could not load river discharge. <button type="button" id="river-retry">Retry</button></div>';
       $('river-retry').addEventListener('click', loadRivers);
       $('river-chart').innerHTML = '';
-      $('kpi-rivers').innerHTML = '<div class="k">Ríos</div><div class="s">Sin conexión con GloFAS.</div>';
+      $('kpi-rivers').innerHTML = '<div class="k">Rivers</div><div class="s">GloFAS is unavailable.</div>';
     });
   }
   function trend(chg) {
     if (chg == null) return '';
-    if (chg > 10) return '<span aria-hidden="true">▲</span> Sube ' + fmt(chg) + ' % en 7 días';
-    if (chg < -10) return '<span aria-hidden="true">▼</span> Baja ' + fmt(-chg) + ' % en 7 días';
-    return '<span aria-hidden="true">▬</span> Estable en 7 días';
+    if (chg > 10) return '<span aria-hidden="true">▲</span> Up ' + fmt(chg) + '% in 7 days';
+    if (chg < -10) return '<span aria-hidden="true">▼</span> Down ' + fmt(-chg) + '% in 7 days';
+    return '<span aria-hidden="true">▬</span> Stable over 7 days';
   }
   function qfmt(v) { return v >= 100 ? fmt(v) : fmt(v, 1); }
   function renderRiverCards() {
@@ -567,33 +568,33 @@
   function renderRiver() {
     if (!rivers) return;
     var r = rivers[riverIdx], R = RIVERS[riverIdx];
-    $('river-title').textContent = 'Río ' + R.name + ' · ' + R.place;
-    $('river-sub').textContent = 'Hoy: ' + qfmt(r.q[r.now]) + ' m³/s · promedio de los últimos 90 días: ' + qfmt(r.mean90) + ' m³/s · máximo pronosticado: ' + qfmt(r.fmax) + ' m³/s';
+    $('river-title').textContent = R.name + ' River · ' + R.place;
+    $('river-sub').textContent = 'Today: ' + qfmt(r.q[r.now]) + ' m³/s · 90-day mean: ' + qfmt(r.mean90) + ' m³/s · forecast peak: ' + qfmt(r.fmax) + ' m³/s';
     var ticks = [];
     r.t.forEach(function (t, i) { if (t.slice(8, 10) === '01') ticks.push({ i: i, label: MONTHS[+t.slice(5, 7) - 1] }); });
     var lo = r.p25.map(function (v, i) { return i >= r.now ? v : null; }), hi = r.p75.map(function (v, i) { return i >= r.now ? v : null; });
     lineChart($('river-chart'), {
-      n: r.t.length, label: 'Caudal diario del río ' + R.name, now: r.now, nowLabel: 'Hoy',
+      n: r.t.length, label: 'Daily discharge of the ' + R.name + ' River', now: r.now, nowLabel: 'Today',
       series: [{ values: r.q, color: 'var(--series-1)', forecastDash: true }],
       band: { lo: lo, hi: hi }, xTicks: ticks, yMin: 0,
       tip: function (i) {
-        var s = '<b>' + dLong(r.t[i]) + (i > r.now ? ' · pronóstico' : '') + '</b><br>' + qfmt(r.q[i]) + ' m³/s';
-        if (i >= r.now && r.p25[i] != null) s += '<br>Rango probable: ' + qfmt(r.p25[i]) + '–' + qfmt(r.p75[i]);
+        var s = '<b>' + dLong(r.t[i]) + (i > r.now ? ' · forecast' : '') + '</b><br>' + qfmt(r.q[i]) + ' m³/s';
+        if (i >= r.now && r.p25[i] != null) s += '<br>Likely range: ' + qfmt(r.p25[i]) + '–' + qfmt(r.p75[i]);
         return s;
       }
     });
     var rowsH = '';
     for (var i = r.t.length - 1; i >= 0; i -= 1) {
-      rowsH += '<tr><td>' + dLong(r.t[i]) + '</td><td class="n">' + qfmt(r.q[i]) + '</td><td>' + (i > r.now ? 'Pronóstico' : 'Modelado') + '</td></tr>';
+      rowsH += '<tr><td>' + dLong(r.t[i]) + '</td><td class="n">' + qfmt(r.q[i]) + '</td><td>' + (i > r.now ? 'Forecast' : 'Modelled') + '</td></tr>';
     }
-    $('river-table').innerHTML = '<div class="table-scroll"><table><thead><tr><th>Fecha</th><th class="n">Caudal (m³/s)</th><th>Tipo</th></tr></thead><tbody>' + rowsH + '</tbody></table></div>';
+    $('river-table').innerHTML = '<div class="table-scroll"><table><thead><tr><th>Date</th><th class="n">Discharge (m³/s)</th><th>Type</th></tr></thead><tbody>' + rowsH + '</tbody></table></div>';
   }
   function paintRiverMarkers() {
     riverMarkers.clearLayers();
     RIVERS.forEach(function (R, i) {
       var r = rivers && rivers[i];
       var m = L.circleMarker([R.lat, R.lon], { radius: i === riverIdx ? 9 : 7, weight: 2, color: '#ffffff', fillColor: '#3987e5', fillOpacity: 1 })
-        .bindTooltip('Río ' + R.name + (r ? ': ' + qfmt(r.q[r.now]) + ' m³/s' : ''), { className: 'gd-tip', direction: 'top', offset: [0, -8] })
+        .bindTooltip(R.name + ' River' + (r ? ': ' + qfmt(r.q[r.now]) + ' m³/s' : ''), { className: 'gd-tip', direction: 'top', offset: [0, -8] })
         .on('click', function () { selectRiver(i, true); });
       riverMarkers.addLayer(m);
     });
@@ -627,13 +628,13 @@
   ];
   var WHO_PM25 = 15, ECA_PM25 = 50;
   var PM_STATUS = [
-    { max: WHO_PM25, key: 'good', label: 'Buena', long: 'dentro de la guía OMS', shape: 'circle' },
-    { max: ECA_PM25, key: 'warning', label: 'Moderada', long: 'sobre la guía OMS, bajo el ECA', shape: 'tri' },
-    { max: Infinity, key: 'critical', label: 'Mala', long: 'sobre el ECA Perú', shape: 'sq' }
+    { max: WHO_PM25, key: 'good', label: 'Good', long: 'within the WHO guideline', shape: 'circle' },
+    { max: ECA_PM25, key: 'warning', label: 'Moderate', long: 'above WHO guideline, below Peru\'s standard', shape: 'tri' },
+    { max: Infinity, key: 'critical', label: 'Poor', long: 'above Peru\'s air quality standard', shape: 'sq' }
   ];
   var UV_STATUS = [
-    { max: 2.99, key: 'good', label: 'Bajo' }, { max: 5.99, key: 'warning', label: 'Moderado' },
-    { max: 7.99, key: 'serious', label: 'Alto' }, { max: 10.99, key: 'critical', label: 'Muy alto' }, { max: Infinity, key: 'critical', label: 'Extremo' }
+    { max: 2.99, key: 'good', label: 'Low' }, { max: 5.99, key: 'warning', label: 'Moderate' },
+    { max: 7.99, key: 'serious', label: 'High' }, { max: 10.99, key: 'critical', label: 'Very high' }, { max: Infinity, key: 'critical', label: 'Extreme' }
   ];
   function pmStatus(v) { for (var i = 0; i < PM_STATUS.length; i++) if (v <= PM_STATUS[i].max) return PM_STATUS[i]; }
   function uvStatus(v) { for (var i = 0; i < UV_STATUS.length; i++) if (v <= UV_STATUS[i].max) return UV_STATUS[i]; }
@@ -668,18 +669,18 @@
       var now = limaHour();
       city.air = (Array.isArray(res[0]) ? res[0] : [res[0]]).map(function (a) { return summarizeAir(a.hourly, now); });
       city.wx = (Array.isArray(res[1]) ? res[1] : [res[1]]).map(function (w) { return w.daily; });
-      $('updated').textContent = 'Actualizado: ' + new Date().toLocaleString('es-PE', { timeZone: TZ, day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' (hora de Lima)';
+      $('updated').textContent = 'Updated: ' + new Date().toLocaleString('en-US', { timeZone: TZ, day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' (Lima time)';
       var over = city.air.filter(function (a) { return a.pm25 != null && a.pm25 > WHO_PM25; }).length;
       var valid = city.air.filter(function (a) { return a.pm25 != null; }).length;
-      $('kpi-air').innerHTML = '<div class="k">Ciudades sobre la guía de aire de la OMS</div>' +
-        '<div class="v">' + over + '<small>de ' + valid + '</small></div><div class="s">PM2.5 promedio de 24 h mayor a 15 µg/m³ · CAMS</div>';
+      $('kpi-air').innerHTML = '<div class="k">Cities above the WHO air guideline</div>' +
+        '<div class="v">' + over + '<small>of ' + valid + '</small></div><div class="s">24 h mean PM2.5 above 15 µg/m³ · CAMS</div>';
       selectCity(city.idx);
     }).catch(function (e) {
       console.error(e);
-      var html = '<div class="msg">No se pudieron cargar los datos de aire y tiempo.<br><button type="button" class="retry">Reintentar</button></div>';
+      var html = '<div class="msg">Could not load air quality and weather data.<br><button type="button" class="retry">Retry</button></div>';
       ['tiles', 'pm-chart', 'rain-chart'].forEach(function (id) { $(id).innerHTML = html; });
-      $('city-title').textContent = 'Sin conexión';
-      $('kpi-air').innerHTML = '<div class="k">Calidad del aire</div><div class="s">Sin conexión con CAMS.</div>';
+      $('city-title').textContent = 'Data unavailable';
+      $('kpi-air').innerHTML = '<div class="k">Air quality</div><div class="s">CAMS is unavailable.</div>';
       document.querySelectorAll('.retry').forEach(function (b) { b.addEventListener('click', loadCities); });
     });
   }
@@ -710,16 +711,16 @@
   function renderNow() {
     var c = CITIES[city.idx], a = city.air[city.idx], w = city.wx[city.idx];
     $('city-title').textContent = c.name;
-    $('city-sub').textContent = 'Región ' + c.region + ' · ahora y hoy';
+    $('city-sub').textContent = c.region + ' region · now and today';
     var pmSt = a.pm25 != null ? pmStatus(a.pm25) : null, uv = w.uv_index_max[0], uvSt = uv != null ? uvStatus(uv) : null;
     $('tiles').innerHTML = '<div class="tiles">' +
-      tile('PM2.5 · promedio 24 h', fmt(a.pm25), 'µg/m³',
-        pmSt ? '<span class="status">' + swatch(pmSt) + 'Aire ' + pmSt.label.toLowerCase() + ' · ' + pmSt.long + '</span>' : '<span class="note">Sin datos suficientes</span>',
+      tile('PM2.5 · 24 h mean', fmt(a.pm25), 'µg/m³',
+        pmSt ? '<span class="status">' + swatch(pmSt) + pmSt.label + ' air · ' + pmSt.long + '</span>' : '<span class="note">Not enough data</span>',
         'PM10: ' + fmt(a.pm10) + ' µg/m³') +
-      tile('Índice UV máximo hoy', fmt(uv, 1), '', uvSt ? '<span class="status">' + swatch({ key: uvSt.key }) + uvSt.label + '</span>' : '',
-        uv >= 8 ? 'Evita el sol de 10 a 16 h' : uv >= 3 ? 'Usa protector solar' : 'Protección mínima') +
-      tile('Lluvia hoy', fmt(w.precipitation_sum[0], 1), 'mm', '',
-        'Probabilidad máx.: ' + fmt(w.precipitation_probability_max[0]) + ' % · ' + fmt(w.temperature_2m_min[0]) + '° a ' + fmt(w.temperature_2m_max[0]) + ' °C') +
+      tile('Max UV index today', fmt(uv, 1), '', uvSt ? '<span class="status">' + swatch({ key: uvSt.key }) + uvSt.label + '</span>' : '',
+        uv >= 8 ? 'Avoid the sun from 10 am to 4 pm' : uv >= 3 ? 'Wear sunscreen' : 'Minimal protection needed') +
+      tile('Rain today', fmt(w.precipitation_sum[0], 1), 'mm', '',
+        'Max probability: ' + fmt(w.precipitation_probability_max[0]) + '% · ' + fmt(w.temperature_2m_min[0]) + '° to ' + fmt(w.temperature_2m_max[0]) + ' °C') +
       '</div>';
   }
   function renderPM() {
@@ -727,25 +728,25 @@
     if (a.series.filter(function (p) { return p.v != null; }).length < 2) { box.innerHTML = '<div class="msg">No hay datos horarios de PM2.5 para esta ciudad.</div>'; $('pm-table').innerHTML = ''; return; }
     var narrow = (box.clientWidth || 600) < 420;
     var ticks = [];
-    a.series.forEach(function (p, i) { if (+p.t.slice(11, 13) % (narrow ? 12 : 6) === 0) ticks.push({ i: i, label: p.t.slice(11, 13) + 'h' }); });
+    a.series.forEach(function (p, i) { if (+p.t.slice(11, 13) % (narrow ? 12 : 6) === 0) ticks.push({ i: i, label: p.t.slice(11, 16) }); });
     lineChart(box, {
-      n: a.series.length, label: 'PM2.5 por hora en ' + CITIES[city.idx].name, now: a.nowIndex, nowLabel: 'Ahora', height: 220,
+      n: a.series.length, label: 'Hourly PM2.5 in ' + CITIES[city.idx].name, now: a.nowIndex, nowLabel: 'Now', height: 220,
       series: [{ values: a.series.map(function (p) { return p.v; }), color: 'var(--series-1)', forecastDash: true }],
-      refs: [{ v: WHO_PM25, label: 'OMS 15' }, { v: ECA_PM25, label: 'ECA 50' }], xTicks: ticks, yMin: 0,
-      tip: function (i) { var p = a.series[i]; return '<b>' + fmt(p.v, 1) + ' µg/m³</b><br>' + p.t.slice(8, 10) + '/' + p.t.slice(5, 7) + ' ' + p.t.slice(11, 16) + (i > a.nowIndex ? ' · pronóstico' : ''); }
+      refs: [{ v: WHO_PM25, label: 'WHO 15' }, { v: ECA_PM25, label: 'Peru 50' }], xTicks: ticks, yMin: 0,
+      tip: function (i) { var p = a.series[i]; return '<b>' + fmt(p.v, 1) + ' µg/m³</b><br>' + dHour(p.t) + (i > a.nowIndex ? ' · forecast' : ''); }
     });
-    $('pm-table').innerHTML = '<div class="table-scroll"><table><thead><tr><th>Hora</th><th class="n">PM2.5 (µg/m³)</th><th>Tipo</th></tr></thead><tbody>' +
-      a.series.map(function (p, i) { return '<tr><td>' + p.t.slice(8, 10) + '/' + p.t.slice(5, 7) + ' ' + p.t.slice(11, 16) + '</td><td class="n">' + fmt(p.v, 1) + '</td><td>' + (i > a.nowIndex ? 'Pronóstico' : 'Estimado') + '</td></tr>'; }).join('') +
+    $('pm-table').innerHTML = '<div class="table-scroll"><table><thead><tr><th>Time</th><th class="n">PM2.5 (µg/m³)</th><th>Type</th></tr></thead><tbody>' +
+      a.series.map(function (p, i) { return '<tr><td>' + dHour(p.t) + '</td><td class="n">' + fmt(p.v, 1) + '</td><td>' + (i > a.nowIndex ? 'Forecast' : 'Estimated') + '</td></tr>'; }).join('') +
       '</tbody></table></div>';
   }
   function renderRain() {
     var w = city.wx[city.idx];
-    var labels = w.time.map(function (t, i) { if (i === 0) return 'Hoy'; var d = new Date(t + 'T12:00:00Z'); return DAYS[d.getUTCDay()] + ' ' + d.getUTCDate(); });
+    var labels = w.time.map(function (t, i) { if (i === 0) return 'Today'; var d = new Date(t + 'T12:00:00Z'); return DAYS[d.getUTCDay()] + ' ' + d.getUTCDate(); });
     barChart($('rain-chart'), {
-      values: w.precipitation_sum, labels: labels, label: 'Lluvia diaria en ' + CITIES[city.idx].name,
-      tip: function (i) { return '<b>' + labels[i] + ': ' + fmt(w.precipitation_sum[i], 1) + ' mm</b><br>Probabilidad máx.: ' + fmt(w.precipitation_probability_max[i]) + ' %'; }
+      values: w.precipitation_sum, labels: labels, label: 'Daily rainfall in ' + CITIES[city.idx].name,
+      tip: function (i) { return '<b>' + labels[i] + ': ' + fmt(w.precipitation_sum[i], 1) + ' mm</b><br>Max probability: ' + fmt(w.precipitation_probability_max[i]) + '%'; }
     });
-    $('rain-table').innerHTML = '<table><thead><tr><th>Día</th><th class="n">Lluvia (mm)</th><th class="n">Prob. (%)</th><th class="n">UV máx.</th></tr></thead><tbody>' +
+    $('rain-table').innerHTML = '<table><thead><tr><th>Day</th><th class="n">Rain (mm)</th><th class="n">Prob. (%)</th><th class="n">Max UV</th></tr></thead><tbody>' +
       labels.map(function (l, i) { return '<tr><td>' + l + '</td><td class="n">' + fmt(w.precipitation_sum[i], 1) + '</td><td class="n">' + fmt(w.precipitation_probability_max[i]) + '</td><td class="n">' + fmt(w.uv_index_max[i], 1) + '</td></tr>'; }).join('') +
       '</tbody></table>';
   }
@@ -754,11 +755,11 @@
   function renderProof() {
     var sats = 'GHRSST · GPM · MODIS · VIIRS · SMAP';
     $('proof').innerHTML =
-      '<div><b>' + Object.keys(LAYERS).length + '</b><span>capas satelitales diarias</span></div>' +
-      '<div><b>' + (CITIES.length + RIVERS.length) + '</b><span>ciudades y ríos monitoreados</span></div>' +
-      '<div><b>' + (new Date().getUTCFullYear() - 1981) + '</b><span>años de datos de El Niño</span></div>' +
-      '<div><b>0</b><span>servidores: todo con datos abiertos</span></div>' +
-      '<div style="flex-basis:100%"><span>Satélites y modelos: ' + sats + ' · Copernicus CAMS y GloFAS · NOAA CPC</span></div>';
+      '<div><b>' + Object.keys(LAYERS).length + '</b><span>daily satellite layers</span></div>' +
+      '<div><b>' + (CITIES.length + RIVERS.length) + '</b><span>cities and rivers monitored</span></div>' +
+      '<div><b>' + (new Date().getUTCFullYear() - 1981) + '</b><span>years of El Niño data</span></div>' +
+      '<div><b>0</b><span>backend servers: static site on open data</span></div>' +
+      '<div style="flex-basis:100%"><span>Satellites and models: ' + sats + ' · Copernicus CAMS and GloFAS · NOAA CPC</span></div>';
   }
 
   // ---------------------------------------------------------------- init

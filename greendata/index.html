@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hendy in Green Data · Observatorio ambiental del Perú</title>
-<meta name="description" content="Observatorio ambiental del Perú con datos satelitales abiertos: El Niño costero, temperatura del mar, lluvias, ríos, vegetación y calidad del aire, actualizados en vivo. Por Hendy Huayana, ingeniera ambiental.">
+<title>Hendy Huayana · Environmental Engineer · Satellite Data &amp; Climate Risk</title>
+<meta name="description" content="Portfolio of Hendy Huayana, Environmental Engineer in Lima, Peru: remote sensing, GIS and climate risk. Includes a live environmental observatory of Peru built on open NASA, NOAA and Copernicus data.">
 <meta name="author" content="Hendy Huayana">
-<meta property="og:title" content="Hendy in Green Data · Observatorio ambiental del Perú">
-<meta property="og:description" content="El Niño costero, mar, lluvias, ríos, vegetación y aire del Perú con datos satelitales de NASA y Copernicus, en vivo.">
+<meta property="og:title" content="Hendy Huayana · Environmental Engineer · Satellite Data & Climate Risk">
+<meta property="og:description" content="Remote sensing, GIS and climate risk from Peru. Live observatory: coastal El Niño, ocean, rainfall, rivers and air quality from open satellite data.">
 <meta property="og:url" content="https://hendyhuayana.github.io/greendata/">
-<meta property="og:type" content="website">
+<meta property="og:type" content="profile">
+<meta property="og:image" content="https://hendyhuayana.github.io/greendata/img/hendy.png">
 <meta name="theme-color" content="#0f2d1f">
 <link rel="canonical" href="https://hendyhuayana.github.io/greendata/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23b6e34f'/%3E%3Cpath d='M9 23c0-8.5 6-14 15-14 0 8.5-5.2 14.4-13.6 14.2M9 23l7-7' fill='none' stroke='%230f2d1f' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -20,71 +21,72 @@
 <link rel="stylesheet" href="vendor/leaflet.css">
 <link rel="stylesheet" href="app.css">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"hendy.greendata","url":"https://hendyhuayana.github.io/greendata/","applicationCategory":"EnvironmentalApplication","inLanguage":"es","description":"Observatorio ambiental del Perú con datos satelitales abiertos.","creator":{"@type":"Person","name":"Hendy Mayumi Huayana Cjuro","url":"https://hendyhuayana.github.io/"}}
+{"@context":"https://schema.org","@type":"Person","name":"Hendy Mayumi Huayana Cjuro","alternateName":"Hendy Huayana","jobTitle":"Environmental Engineer","image":"https://hendyhuayana.github.io/greendata/img/hendy.png","address":{"@type":"PostalAddress","addressLocality":"Lima","addressCountry":"PE"},"url":"https://hendyhuayana.github.io/greendata/","sameAs":["https://www.linkedin.com/in/hendy-huayana/","https://github.com/hendyhuayana","https://orcid.org/0009-0000-9348-6078","https://www.tiktok.com/@hendy.greendata"],"knowsAbout":["Remote sensing","Geographic Information Systems","Climate risk","El Niño","Early warning systems","Google Earth Engine","Python","PostGIS"],"knowsLanguage":["es","qu","en"]}
 </script>
 </head>
 <body>
-<a class="skip" href="#main">Saltar al contenido</a>
+<a class="skip" href="#main">Skip to content</a>
 
 <header class="nav">
   <div class="wrap nav-in">
-    <a class="brand" href="#top" aria-label="Hendy in Green Data, inicio">
+    <a class="brand" href="#top" aria-label="Hendy in Green Data, home">
       <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 18.5c0-7.8 5.6-12.8 13.8-12.8 0 7.8-4.8 13.2-12.5 13M5 18.5l6.3-6.3" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       <span class="wm" aria-hidden="true"><b>HENDY</b><i>in</i><b class="g">GREEN</b><b>DATA</b></span>
     </a>
-    <nav aria-label="Secciones">
-      <a href="#satelite">Satélite</a>
+    <nav aria-label="Sections">
+      <a href="#satellite">Satellite</a>
       <a href="#nino">El Niño</a>
-      <a href="#rios">Ríos</a>
-      <a href="#ciudades">Ciudades</a>
-      <a class="btn sm" href="#trabajemos">Trabajemos</a>
+      <a href="#rivers">Rivers</a>
+      <a href="#cities">Air</a>
+      <a href="#about">About</a>
+      <a class="btn sm" href="#contact">Contact</a>
     </nav>
   </div>
 </header>
 
 <main id="main">
   <!-- HERO MAP -->
-  <section class="hero" id="satelite" aria-label="Mapa satelital">
-    <div id="map" aria-label="Mapa satelital del Perú"></div>
+  <section class="hero" id="satellite" aria-label="Satellite map">
+    <div id="map" aria-label="Satellite map of Peru"></div>
 
     <div class="hero-copy" id="top">
       <div class="wrap"><div class="copy-col">
-        <p class="eyebrow"><span class="live" aria-hidden="true"></span>Observatorio ambiental del Perú · en vivo</p>
-        <h1 id="hero-h">¿Sabías que el Perú se puede ver <span class="hl">desde el espacio</span>?</h1>
-        <p class="lede" id="hero-lede">Satélites de la NASA, Copernicus y NOAA, actualizados cada día. Mueve la línea blanca para comparar con hace un año.</p>
-        <a class="handle" href="#trabajemos"><img src="img/hendy.png" width="26" height="26" alt="">@hendy.greendata</a>
+        <p class="eyebrow"><span class="live" aria-hidden="true"></span>Live environmental observatory · Peru</p>
+        <h1 id="hero-h">Did you know you can watch Peru <span class="hl">from space</span>?</h1>
+        <p class="lede" id="hero-lede">Daily satellite data from NASA, Copernicus and NOAA. Drag the white line to compare with one year ago.</p>
+        <a class="handle" href="#about"><img src="img/hendy.png" width="26" height="26" alt="">Built by Hendy Huayana</a>
       </div></div>
     </div>
 
     <div class="swipe" id="swipe" hidden>
-      <div class="swipe-line" aria-hidden="true"><span class="swipe-knob" id="swipe-knob" role="slider" tabindex="0" aria-label="Comparar fechas: arrastra o usa las flechas" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><svg viewBox="0 0 24 24"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      <div class="swipe-line" aria-hidden="true"><span class="swipe-knob" id="swipe-knob" role="slider" tabindex="0" aria-label="Compare dates: drag or use the arrow keys" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><svg viewBox="0 0 24 24"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
       <span class="swipe-tag left" id="swipe-left"></span>
       <span class="swipe-tag right" id="swipe-right"></span>
     </div>
 
-    <aside class="panel" aria-label="Capas satelitales">
+    <aside class="panel" aria-label="Satellite layers">
       <div class="panel-head">
-        <span class="panel-title">Capa satelital</span>
-        <button class="icon-btn" id="panel-toggle" aria-expanded="true" aria-controls="panel-body" title="Mostrar u ocultar">
+        <span class="panel-title">Satellite layer</span>
+        <button class="icon-btn" id="panel-toggle" aria-expanded="true" aria-controls="panel-body" title="Show or hide">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
       </div>
       <div id="panel-body">
-        <div class="layer-groups" id="layers" role="radiogroup" aria-label="Elegir capa"></div>
+        <div class="layer-groups" id="layers" role="radiogroup" aria-label="Choose a layer"></div>
         <div class="layer-info" id="layer-info"></div>
         <img class="legend-img" id="legend" alt="" hidden>
         <div class="time">
           <div class="time-row">
-            <button class="icon-btn play" id="play" aria-label="Animar últimos 14 días" title="Animar últimos 14 días">
+            <button class="icon-btn play" id="play" aria-label="Animate the last 14 days" title="Animate the last 14 days">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path id="play-icon" d="M8 5v14l11-7z" fill="currentColor"/></svg>
             </button>
-            <input type="range" id="date-range" min="0" max="60" value="60" aria-label="Fecha de la imagen">
+            <input type="range" id="date-range" min="0" max="60" value="60" aria-label="Image date">
             <output id="date-label" for="date-range"></output>
           </div>
-          <label class="check"><input type="checkbox" id="compare" checked> Comparar con hace 1 año</label>
+          <label class="check"><input type="checkbox" id="compare" checked> Compare with one year ago</label>
           <div class="overlay-toggles">
-            <label class="check"><input type="checkbox" id="ov-cities" checked> Ciudades (calidad del aire)</label>
-            <label class="check"><input type="checkbox" id="ov-rivers" checked> Ríos (caudal)</label>
+            <label class="check"><input type="checkbox" id="ov-cities" checked> Cities (air quality)</label>
+            <label class="check"><input type="checkbox" id="ov-rivers" checked> Rivers (discharge)</label>
           </div>
         </div>
       </div>
@@ -92,7 +94,7 @@
   </section>
 
   <!-- KPIs -->
-  <section class="wrap kpis" aria-label="Indicadores principales" id="kpis">
+  <section class="wrap kpis" aria-label="Key indicators" id="kpis">
     <div class="kpi" id="kpi-n12"><div class="skeleton"></div></div>
     <div class="kpi" id="kpi-oni"><div class="skeleton"></div></div>
     <div class="kpi" id="kpi-air"><div class="skeleton"></div></div>
@@ -102,108 +104,160 @@
   <!-- EL NIÑO -->
   <section class="wrap section" id="nino" aria-labelledby="nino-h">
     <div class="sec-head">
-      <p class="kicker">Océano y clima</p>
-      <h2 id="nino-h">¿Qué tan fuerte es <span class="hl">El Niño</span> este año?</h2>
-      <p class="sec-lede" id="nino-lede">Anomalía de la temperatura del mar: cuánto más caliente (o frío) está el océano respecto a lo normal.</p>
+      <p class="kicker">Ocean &amp; climate</p>
+      <h2 id="nino-h">How strong is <span class="hl">El Niño</span> this year?</h2>
+      <p class="sec-lede" id="nino-lede">Sea surface temperature anomaly: how much warmer (or colder) the ocean is than normal.</p>
     </div>
     <div class="card">
       <div class="card-top">
-        <div class="seg" role="tablist" aria-label="Periodo">
-          <button role="tab" data-range="all" aria-selected="true">1981 – hoy</button>
-          <button role="tab" data-range="10" aria-selected="false">10 años</button>
-          <button role="tab" data-range="2" aria-selected="false">2 años</button>
+        <div class="seg" role="tablist" aria-label="Period">
+          <button role="tab" data-range="all" aria-selected="true">1981 – today</button>
+          <button role="tab" data-range="10" aria-selected="false">10 years</button>
+          <button role="tab" data-range="2" aria-selected="false">2 years</button>
         </div>
         <div class="chart-legend">
-          <span><i class="ln warm"></i>Niño 1+2 · costa de Perú y Ecuador</span>
-          <span><i class="ln dash"></i>Niño 3.4 · Pacífico central</span>
+          <span><i class="ln warm"></i>Niño 1+2 · coast of Peru &amp; Ecuador</span>
+          <span><i class="ln dash"></i>Niño 3.4 · central Pacific</span>
         </div>
       </div>
       <div class="chart" id="enso-chart" style="min-height:300px"><div class="skeleton tall"></div></div>
-      <details class="table"><summary>Ver últimas 12 semanas como tabla</summary><div id="enso-table"></div></details>
+      <details class="table"><summary>Show the last 12 weeks as a table</summary><div id="enso-table"></div></details>
     </div>
     <div class="explain">
-      <div><h3>¿Niño 1+2 o Niño 3.4?</h3><p><strong>Niño 1+2</strong> mide el mar frente a la costa norte de Perú y Ecuador: es el que trae lluvias intensas, huaicos y cambios en la pesca. <strong>Niño 3.4</strong> mide el Pacífico central y define El Niño a escala mundial.</p></div>
-      <div><h3>¿Qué significa +1 °C?</h3><p>Parece poco, pero un océano 1 °C más caliente evapora más agua y altera los vientos. En 1983 y 1998, anomalías de +4 °C trajeron las peores lluvias del siglo XX en Tumbes y Piura.</p></div>
-      <div><h3>¿Quién lo vigila en Perú?</h3><p>La Comisión Multisectorial <strong>ENFEN</strong> emite los comunicados oficiales y el índice costero (ICEN). Esta página es educativa: ante una alerta, sigue siempre a ENFEN, SENAMHI e INDECI.</p></div>
+      <div><h3>Niño 1+2 or Niño 3.4?</h3><p><strong>Niño 1+2</strong> tracks the ocean off northern Peru and Ecuador: it drives heavy rain, debris flows and fishery shifts along the coast. <strong>Niño 3.4</strong> tracks the central Pacific and defines El Niño globally.</p></div>
+      <div><h3>Why does +1 °C matter?</h3><p>A 1 °C warmer ocean evaporates more water and reshapes winds. In 1983 and 1998, anomalies of about +4 °C brought the worst rainfall of the 20th century to Tumbes and Piura.</p></div>
+      <div><h3>Who issues official alerts?</h3><p>Peru's multisector commission <strong>ENFEN</strong> issues the official statements and the coastal index (ICEN). This site is educational: always follow ENFEN, SENAMHI and INDECI.</p></div>
     </div>
   </section>
 
   <!-- RIVERS -->
-  <section class="wrap section" id="rios" aria-labelledby="rios-h">
+  <section class="wrap section" id="rivers" aria-labelledby="rios-h">
     <div class="sec-head">
-      <p class="kicker">Agua</p>
-      <h2 id="rios-h">¿Cuánta agua llevan <span class="hl">nuestros ríos</span>?</h2>
-      <p class="sec-lede">Caudal de los últimos 90 días y pronóstico a 30 días, del modelo hidrológico global GloFAS (Copernicus). Elige un río.</p>
+      <p class="kicker">Water</p>
+      <h2 id="rios-h">How much water are <span class="hl">Peru's rivers</span> carrying?</h2>
+      <p class="sec-lede">Daily discharge for the last 90 days and a 30-day forecast from the GloFAS global hydrological model (Copernicus). Pick a river.</p>
     </div>
     <div class="river-grid" id="river-cards"><div class="skeleton"></div></div>
     <div class="card">
       <div class="card-top">
         <div><h3 class="card-h" id="river-title">&nbsp;</h3><p class="card-sub" id="river-sub">&nbsp;</p></div>
         <div class="chart-legend">
-          <span><i class="ln"></i>Caudal diario</span>
-          <span><i class="band"></i>Rango probable del pronóstico (p25–p75)</span>
+          <span><i class="ln"></i>Daily discharge</span>
+          <span><i class="band"></i>Likely forecast range (p25–p75)</span>
         </div>
       </div>
       <div class="chart" id="river-chart" style="min-height:260px"><div class="skeleton tall"></div></div>
-      <details class="table"><summary>Ver como tabla</summary><div id="river-table"></div></details>
+      <details class="table"><summary>Show as a table</summary><div id="river-table"></div></details>
     </div>
   </section>
 
   <!-- CITIES -->
-  <section class="wrap section" id="ciudades" aria-labelledby="ciu-h">
+  <section class="wrap section" id="cities" aria-labelledby="ciu-h">
     <div class="sec-head">
-      <p class="kicker">Aire y clima</p>
-      <h2 id="ciu-h">¿Cómo está el aire <span class="hl">en tu ciudad</span>?</h2>
+      <p class="kicker">Air &amp; weather</p>
+      <h2 id="ciu-h">How clean is the air in <span class="hl">Peru's cities</span>?</h2>
       <div class="picker">
-        <label for="city">Ciudad</label>
+        <label for="city">City</label>
         <select id="city"></select>
         <span class="updated" id="updated" aria-live="polite"></span>
       </div>
     </div>
     <div class="city-grid">
       <div class="card" id="now">
-        <h3 class="card-h" id="city-title">Cargando…</h3>
+        <h3 class="card-h" id="city-title">Loading…</h3>
         <p class="card-sub" id="city-sub">&nbsp;</p>
         <div id="tiles"><div class="skeleton"></div></div>
       </div>
       <div class="card">
-        <h3 class="card-h">Partículas finas PM2.5 · 48 horas</h3>
-        <p class="card-sub">24 h estimadas + 24 h de pronóstico, en µg/m³.</p>
+        <h3 class="card-h">Fine particles PM2.5 · 48 hours</h3>
+        <p class="card-sub">24 h estimated + 24 h forecast, in µg/m³.</p>
         <div class="chart" id="pm-chart"><div class="skeleton"></div></div>
-        <div class="chart-legend"><span><i class="ln"></i>PM2.5 por hora</span><span><i class="ln dash"></i>Guía OMS (15) y ECA Perú (50), promedio 24 h</span></div>
-        <details class="table"><summary>Ver como tabla</summary><div id="pm-table"></div></details>
+        <div class="chart-legend"><span><i class="ln"></i>Hourly PM2.5</span><span><i class="ln dash"></i>WHO guideline (15) and Peru's standard (50), 24 h mean</span></div>
+        <details class="table"><summary>Show as a table</summary><div id="pm-table"></div></details>
       </div>
       <div class="card">
-        <h3 class="card-h">Lluvia · próximos 7 días</h3>
-        <p class="card-sub">Precipitación acumulada por día, en mm.</p>
+        <h3 class="card-h">Rainfall · next 7 days</h3>
+        <p class="card-sub">Daily accumulated precipitation, in mm.</p>
         <div class="chart" id="rain-chart"><div class="skeleton"></div></div>
-        <details class="table"><summary>Ver como tabla</summary><div id="rain-table"></div></details>
+        <details class="table"><summary>Show as a table</summary><div id="rain-table"></div></details>
       </div>
     </div>
   </section>
 
-  <!-- WORK WITH ME -->
-  <section class="cta" id="trabajemos" aria-labelledby="cta-h">
+  <!-- PORTFOLIO -->
+  <section class="cta" id="about" aria-labelledby="about-h">
     <div class="wrap">
       <div class="cta-intro">
-        <img class="avatar" src="img/hendy.png" width="178" height="178" alt="Hendy Huayana, autora de Hendy in Green Data">
+        <img class="avatar" src="img/hendy.png" width="178" height="178" alt="Portrait of Hendy Huayana with the Hendy in Green Data logo">
         <div>
-      <p class="kicker">Trabajemos juntos</p>
-      <h2 id="cta-h">¿Y si tus datos ambientales <span class="hl">hablaran</span> así?</h2>
-      <p class="sec-lede">Soy <strong>Hendy Huayana</strong>, ingeniera ambiental en Lima. Trabajo con teledetección, SIG y riesgo climático: evaluaciones de riesgo, flujos de alerta temprana y dashboards con datos satelitales y climáticos. Convierto datos satelitales en decisiones ambientales, y esta página es un ejemplo de lo que puedo construir para tu equipo.</p>
+          <p class="kicker">About me</p>
+          <h2 id="about-h">Turning <span class="hl">satellite data</span> into environmental decisions</h2>
+          <p class="sec-lede">I'm <strong>Hendy Huayana</strong>, an Environmental Engineer based in Lima, Peru, working at the intersection of remote sensing, GIS and climate risk. I build risk assessments, early warning workflows and dashboards with satellite and climate data, with a focus on El Niño, hazard susceptibility and environmental monitoring.</p>
         </div>
       </div>
+
+      <h3 class="block-h">Experience</h3>
+      <div class="timeline">
+        <div class="tl-item">
+          <p class="tl-org">OEFA · Agency for Environmental Assessment and Enforcement, Peru</p>
+          <h4>Environmental Engineer</h4>
+          <ul>
+            <li>Multicriteria climate risk assessments for El Niño events and hazard susceptibility.</li>
+            <li>Early warning workflows built on satellite data and precipitation forecasts.</li>
+            <li>Dashboards for environmental monitoring with satellite and climate data.</li>
+          </ul>
+        </div>
+        <div class="tl-item">
+          <p class="tl-org">Universidad Nacional Federico Villarreal (UNFV)</p>
+          <h4>Volunteer Lecturer · Geospatial Databases</h4>
+          <ul><li>Taught the Geospatial Databases course as a volunteer lecturer.</li></ul>
+        </div>
+        <div class="tl-item">
+          <p class="tl-org">Research</p>
+          <h4>Undergraduate thesis (in progress) · Heavy-metal removal from acid mine drainage</h4>
+        </div>
+        <div class="tl-item">
+          <p class="tl-org">Science communication</p>
+          <h4>Creator · Hendy in Green Data</h4>
+          <ul><li>Short videos explaining GIS, remote sensing and climate data in Spanish on <a href="https://www.tiktok.com/@hendy.greendata">TikTok</a>.</li></ul>
+        </div>
+      </div>
+
+      <h3 class="block-h">Featured projects</h3>
       <div class="services">
-        <div class="svc"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="12.5" y="12.5" width="7" height="7" rx="1.2" transform="rotate(45 16 16)"/><path d="M11 11 6.5 6.5M8.5 4.2 4.2 8.5l4.3 4.3 4.3-4.3z"/><path d="M21 21l4.5 4.5M23.5 19.2l4.3 4.3-4.3 4.3-4.3-4.3z"/><path d="M20.5 6.5a5 5 0 0 1 5 5M20.5 2.8a8.7 8.7 0 0 1 8.7 8.7"/></svg></span><h3>Monitoreo satelital</h3><p>Vegetación, agua, mar, nieve y calidad del aire con Google Earth Engine, Sentinel, Landsat, MODIS y GPM.</p></div>
-        <div class="svc"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 19.5h13a5 5 0 0 0 .6-10A7 7 0 0 0 9.8 11.4 4.1 4.1 0 0 0 9.5 19.5z"/><path d="M11 23.5l-1.5 3.5M16.5 23.5 15 27M22 23.5l-1.5 3.5"/></svg></span><h3>Riesgo climático y El Niño</h3><p>Mapas de susceptibilidad y riesgo multicriterio (AHP), umbrales de lluvia y alertas tempranas.</p><a href="https://github.com/hendyhuayana/ahp-risk-mapping">Ver proyecto AHP →</a></div>
-        <div class="svc"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="24" height="18" rx="2.5"/><path d="M12 28h8M16 23v5"/><path d="M9 18v-3M13.5 18v-6M18 18v-4.5M22.5 18V10"/></svg></span><h3>Dashboards y apps geoespaciales</h3><p>Visores web como este, ArcGIS Enterprise y bases de datos PostGIS, listos para tomar decisiones.</p><a href="https://github.com/hendyhuayana/gpm-rainfall-alert-peru">Ver alerta de lluvias GPM →</a></div>
-        <div class="svc"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 16 7l12 5.5-12 5.5z"/><path d="M9 15v6c0 2 3.1 3.5 7 3.5s7-1.5 7-3.5v-6"/><path d="M28 12.5v7"/></svg></span><h3>Capacitación y divulgación</h3><p>Docente voluntaria de Bases de Datos Geoespaciales (UNFV) y divulgadora en <a href="https://www.tiktok.com/@hendy.greendata">@hendy.greendata</a>.</p></div>
+        <div class="svc"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="12.5" y="12.5" width="7" height="7" rx="1.2" transform="rotate(45 16 16)"/><path d="M11 11 6.5 6.5M8.5 4.2 4.2 8.5l4.3 4.3 4.3-4.3z"/><path d="M21 21l4.5 4.5M23.5 19.2l4.3 4.3-4.3 4.3-4.3-4.3z"/><path d="M20.5 6.5a5 5 0 0 1 5 5M20.5 2.8a8.7 8.7 0 0 1 8.7 8.7"/></svg></span><h3>Peru environmental observatory</h3><p>This page: 10 daily NASA satellite layers, El Niño indices since 1981 refreshed weekly by GitHub Actions, river forecasts and air quality.</p><a href="https://github.com/hendyhuayana/hendyhuayana.github.io/tree/main/greendata">View code →</a></div>
+        <div class="svc"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="24" height="18" rx="2.5"/><path d="M12 28h8M16 23v5"/><path d="M9 18v-3M13.5 18v-6M18 18v-4.5M22.5 18V10"/></svg></span><h3>AHP climate risk mapping</h3><p>Python tool for multicriteria risk maps: AHP weights, consistency check and a classified risk index from rasters.</p><a href="https://github.com/hendyhuayana/ahp-risk-mapping">View project →</a></div>
+        <div class="svc"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 19.5h13a5 5 0 0 0 .6-10A7 7 0 0 0 9.8 11.4 4.1 4.1 0 0 0 9.5 19.5z"/><path d="M11 23.5l-1.5 3.5M16.5 23.5 15 27M22 23.5l-1.5 3.5"/></svg></span><h3>GPM rainfall alert for Peru</h3><p>Google Earth Engine script that turns NASA GPM IMERG precipitation into 24 h and 48 h alert levels by region.</p><a href="https://github.com/hendyhuayana/gpm-rainfall-alert-peru">View project →</a></div>
       </div>
       <div class="proof" id="proof"></div>
-      <div class="cta-row">
-        <a class="btn" href="https://www.linkedin.com/in/hendy-huayana/">Escríbeme por LinkedIn</a>
-        <a class="btn ghost" href="https://github.com/hendyhuayana">Ver mi GitHub</a>
-        <a class="btn ghost" href="https://www.tiktok.com/@hendy.greendata">Sígueme en TikTok</a>
+
+      <div class="two-col">
+        <div>
+          <h3 class="block-h">Skills &amp; tools</h3>
+          <ul class="tags">
+            <li>Remote sensing</li><li>Google Earth Engine</li><li>ArcGIS Pro</li><li>ArcGIS Enterprise</li><li>QGIS</li>
+            <li>Python</li><li>GeoPandas</li><li>Rasterio</li><li>ArcPy</li><li>SQL / PostGIS</li><li>Angular</li>
+            <li>Multicriteria analysis (AHP)</li><li>Early warning systems</li><li>Climate risk</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="block-h">Languages &amp; communities</h3>
+          <ul class="tags">
+            <li>Spanish · native</li><li>Quechua</li><li>English</li>
+            <li>Women in GIS</li><li>Women Techmakers</li><li>Esri Young Professionals Network</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="contact" id="contact">
+        <h3 class="block-h">Let's connect</h3>
+        <p class="sec-lede">Open to international collaborations in remote sensing, climate risk and environmental data.</p>
+        <div class="cta-row">
+          <a class="btn" href="https://www.linkedin.com/in/hendy-huayana/">Connect on LinkedIn</a>
+          <a class="btn ghost" href="https://github.com/hendyhuayana">GitHub</a>
+          <a class="btn ghost" href="https://orcid.org/0009-0000-9348-6078">ORCID</a>
+          <a class="btn ghost" href="https://www.tiktok.com/@hendy.greendata">TikTok</a>
+        </div>
       </div>
     </div>
   </section>
@@ -213,10 +267,10 @@
   <div class="wrap">
     <a class="brand" href="#top"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 18.5c0-7.8 5.6-12.8 13.8-12.8 0 7.8-4.8 13.2-12.5 13M5 18.5l6.3-6.3" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="wm" aria-hidden="true"><b>HENDY</b><i>in</i><b class="g">GREEN</b><b>DATA</b></span></a>
     <div class="sources">
-      <p><strong>Fuentes abiertas.</strong> Imágenes satelitales: <a href="https://www.earthdata.nasa.gov/engage/open-data-services-software/earthdata-developer-portal/gibs-api">NASA GIBS</a> (GHRSST MUR, GPM IMERG, MODIS, VIIRS, SMAP). Índices de El Niño: <a href="https://www.cpc.ncep.noaa.gov/data/indices/">NOAA CPC</a>, actualizados automáticamente cada semana. Caudales: <a href="https://open-meteo.com/en/docs/flood-api">GloFAS (Copernicus)</a> vía Open-Meteo. Aire y tiempo: <a href="https://open-meteo.com/">Open-Meteo</a> con <a href="https://atmosphere.copernicus.eu/">Copernicus CAMS</a> (CC BY 4.0). Límite del Perú: Natural Earth. Mapa base: Esri, HERE, Garmin, © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.</p>
-      <p><strong>Importante.</strong> Son productos satelitales y modelos globales, no mediciones oficiales. No reemplazan los comunicados de ENFEN, SENAMHI, ANA, MINAM, OEFA o INDECI. Proyecto personal y educativo.</p>
+      <p><strong>Open data sources.</strong> Satellite imagery: <a href="https://www.earthdata.nasa.gov/engage/open-data-services-software/earthdata-developer-portal/gibs-api">NASA GIBS</a> (GHRSST MUR, GPM IMERG, MODIS, VIIRS, SMAP). El Niño indices: <a href="https://www.cpc.ncep.noaa.gov/data/indices/">NOAA CPC</a>, refreshed automatically every week. River discharge: <a href="https://open-meteo.com/en/docs/flood-api">GloFAS (Copernicus)</a> via Open-Meteo. Air quality and weather: <a href="https://open-meteo.com/">Open-Meteo</a> with <a href="https://atmosphere.copernicus.eu/">Copernicus CAMS</a> (CC BY 4.0). Peru boundary: Natural Earth. Basemap: Esri, HERE, Garmin, © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.</p>
+      <p><strong>Disclaimer.</strong> These are satellite products and global models, not official measurements. They do not replace statements from ENFEN, SENAMHI, ANA, MINAM, OEFA or INDECI. Personal, educational project.</p>
     </div>
-    <p class="fine">Hecho en Lima por Hendy Huayana · <a href="https://hendyhuayana.github.io/">Sobre mí</a> · <a href="https://github.com/hendyhuayana/hendyhuayana.github.io/tree/main/greendata">Código abierto</a></p>
+    <p class="fine">Made in Lima by Hendy Huayana · <a href="https://github.com/hendyhuayana/hendyhuayana.github.io/tree/main/greendata">Open source</a></p>
   </div>
 </footer>
 
