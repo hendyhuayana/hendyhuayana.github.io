@@ -369,3 +369,15 @@ select { background-color: #153d2c; border-color: rgba(255,255,255,.18); }
 
 .tags.focus { margin-top: 16px; }
 .tags.focus li { background: rgba(182,227,79,.12); border-color: rgba(182,227,79,.35); color: var(--lime); font-weight: 600; }
+
+/* Name-first brand in the top bar */
+.nav-avatar { width: 34px; height: 34px; border-radius: 50%; box-shadow: 0 0 0 2px var(--lime); flex: none; }
+.nm { display: flex; flex-direction: column; gap: 3px; line-height: 1; }
+.nm b { font: 900 1rem/1 var(--display); text-transform: uppercase; letter-spacing: .01em; color: #fff; }
+.nm small { font: 500 .72rem/1 var(--font); color: var(--lime); letter-spacing: .01em; }
+@media (max-width: 1280px) { .nav nav a.xp-link { display: none; } .nav nav a.xp-short { display: inline-block; } }
+@media (max-width: 720px) { .nav nav a.xp-short { display: none; } }
+@media (max-width: 360px) { .nm small { display: none; } }
+.foot-name { margin: 24px 0 0; color: #fff; font-size: .95rem; }
+.foot-name b { font-family: var(--display); font-weight: 900; text-transform: uppercase; }
+.footer .brand { margin-top: 12px; }
