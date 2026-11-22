@@ -381,3 +381,8 @@ select { background-color: #153d2c; border-color: rgba(255,255,255,.18); }
 .foot-name { margin: 24px 0 0; color: #fff; font-size: .95rem; }
 .foot-name b { font-family: var(--display); font-weight: 900; text-transform: uppercase; }
 .footer .brand { margin-top: 12px; }
+
+.fire-key { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: .8rem; color: #fff; }
+.fire-key i { width: 9px; height: 9px; border-radius: 50%; background: #ff2a2a; box-shadow: 0 0 0 2px rgba(255,255,255,.25); }
+
+.legend-img[hidden] { display: none; }

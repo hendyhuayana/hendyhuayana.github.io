@@ -221,7 +221,7 @@
     { name: 'Ocean', layers: ['sst_anom', 'sst', 'chl'] },
     { name: 'Water', layers: ['rain', 'soil', 'snow'] },
     { name: 'Land', layers: ['true', 'ndvi', 'lst'] },
-    { name: 'Air', layers: ['aod'] }
+    { name: 'Air & fire', layers: ['aod', 'fire'] }
   ];
   var LAYERS = {
     sst_anom: { label: 'El Niño (sea temperature anomaly)', id: 'GHRSST_L4_MUR_Sea_Surface_Temperature_Anomalies', z: 7, ext: 'png', lag: 2,
@@ -259,6 +259,9 @@
       legend: 'MODIS_Land_Surface_Temp_H.svg',
       info: '<b>How hot the ground surface gets during the day</b>, not the air. Cities and deserts heat up far more than vegetation.',
       meta: 'MODIS Terra · NASA · 1 km · daily' },
+    fire: { label: 'Active fires (VIIRS)', wms: true, id: 'VIIRS_NOAA21_Thermal_Anomalies_375m_All', lag: 1, legend: null,
+      info: '<b>Every red dot is a heat anomaly detected from space that day</b>, most often a wildfire or agricultural burning. Fire season in the Peruvian Amazon and Andes peaks in the dry months. Some dots can be volcanoes or industrial heat sources.<span class="fire-key"><i></i>Thermal anomaly (375 m pixel)</span>',
+      meta: 'VIIRS NOAA-21 · NASA FIRMS / LANCE · 375 m · daily' },
     aod: { label: 'Aerosols (smoke & dust)', id: 'MODIS_Combined_MAIAC_L2G_AerosolOpticalDepth', z: 7, ext: 'png', lag: 2,
       legend: 'MODIS_VIIRS_AOD_H.svg',
       info: '<b>Particles in the atmosphere: wildfire smoke, dust and pollution.</b> In the dry season, Amazon fire smoke can blanket eastern Peru.',
@@ -275,7 +278,17 @@
     var L = LAYERS[key];
     return GIBS + L.id + '/default/' + date + '/GoogleMapsCompatible_Level' + L.z + '/{z}/{y}/{x}.' + L.ext;
   }
+  var GIBS_WMS = 'https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi';
+  function setSatDate(layer, key, date) {
+    if (LAYERS[key].wms) layer.setParams({ TIME: date }); else layer.setUrl(gibsUrl(key, date));
+  }
   function makeSat(key, date, pane) {
+    if (LAYERS[key].wms) {
+      return L.tileLayer.wms(GIBS_WMS, {
+        layers: LAYERS[key].id, format: 'image/png', transparent: true, version: '1.3.0', TIME: date,
+        pane: pane, maxZoom: 12, attribution: '<a href="https://earthdata.nasa.gov/gibs">NASA GIBS</a> · FIRMS'
+      });
+    }
     return L.tileLayer(gibsUrl(key, date), {
       pane: pane, maxNativeZoom: LAYERS[key].z, maxZoom: 12, bounds: [[-85, -180], [85, 180]], keepBuffer: 4,
       attribution: '<a href="https://earthdata.nasa.gov/gibs">NASA GIBS</a>'
@@ -351,7 +364,7 @@
     var L0 = LAYERS[key];
     $('layer-info').innerHTML = L0.info + '<span class="meta">' + esc(L0.meta) + '</span>';
     var lg = $('legend');
-    if (L0.legend) { lg.src = 'https://gibs.earthdata.nasa.gov/legends/' + L0.legend; lg.alt = 'Leyenda de ' + L0.label; lg.hidden = false; }
+    if (L0.legend) { lg.src = 'https://gibs.earthdata.nasa.gov/legends/' + L0.legend; lg.alt = 'Legend for ' + L0.label; lg.hidden = false; }
     else { lg.hidden = true; lg.removeAttribute('src'); }
     if (satNow) map.removeLayer(satNow);
     if (satCmp) map.removeLayer(satCmp);
@@ -363,12 +376,12 @@
   function updateDates() {
     var d = layerDate(sat.key, sat.back);
     $('date-label').textContent = dLong(d);
-    if (!satNow) { satNow = makeSat(sat.key, d, 'satNow').addTo(map); } else satNow.setUrl(gibsUrl(sat.key, d));
+    if (!satNow) { satNow = makeSat(sat.key, d, 'satNow').addTo(map); } else setSatDate(satNow, sat.key, d);
     var showCmp = sat.compare && !sat.playing;
     $('swipe').hidden = !showCmp;
     if (showCmp) {
       var d2 = yearAgo(d);
-      if (!satCmp) satCmp = makeSat(sat.key, d2, 'satCmp').addTo(map); else satCmp.setUrl(gibsUrl(sat.key, d2));
+      if (!satCmp) satCmp = makeSat(sat.key, d2, 'satCmp').addTo(map); else setSatDate(satCmp, sat.key, d2);
       $('swipe-left').textContent = dLong(d2);
       $('swipe-right').textContent = dLong(d);
     } else if (satCmp) { map.removeLayer(satCmp); satCmp = null; }
