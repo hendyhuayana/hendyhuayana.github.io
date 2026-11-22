@@ -337,3 +337,8 @@ select { background-color: #153d2c; border-color: rgba(255,255,255,.18); }
 .contact { margin-top: 8px; }
 .contact .sec-lede { margin-bottom: 18px; }
 .cta { margin-top: 88px; }
+
+.tl-date { float: right; color: var(--muted); font-weight: 500; text-transform: none; letter-spacing: 0; margin-left: 10px; }
+.tl-sub { margin: -2px 0 8px; font-size: .84rem; color: var(--muted); }
+.tl-item.plain::before { display: none; }
+@media (max-width: 640px) { .tl-date { float: none; display: block; margin: 2px 0 0; } }
