@@ -764,6 +764,76 @@
       '</tbody></table>';
   }
 
+
+  // ---------------------------------------------------------------- Climate projections (CMIP6, built by GitHub Actions)
+  var proj = { data: null, city: null, v: 0 };
+  function projSeries(c, v) {
+    var d = proj.data, years = [], mean = [], lo = [], hi = [];
+    for (var y = d.first_year; y <= d.last_year; y++) {
+      var vals = d.models.map(function (m) { var r = c.years[m] && c.years[m][y]; return r ? r[v] : null; });
+      years.push(y);
+      if (vals.some(function (x) { return x == null; })) { mean.push(null); lo.push(null); hi.push(null); continue; }
+      mean.push(vals.reduce(function (a, b) { return a + b; }, 0) / vals.length);
+      lo.push(Math.min.apply(null, vals)); hi.push(Math.max.apply(null, vals));
+    }
+    return { years: years, mean: mean, lo: lo, hi: hi };
+  }
+  function avgYears(sr, a, b) {
+    var v = sr.mean.filter(function (x, i) { return sr.years[i] >= a && sr.years[i] <= b && x != null; });
+    return v.length ? v.reduce(function (s, x) { return s + x; }, 0) / v.length : null;
+  }
+  function renderProj() {
+    var d = proj.data, c = d.cities[proj.city], v = proj.v;
+    var unit = v === 0 ? '°C' : 'mm';
+    var T = projSeries(c, 0), P = projSeries(c, 1), B = d.baseline;
+    var t0 = avgYears(T, B[0], B[1]), t1 = avgYears(T, 2040, 2049), p0 = avgYears(P, B[0], B[1]), p1 = avgYears(P, 2040, 2049);
+    var dp = p0 ? (p1 - p0) / p0 * 100 : null;
+    $('proj-kpis').innerHTML =
+      '<div class="proj-kpi"><div class="k">' + esc(proj.city) + ' · warming by the 2040s</div><div class="v">' + signed(t1 - t0, 1) + '<small>°C</small></div>' +
+      '<div class="s">2040–2049 vs ' + B[0] + '–' + B[1] + ' (' + fmt(t0, 1) + ' → ' + fmt(t1, 1) + ' °C)</div></div>' +
+      '<div class="proj-kpi"><div class="k">Rainfall change by the 2040s</div><div class="v">' + signed(dp, 0) + '<small>%</small></div>' +
+      '<div class="s">' + fmt(p0) + ' → ' + fmt(p1) + ' mm per year · models can disagree on rainfall</div></div>';
+    var S = v === 0 ? T : P, base = v === 0 ? t0 : p0;
+    var nowI = new Date().getUTCFullYear() - d.first_year;
+    var ticks = S.years.map(function (y, i) { return y % 10 === 0 ? { i: i, label: String(y) } : null; }).filter(Boolean);
+    lineChart($('proj-chart'), {
+      n: S.years.length, label: (v === 0 ? 'Annual mean temperature' : 'Annual rainfall') + ' in ' + proj.city + ', 1960–2049',
+      series: [{ values: S.mean, color: 'var(--series-1)', width: 2.2 }],
+      band: { lo: S.lo, hi: S.hi }, refs: [{ v: base, label: B[0] + '–' + B[1] + ' avg' }],
+      now: nowI >= 0 && nowI < S.years.length ? nowI : null, nowLabel: 'Today', xTicks: ticks, yMin: v === 0 ? Math.floor(Math.min.apply(null, S.lo.filter(function (x) { return x != null; })) - 1) : 0,
+      tip: function (i) {
+        return '<b>' + S.years[i] + '</b><br>Models average: ' + fmt(S.mean[i], v === 0 ? 1 : 0) + ' ' + unit +
+          (S.lo[i] != null ? '<br>Range: ' + fmt(S.lo[i], v === 0 ? 1 : 0) + '–' + fmt(S.hi[i], v === 0 ? 1 : 0) + ' ' + unit : '');
+      }
+    });
+    var rows = '';
+    for (var y0 = d.first_year; y0 <= d.last_year; y0 += 10) {
+      rows += '<tr><td>' + y0 + 's</td><td class="n">' + fmt(avgYears(T, y0, y0 + 9), 1) + '</td><td class="n">' + fmt(avgYears(P, y0, y0 + 9)) + '</td></tr>';
+    }
+    $('proj-table').innerHTML = '<table><thead><tr><th>Decade</th><th class="n">Mean temperature (°C)</th><th class="n">Rainfall (mm/yr)</th></tr></thead><tbody>' + rows + '</tbody></table>';
+  }
+  function loadProj() {
+    return fetchJSON('data/climate.json').then(function (d) {
+      proj.data = d;
+      var ready = d.complete_cities || [];
+      if (!ready.length) throw new Error('no complete city yet');
+      proj.city = ready[0];
+      $('projections').hidden = false;
+      $('proj-city').innerHTML = ready.map(function (n) { return '<option>' + esc(n) + '</option>'; }).join('');
+      $('proj-city').addEventListener('change', function (e) { proj.city = e.target.value; renderProj(); });
+      document.querySelectorAll('#projections .seg button').forEach(function (b) {
+        b.addEventListener('click', function () {
+          proj.v = +b.getAttribute('data-var');
+          document.querySelectorAll('#projections .seg button').forEach(function (x) { x.setAttribute('aria-selected', x === b); });
+          renderProj();
+        });
+      });
+      renderProj();
+    }).catch(function () {
+      $('projections').hidden = true;
+    });
+  }
+
   // ---------------------------------------------------------------- proof strip
   function renderProof() {
     var sats = 'GHRSST · GPM · MODIS · VIIRS · SMAP';
@@ -799,13 +869,14 @@
   loadEnso();
   loadRivers();
   loadCities();
+  loadProj();
 
   var lastW = window.innerWidth, rt;
   window.addEventListener('resize', function () {
     if (window.innerWidth === lastW) return;
     lastW = window.innerWidth; clearTimeout(rt);
     rt = setTimeout(function () {
-      renderEnso(); renderRiver();
+      renderEnso(); renderRiver(); if (proj.data && proj.city) renderProj();
       if (city.air) { renderPM(); renderRain(); }
     }, 150);
   });

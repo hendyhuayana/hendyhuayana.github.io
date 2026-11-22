@@ -386,3 +386,14 @@ select { background-color: #153d2c; border-color: rgba(255,255,255,.18); }
 .fire-key i { width: 9px; height: 9px; border-radius: 50%; background: #ff2a2a; box-shadow: 0 0 0 2px rgba(255,255,255,.25); }
 
 .legend-img[hidden] { display: none; }
+
+/* Climate projections */
+.proj-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr); gap: 14px; }
+@media (max-width: 900px) { .proj-grid { grid-template-columns: minmax(0, 1fr); } }
+.proj-kpi + .proj-kpi { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+.proj-kpi .k { font-size: .8rem; color: var(--ink-2); }
+.proj-kpi .v { font: 900 2.4rem/1.1 var(--display); letter-spacing: -.02em; margin: 6px 0 2px; font-variant-numeric: tabular-nums; }
+.proj-kpi .v small { font: 500 .95rem var(--font); color: var(--muted); margin-left: 4px; }
+.proj-kpi .s { font-size: .82rem; color: var(--muted); }
+.proj-note { margin-top: 12px; max-width: 90ch; }
+#projections .picker .seg { margin-left: 4px; }

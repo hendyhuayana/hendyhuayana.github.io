@@ -171,6 +171,36 @@
     </div>
   </section>
 
+  <!-- CLIMATE PROJECTIONS -->
+  <section class="wrap section" id="projections" aria-labelledby="proj-h" hidden>
+    <div class="sec-head">
+      <p class="kicker">Climate projections</p>
+      <h2 id="proj-h">How will Peru's climate change <span class="hl">by 2050</span>?</h2>
+      <p class="sec-lede">Annual temperature and rainfall from 1960 to 2049 in two high-resolution CMIP6 climate models, compared with the 1981–2010 baseline.</p>
+      <div class="picker">
+        <label for="proj-city">City</label>
+        <select id="proj-city"></select>
+        <div class="seg" role="tablist" aria-label="Variable">
+          <button role="tab" data-var="0" aria-selected="true">Temperature</button>
+          <button role="tab" data-var="1" aria-selected="false">Rainfall</button>
+        </div>
+      </div>
+    </div>
+    <div class="proj-grid">
+      <div class="card" id="proj-kpis"><div class="skeleton"></div></div>
+      <div class="card">
+        <div class="chart" id="proj-chart" style="min-height:280px"><div class="skeleton tall"></div></div>
+        <div class="chart-legend">
+          <span><i class="ln"></i>Average of the models</span>
+          <span><i class="band"></i>Range between models</span>
+          <span><i class="ln dash"></i>1981–2010 baseline</span>
+        </div>
+        <details class="table"><summary>Show decade averages as a table</summary><div id="proj-table"></div></details>
+      </div>
+    </div>
+    <p class="card-sub proj-note">Projections are not forecasts: they show the long-term trend under a high-emissions pathway (close to RCP8.5), not the weather of a given year. Models: EC-Earth3P-HR and MRI-AGCM3-2-S (CMIP6 HighResMIP), bias corrected by <a href="https://open-meteo.com/en/docs/climate-api">Open-Meteo</a>. Built by an automated pipeline on GitHub Actions.</p>
+  </section>
+
   <!-- CITIES -->
   <section class="wrap section" id="cities" aria-labelledby="ciu-h">
     <div class="sec-head">
