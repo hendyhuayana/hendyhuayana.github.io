@@ -93,3 +93,10 @@ Leave any factor you didn't vary or record as `null`; it won't be shown.
 - `status`: set to `"final"` when the thesis is approved. The badge changes
   from "Thesis in progress" to "Thesis results".
 - `updated`: date of the last update, `YYYY-MM-DD`.
+
+## Demo mode
+
+`thesis_demo.json` holds **invented numbers** used only to preview the layout.
+It loads only when the page URL ends in `?demo=1`, and the section then shows a
+red **"DEMO DATA — NOT REAL RESULTS"** banner. The normal page always reads
+`thesis_results.json`. Never copy demo values into your results.

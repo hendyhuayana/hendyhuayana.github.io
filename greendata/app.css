@@ -433,3 +433,5 @@ select { background-color: #153d2c; border-color: rgba(255,255,255,.18); }
 .thesis-notes li { margin: 4px 0; }
 
 [hidden] { display: none !important; }
+
+.demo-banner { position: sticky; top: 64px; z-index: 50; background: #ff2a2a; color: #fff; font: 900 1.05rem/1.2 var(--display); letter-spacing: .05em; text-align: center; padding: 10px 12px; border-radius: 12px; margin-bottom: 18px; }

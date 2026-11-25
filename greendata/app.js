@@ -1043,7 +1043,14 @@
     if (lim.length) $('thesis-limits').innerHTML = lim.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('');
   }
   function loadThesis() {
-    return fetchJSON('data/thesis_results.json').then(function (d) { thesis = d; renderThesis(); })
+    var demo = /[?&]demo=1\b/.test(location.search);
+    if (demo) {
+      var ban = document.createElement('div');
+      ban.className = 'demo-banner'; ban.setAttribute('role', 'alert');
+      ban.textContent = 'DEMO DATA — NOT REAL RESULTS';
+      $('thesis').prepend(ban);
+    }
+    return fetchJSON(demo ? 'data/thesis_demo.json' : 'data/thesis_results.json').then(function (d) { thesis = d; renderThesis(); })
       .catch(function (e) { console.error(e); });
   }
 
