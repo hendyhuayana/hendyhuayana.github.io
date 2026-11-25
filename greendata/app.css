@@ -375,7 +375,7 @@ select { background-color: #153d2c; border-color: rgba(255,255,255,.18); }
 .nm { display: flex; flex-direction: column; gap: 3px; line-height: 1; }
 .nm b { font: 900 1rem/1 var(--display); text-transform: uppercase; letter-spacing: .01em; color: #fff; }
 .nm small { font: 500 .72rem/1 var(--font); color: var(--lime); letter-spacing: .01em; }
-@media (max-width: 1400px) { .nav nav a.xp-link { display: none; } .nav nav a.xp-short { display: inline-block; } }
+@media (max-width: 1480px) { .nav nav a.xp-link { display: none; } .nav nav a.xp-short { display: inline-block; } }
 @media (max-width: 720px) { .nav nav a.xp-short { display: none; } }
 @media (max-width: 360px) { .nm small { display: none; } }
 .foot-name { margin: 24px 0 0; color: #fff; font-size: .95rem; }
@@ -435,3 +435,24 @@ select { background-color: #153d2c; border-color: rgba(255,255,255,.18); }
 [hidden] { display: none !important; }
 
 .demo-banner { position: sticky; top: 64px; z-index: 50; background: #ff2a2a; color: #fff; font: 900 1.05rem/1.2 var(--display); letter-spacing: .05em; text-align: center; padding: 10px 12px; border-radius: 12px; margin-bottom: 18px; }
+
+/* Research hub */
+.research-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.r-status { margin: 14px 0 0; font-size: .74rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--yellow); }
+.research-grid .xp h3 { margin-top: 6px; font-size: 1rem; }
+
+/* Subpages: Research hub and project apps */
+.page-top { padding-top: 40px; min-height: 60vh; }
+.page-h1 { font-size: clamp(1.9rem, 4.2vw, 3rem); margin: 0 0 10px; max-width: 22ch; text-wrap: balance; }
+.crumbs { font-size: .84rem; color: var(--muted); margin-bottom: 18px; }
+.crumbs a { color: var(--ink-2); }
+.crumbs span { color: #fff; }
+.nav nav a[aria-current="page"] { color: #fff; background: rgba(182,227,79,.14); }
+a.r-card { text-decoration: none; color: inherit; cursor: pointer; }
+a.r-card:hover { border-color: var(--lime); transform: translateY(-3px); }
+a.r-card:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+.r-open { margin-top: auto; padding-top: 10px; color: var(--lime); font-weight: 700; font-size: .92rem; }
+.r-card.is-soon { opacity: .78; }
+.r-card.is-soon:hover { transform: none; border-color: rgba(255,255,255,.08); }
+.r-soon { margin-top: auto; padding-top: 10px; font-size: .8rem; color: var(--muted); font-weight: 600; }
+.research-grid .r-card:first-child { border-color: rgba(182,227,79,.45); }
