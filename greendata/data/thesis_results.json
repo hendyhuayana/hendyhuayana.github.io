@@ -1,0 +1,57 @@
+{
+  "status": "in_progress",
+  "updated": null,
+
+  "sampling": {
+    "site": "Quiulacocha, Pasco, Peru",
+    "date": "2026-09-12",
+    "points": [
+      { "id": "PM1", "lat": null, "lon": null, "description": "" },
+      { "id": "PM2", "lat": null, "lon": null, "description": "" }
+    ]
+  },
+
+  "design": {
+    "method": "Box-Behnken",
+    "jar_test_runs": null,
+    "lab": "Environmental Engineering Laboratory, UTEC",
+    "analysis": "ICP-OES"
+  },
+
+  "standard": {
+    "short_name": "",
+    "full_name": "",
+    "url": "",
+    "note": ""
+  },
+
+  "metals": [
+    { "metal": "Fe", "initial_mg_L": null, "final_pitahaya_mg_L": null, "final_zapallo_mg_L": null, "removal_pitahaya_pct": null, "removal_zapallo_pct": null, "limit_mg_L": null, "limit_note": "" },
+    { "metal": "Pb", "initial_mg_L": null, "final_pitahaya_mg_L": null, "final_zapallo_mg_L": null, "removal_pitahaya_pct": null, "removal_zapallo_pct": null, "limit_mg_L": null, "limit_note": "" },
+    { "metal": "Zn", "initial_mg_L": null, "final_pitahaya_mg_L": null, "final_zapallo_mg_L": null, "removal_pitahaya_pct": null, "removal_zapallo_pct": null, "limit_mg_L": null, "limit_note": "" },
+    { "metal": "Cu", "initial_mg_L": null, "final_pitahaya_mg_L": null, "final_zapallo_mg_L": null, "removal_pitahaya_pct": null, "removal_zapallo_pct": null, "limit_mg_L": null, "limit_note": "" },
+    { "metal": "Cr", "initial_mg_L": null, "final_pitahaya_mg_L": null, "final_zapallo_mg_L": null, "removal_pitahaya_pct": null, "removal_zapallo_pct": null, "limit_mg_L": null, "limit_note": "" }
+  ],
+
+  "optimal_conditions": [
+    { "bioflocculant": "pitahaya", "dose_mg_L": null, "pH": null, "rapid_mix_rpm": null, "rapid_mix_min": null, "slow_mix_rpm": null, "slow_mix_min": null, "settling_min": null },
+    { "bioflocculant": "zapallo", "dose_mg_L": null, "pH": null, "rapid_mix_rpm": null, "rapid_mix_min": null, "slow_mix_rpm": null, "slow_mix_min": null, "settling_min": null }
+  ],
+
+  "random_forest": {
+    "target": "",
+    "r2_test": null,
+    "rmse_test": null,
+    "rmse_unit": "",
+    "n_train": null,
+    "n_test": null,
+    "validation": "",
+    "feature_importance": [
+      { "feature": "", "importance": null }
+    ]
+  },
+
+  "idw_map_image": "",
+
+  "limitations": []
+}
