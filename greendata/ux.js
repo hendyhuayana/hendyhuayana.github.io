@@ -2,7 +2,7 @@
  * - Search palette (Ctrl/⌘ K or "/"): sections, satellite layers, cities, rivers, research, data, languages
  * - Toast messages and "Share this view" (a link that reopens the same layer, date, city and river)
  * - Scroll spy: the top menu marks the section you are reading
- * - "What brings you here?" paths for recruiters, researchers and curious visitors
+ * - "What brings you here?" paths for learners, researchers and curious visitors
  * - A 3-step welcome tour, shown once
  * Everything works with the keyboard and respects prefers-reduced-motion.
  */
@@ -105,7 +105,7 @@
     [['#satellite', 'Satellite map', 'map space nasa'], ['#expertise', 'Expertise', 'skills areas'], ['#nino', 'Ocean & climate', 'el nino enso sea'],
      ['#rivers', 'Rivers', 'water discharge flood'], ['#projections', 'Climate projections', 'cmip6 2050 warming stripes'],
      ['#cities', 'Air & weather', 'pm2.5 uv rain air quality'], ['#about', 'About', 'cv profile'], ['#experience', 'Experience', 'jobs oefa work'],
-     ['#skills', 'Skills & tools', 'python arcgis gee'], ['#contact', 'Contact', 'email linkedin hire']].forEach(function (s) {
+     ['#skills', 'Skills & tools', 'python arcgis gee'], ['#contact', 'Contact', 'email linkedin collaboration papers conferences']].forEach(function (s) {
       add(S, 'section', t(s[1]), '', link(s[0]), s[1] + ' ' + s[2]);
     });
     [['xp-climate', 'Climate Risk'], ['xp-geo', 'Geospatial Analysis'], ['xp-rs', 'Remote Sensing'], ['xp-ews', 'Early Warning'], ['xp-air', 'Air Quality'], ['xp-fire', 'Wildfire']].forEach(function (s) {
@@ -128,6 +128,7 @@
       add(D, 'data', t(d[1]), d[2], function () { window.open(BASE + 'data/' + d[0], '_blank', 'noopener'); }, 'download data ' + d[1]);
     });
     if (isHome) add(t('Actions'), 'data', t('Share this view'), t('Copy a link to this layer, date, city and river'), share, 'share link copy');
+    add(t('Actions'), 'section', t('Collaborations'), '', link('#collaborations'), 'collaborations partners');
     add(t('Actions'), 'section', t('Connect on LinkedIn'), '', function () { window.open('https://www.linkedin.com/in/hendy-huayana/', '_blank', 'noopener'); }, 'linkedin contact');
     var LN = { en: 'English', es: 'Español', pt: 'Português', fr: 'Français', de: 'Deutsch', zh: '中文' };
     Object.keys(LN).forEach(function (k) {
@@ -249,14 +250,14 @@
   // ------------------------------------------------------------------ "What brings you here?" (home only)
   if (isHome && $('kpis')) {
     var PATHS = [
-      { id: 'hire', tab: 'I’m hiring', cards: [
-        ['#experience', 'Experience', 'Three years building climate-risk and early-warning products for Peru’s environmental agency.'],
-        ['#skills', 'Skills & tools', 'GIS, remote sensing, Python and risk analysis: the tools I use every day.'],
-        ['#contact', 'Get in touch', 'Open to international roles and collaborations.']] },
+      { id: 'learn', tab: 'I want to learn', cards: [
+        ['#nino', 'How El Niño works', 'Why the sea off Peru warms up, and what it means for rain, rivers and fishing.'],
+        ['#projections', 'Climate to 2050', 'CMIP6 projections and warming stripes for Peruvian cities.'],
+        ['#satellite', 'Satellite layers explained', 'What each layer shows, from ocean heat to active fires, in plain language.']] },
       { id: 'research', tab: 'I do research', cards: [
         ['research/quiulacocha/', 'Quiulacocha case study', 'Can fruit peels remove heavy metals from acid mine drainage? My thesis, as an app.'],
-        ['#nino', 'El Niño since 1981', 'Weekly NOAA indices you can explore, read as a table or download.'],
-        ['#projections', 'Climate to 2050', 'CMIP6 projections and warming stripes for Peruvian cities.']] },
+        ['research/', 'Papers & conferences', 'My research, presentations and talks in one place.'],
+        ['#nino', 'El Niño since 1981', 'Weekly NOAA indices you can explore, read as a table or download.']] },
       { id: 'curious', tab: 'I’m curious', cards: [
         ['#satellite', 'Peru from space', 'Compare today’s satellite images with the same day one year ago.'],
         ['#cities', 'The air in your city', 'Live PM2.5, UV and rain for cities across Peru.'],
@@ -579,5 +580,39 @@
       e.preventDefault(); if (openLi) close(openLi); scrollToId(a.getAttribute('href').slice(1));
     });
     document.addEventListener('click', function (e) { if (openLi && !openLi.contains(e.target)) close(openLi); });
+  })();
+
+  // ------------------------------------------------------------------ contact: email + WhatsApp buttons, and collaborations (home)
+  (function () {
+    var contact = $('contact'); if (!contact) return;
+    var row = contact.querySelector('.cta-row');
+    if (row) {
+      // the address is put together here so simple spam robots that read the HTML do not find it
+      var u = ['hendy', 'huayana'].join(''), d = ['gmail', 'com'].join('.'), mail = u + '@' + d;
+      var wa = 'https://wa.me/' + ['51', '944', '511', '915'].join('') + '?text=' + encodeURIComponent(t('Hi Hendy, I am writing from your Hendy in Green Data page.'));
+      var mailA = el('a', 'btn contact-mail'); mailA.href = 'mailto:' + mail;
+      mailA.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M4 7l8 6 8-6"/></svg><span></span>';
+      mailA.lastChild.textContent = mail;
+      mailA.setAttribute('aria-label', t('Write to me') + ': ' + mail);
+      var waA = el('a', 'btn contact-wa'); waA.href = wa; waA.target = '_blank'; waA.rel = 'noopener';
+      waA.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1.3-4A8 8 0 1 1 8.4 19z"/><path d="M9 9.5c0 2.8 2.7 5.5 5.5 5.5l1.2-1.3-1.8-1-.8.8c-1-.4-2-1.4-2.4-2.4l.8-.8-1-1.8z"/></svg>WhatsApp';
+      row.insertBefore(waA, row.firstChild); row.insertBefore(mailA, row.firstChild);
+      var li = row.querySelector('a[href*="linkedin"]'); if (li) li.classList.add('ghost');
+    }
+    // collaborations, just before the contact block
+    var COL = [
+      ['UTEC', 'Universidad de Ingeniería y Tecnología', 'Environmental engineering lab: the jar tests of my thesis'],
+      ['UNFV', 'Universidad Nacional Federico Villarreal (UNFV)', 'My university · volunteer lecturer in spatial databases'],
+      ['IGP', 'Instituto Geofísico del Perú', 'Ciencia Climática · science interpreter'],
+      ['Y & J', 'Yajhaira & Jhilary', 'Thesis co-authors'],
+      ['YPN', 'Esri Young Professionals Network', 'Community Ambassador 2026']
+    ];
+    var box = el('div', 'collabs'); box.id = 'collaborations';
+    box.innerHTML = '<h3 class="block-h">' + esc(t('Collaborations')) + '</h3><p class="sec-lede">' + esc(t('People and institutions I research and learn with.')) + '</p>' +
+      '<ul class="collab-grid">' + COL.map(function (c) {
+        return '<li><span class="collab-mark" aria-hidden="true">' + esc(c[0]) + '</span><b>' + esc(t(c[1])) + '</b><span>' + esc(t(c[2])) + '</span></li>';
+      }).join('') + '</ul>';
+    contact.parentNode.insertBefore(box, contact);
+    if (window.gdReveal) window.gdReveal(box);
   })();
 })();

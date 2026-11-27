@@ -877,3 +877,15 @@ html.pal-open { overflow: hidden; }
 .nav-in > .lang-switch { margin-left: 8px; }
 .nav .topmenu .tm-item.is-page > .tm-top { color: var(--lime); }
 @media (max-width: 720px) { .demo-banner { top: 60px; } }
+
+/* ===== Contact buttons and collaborations ===== */
+.cta-row .btn svg { width: 18px; height: 18px; flex: none; }
+.contact-wa { background: #25d366; color: #0a2116; }
+.contact-wa:hover { background: #3ee07a; }
+.collabs { margin-top: 8px; }
+.collabs .sec-lede { margin-bottom: 16px; }
+.collab-grid { list-style: none; margin: 0 0 8px; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+.collab-grid li { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 18px 18px 18px 74px; min-height: 92px; border-radius: 14px; background: rgba(255,255,255,.04); border: 1px solid var(--hud-line); }
+.collab-grid b { color: #fff; font: 800 .95rem/1.25 var(--display); }
+.collab-grid li > span:last-child { color: var(--hud-muted); font-size: .84rem; line-height: 1.4; }
+.collab-mark { position: absolute; left: 16px; top: 18px; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--lime); color: var(--on-lime); font: 900 .72rem/1 var(--display); text-align: center; }
