@@ -787,6 +787,43 @@
     var v = sr.mean.filter(function (x, i) { return sr.years[i] >= a && sr.years[i] <= b && x != null; });
     return v.length ? v.reduce(function (s, x) { return s + x; }, 0) / v.length : null;
   }
+  // Warming stripes (ColorBrewer RdBu, the palette used by the original climate stripes)
+  var STRIPES = ['#053061', '#2166ac', '#4393c3', '#92c5de', '#d1e5f0', '#f7f7f7', '#fddbc7', '#f4a582', '#d6604d', '#b2182b', '#67001f'];
+  function stripeColor(a, lim) {
+    var t = Math.max(-1, Math.min(1, a / lim)), i = Math.round((t + 1) / 2 * (STRIPES.length - 1));
+    return STRIPES[i];
+  }
+  function renderStripes(T, t0, city, firstYear) {
+    var box = $('stripes'), W = Math.max(300, box.clientWidth || 800), H = W < 520 ? 120 : 170, mb = 22;
+    var an = T.mean.map(function (v) { return v == null ? null : v - t0; });
+    var lim = Math.max.apply(null, an.filter(function (x) { return x != null; }).map(Math.abs)) || 1;
+    var n = an.length, sw = W / n, nowI = new Date().getUTCFullYear() - firstYear;
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + (H + mb) + '" role="img" aria-label="Warming stripes for ' + esc(city) + ', ' + T.years[0] + '–' + T.years[n - 1] + '">';
+    an.forEach(function (a, i) {
+      if (a == null) return;
+      svg += '<rect data-i="' + i + '" x="' + (i * sw).toFixed(2) + '" y="0" width="' + (sw + 0.6).toFixed(2) + '" height="' + H + '" fill="' + stripeColor(a, lim) + '"/>';
+    });
+    if (nowI > 0 && nowI < n) {
+      var nx = (nowI * sw).toFixed(1);
+      svg += '<line x1="' + nx + '" x2="' + nx + '" y1="0" y2="' + H + '" stroke="#fff" stroke-width="2"/>' +
+        '<text x="' + (+nx + 6) + '" y="16" class="stripe-lbl">Today · projections →</text>';
+    }
+    T.years.forEach(function (y, i) { if (y % 10 === 0) svg += '<text x="' + (i === 0 ? 0 : i * sw + sw / 2) + '" y="' + (H + 16) + '" text-anchor="' + (i === 0 ? 'start' : 'middle') + '">' + y + '</text>'; });
+    svg += '</svg>';
+    box.innerHTML = svg;
+    $('stripes-title').textContent = 'Warming stripes · ' + city;
+    $('stripes-legend').innerHTML = '<span>' + signed(-lim, 1) + ' °C</span><i style="background:linear-gradient(90deg,' + STRIPES.join(',') + ')"></i><span>' + signed(lim, 1) + ' °C</span>';
+    var svgEl = box.querySelector('svg'), tip = tipFor(box);
+    svgEl.addEventListener('pointermove', function (e) {
+      var r = svgEl.getBoundingClientRect(), i = Math.max(0, Math.min(n - 1, Math.floor((e.clientX - r.left) / r.width * n)));
+      if (an[i] == null) return;
+      tip.innerHTML = '<b>' + T.years[i] + (i > nowI ? ' · projection' : '') + '</b><br>' + signed(an[i], 2) + ' °C vs 1981–2010';
+      tip.style.left = Math.max(70, Math.min(r.width - 70, (i + 0.5) / n * r.width)) + 'px';
+      tip.style.top = '8px'; tip.style.opacity = 1;
+    });
+    svgEl.addEventListener('pointerleave', function () { tip.style.opacity = 0; });
+  }
+
   function renderProj() {
     var d = proj.data, c = d.cities[proj.city], v = proj.v;
     var unit = v === 0 ? '°C' : '%';
@@ -800,6 +837,7 @@
       '<div class="s">2040–2049 vs ' + B[0] + '–' + B[1] + ' · relative change; models often disagree on rainfall</div></div>';
     var pct = function (x) { return x == null || !p0 ? null : (x - p0) / p0 * 100; };
     var S = v === 0 ? T : { years: P.years, mean: P.mean.map(pct), lo: P.lo.map(pct), hi: P.hi.map(pct) };
+    renderStripes(T, t0, proj.city, d.first_year);
     var base = v === 0 ? t0 : 0;
     var nowI = new Date().getUTCFullYear() - d.first_year;
     var ticks = S.years.map(function (y, i) { return y % 10 === 0 ? { i: i, label: String(y) } : null; }).filter(Boolean);
