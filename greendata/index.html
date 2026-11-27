@@ -16,7 +16,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23b6e34f'/%3E%3Cpath d='M9 23c0-8.5 6-14 15-14 0 8.5-5.2 14.4-13.6 14.2M9 23l7-7' fill='none' stroke='%230f2d1f' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@200;300;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 <link rel="preconnect" href="https://gibs.earthdata.nasa.gov" crossorigin>
 <link rel="stylesheet" href="vendor/leaflet.css">
 <link rel="stylesheet" href="app.css">
@@ -52,18 +52,6 @@
 
 <main id="main">
   <!-- HERO MAP -->
-  <!-- INTRO: descent from orbit -->
-  <section class="orbit" id="orbit" aria-label="Intro">
-    <div class="orbit-stage">
-      <div class="orbit-earth" id="orbit-earth" role="img" aria-label="South America from space, NASA Blue Marble"></div>
-      <div class="orbit-fog" aria-hidden="true"><i></i><i></i><i></i></div>
-      <div class="orbit-scale" aria-hidden="true"><span class="orbit-lbl">Altitude</span><ol id="orbit-ticks"></ol><b id="orbit-now">800 km</b></div>
-      <p class="orbit-hint" id="orbit-hint">Scroll to descend</p>
-      <a class="orbit-skip" href="#satellite">Skip intro</a>
-      <div class="orbit-word" aria-hidden="true"><svg viewBox="0 0 1000 90"><text x="4" y="78" textLength="992" lengthAdjust="spacingAndGlyphs">HENDY IN GREEN DATA</text></svg></div>
-    </div>
-  </section>
-
   <section class="hero" id="satellite" aria-label="Satellite map">
     <div id="map" aria-label="Satellite map of Peru"></div>
 

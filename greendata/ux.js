@@ -226,24 +226,25 @@
   }
 
   // ------------------------------------------------------------------ scroll spy
-  var spyLinks = [].slice.call(document.querySelectorAll('#site-nav a[href^="#"]')).filter(function (a) { return $(a.getAttribute('href').slice(1)); });
-  if (spyLinks.length) {
-    var spyTick = false;
-    var spy = function () {
-      spyTick = false;
-      var line = window.innerHeight * 0.35, best = null, bestTop = -Infinity;
-      spyLinks.forEach(function (a) {
-        if (!a.getClientRects().length) return; // link hidden at this screen size
-        var target = $(a.getAttribute('href').slice(1)), r = target.getBoundingClientRect();
-        if (!r.height) return;
-        if (r.top <= line && r.bottom > 80 && r.top > bestTop) { best = a; bestTop = r.top; }
-      });
-      spyLinks.forEach(function (a) { if (a === best) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); });
-    };
-    window.addEventListener('scroll', function () { if (!spyTick) { spyTick = true; requestAnimationFrame(spy); } }, { passive: true });
-    window.addEventListener('resize', spy);
-    spy();
-  }
+  // (links are read on every pass: the desktop menu is built further down)
+  var spyTick = false;
+  var spy = function () {
+    spyTick = false;
+    var links = [].slice.call(document.querySelectorAll('#site-nav a[href^="#"], .topmenu a[href^="#"]')).filter(function (a) { return $(a.getAttribute('href').slice(1)); });
+    var line = window.innerHeight * 0.35, best = null, bestTop = -Infinity;
+    links.forEach(function (a) {
+      var vis = a.closest('.tm-panel') ? a.closest('.tm-item').getClientRects().length : a.getClientRects().length;
+      if (!vis) return; // hidden at this screen size
+      var r = $(a.getAttribute('href').slice(1)).getBoundingClientRect();
+      if (!r.height) return;
+      if (r.top <= line && r.bottom > 80 && r.top > bestTop) { best = a; bestTop = r.top; }
+    });
+    links.forEach(function (a) { if (a === best) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); });
+    document.querySelectorAll('.topmenu .tm-item').forEach(function (li) { li.classList.toggle('is-current', !!(best && li.contains(best))); });
+  };
+  window.addEventListener('scroll', function () { if (!spyTick) { spyTick = true; requestAnimationFrame(spy); } }, { passive: true });
+  window.addEventListener('resize', spy);
+  setTimeout(spy, 0);
 
   // ------------------------------------------------------------------ "What brings you here?" (home only)
   if (isHome && $('kpis')) {
@@ -378,14 +379,13 @@
     // step aside while the contact block itself is on screen
     // and while the satellite map is on screen, so it never covers the layer panel
     if ('IntersectionObserver' in window) {
-      var vis = {}, hero = $('satellite'), orbitEl = $('orbit');
+      var vis = {}, hero = $('satellite');
       var io = new IntersectionObserver(function (en) {
         en.forEach(function (x) { vis[x.target.id] = x.isIntersecting; });
-        a.classList.toggle('away', !!(vis.contact || vis.satellite || vis.orbit));
+        a.classList.toggle('away', !!(vis.contact || vis.satellite));
       }, { threshold: 0.2 });
       if (target) io.observe(target);
       if (hero) io.observe(hero);
-      if (orbitEl) io.observe(orbitEl);
     }
   })();
 
@@ -519,34 +519,83 @@
     var band = el('div', 'lime-band'); band.setAttribute('aria-hidden', 'true'); f.parentNode.insertBefore(band, f);
   })();
 
-  // ------------------------------------------------------------------ intro: descent from orbit (home)
+  // ------------------------------------------------------------------ top bar: announcement strip + desktop menu with dropdowns
   (function () {
-    var sec = $('orbit'); if (!sec) return;
-    var earth = $('orbit-earth'), now = $('orbit-now'), hint = $('orbit-hint'), word = sec.querySelector('.orbit-word'), fog = sec.querySelector('.orbit-fog');
-    // NASA Blue Marble over South America (GIBS WMS, EPSG:4326: BBOX is minLat,minLon,maxLat,maxLon)
-    var img = 'https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=BlueMarble_ShadedRelief_Bathymetry&STYLES=&CRS=EPSG:4326&BBOX=-45,-110,15,-30&WIDTH=2400&HEIGHT=1800&FORMAT=image/jpeg';
-    earth.style.backgroundImage = 'url("' + img + '")';
-    var ticks = $('orbit-ticks'), TOP = 800;
-    for (var k = TOP; k >= 0; k -= 100) ticks.insertAdjacentHTML('beforeend', '<li><span>' + k + '</span></li>');
-    if (reduce) { sec.classList.add('still'); return; }
-    var nf = new Intl.NumberFormat(window.GD_LOCALE || 'en-US');
-    var tick = false;
-    function ease(x) { return x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2; }
-    function frame() {
-      tick = false;
-      var r = sec.getBoundingClientRect(), span = r.height - window.innerHeight;
-      var p = Math.max(0, Math.min(1, -r.top / (span || 1))), e = ease(p);
-      earth.style.transform = 'scale(' + (1 + 2.3 * e).toFixed(4) + ')';
-      fog.style.opacity = Math.max(0, 1 - p * 1.25).toFixed(3);
-      word.style.opacity = Math.max(0, 1 - p * 2.2).toFixed(3);
-      word.style.transform = 'translateY(' + (p * 60).toFixed(1) + 'px)';
-      sec.style.setProperty('--p', p.toFixed(4));
-      now.textContent = nf.format(Math.round(TOP * (1 - e))) + ' km';
-      hint.classList.toggle('gone', p > 0.04);
+    var header = document.querySelector('header.nav'), navIn = header && header.querySelector('.nav-in');
+    if (!navIn) return;
+    var home = isHome ? '' : BASE + 'index.html';
+    function href(h) { return h.charAt(0) === '#' ? (isHome ? h : withLang(home + h)) : withLang(BASE + h); }
+
+    // 1) announcement strip (can be dismissed; remembered)
+    var hidden = false; try { hidden = localStorage.getItem('gd-bar') === 'off'; } catch (e) {}
+    if (!hidden) {
+      var bar = el('div', 'ann-bar');
+      bar.innerHTML = '<p><span class="ann-dot" aria-hidden="true"></span>' + esc(t('Open to international roles and collaborations.')) +
+        ' <a href="' + href('#contact') + '">' + esc(t('Get in touch')) + ' <span aria-hidden="true">›</span></a></p>' +
+        '<button type="button" class="ann-x" aria-label="' + esc(t('Close')) + '"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>';
+      header.insertBefore(bar, header.firstChild);
+      document.documentElement.classList.add('has-bar');
+      var setH = function () { document.documentElement.style.setProperty('--ann-h', bar.offsetHeight + 'px'); };
+      setH(); window.addEventListener('resize', setH);
+      bar.querySelector('a').addEventListener('click', function (e) { if (isHome) { e.preventDefault(); scrollToId('contact'); } });
+      bar.querySelector('.ann-x').addEventListener('click', function () {
+        bar.remove(); document.documentElement.classList.remove('has-bar');
+        try { localStorage.setItem('gd-bar', 'off'); } catch (e) {}
+      });
     }
-    window.addEventListener('scroll', function () { if (!tick) { tick = true; requestAnimationFrame(frame); } }, { passive: true });
-    window.addEventListener('resize', frame);
-    frame();
-    sec.querySelector('.orbit-skip').addEventListener('click', function (e) { e.preventDefault(); scrollToId('satellite'); });
+
+    // 2) desktop menu with dropdowns (the phone keeps the ☰ menu)
+    var chev = '<svg class="tm-chev" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+    var MENU = [
+      { label: 'Expertise', items: [['#xp-climate', 'Climate Risk'], ['#xp-geo', 'Geospatial Analysis'], ['#xp-rs', 'Remote Sensing'], ['#xp-ews', 'Early Warning'], ['#xp-air', 'Air Quality'], ['#xp-fire', 'Wildfire']] },
+      { label: 'Observatory', items: [['#satellite', 'Satellite map'], ['#nino', 'Ocean & climate'], ['#rivers', 'Rivers'], ['#projections', 'Climate projections'], ['#cities', 'Air & weather']] },
+      { label: 'Research', items: [['research/', 'Scientific research'], ['research/quiulacocha/', 'Quiulacocha case study']] },
+      { label: 'About', href: '#about' }
+    ];
+    var tm = el('nav', 'topmenu'); tm.setAttribute('aria-label', t('Sections'));
+    var ul = el('ul');
+    MENU.forEach(function (m, i) {
+      var li = el('li', 'tm-item');
+      if (m.href) {
+        li.innerHTML = '<a class="tm-top" href="' + href(m.href) + '">' + esc(t(m.label)) + '</a>';
+      } else {
+        li.innerHTML = '<button type="button" class="tm-top" aria-expanded="false" aria-controls="tm-p' + i + '">' + esc(t(m.label)) + chev + '</button>' +
+          '<div class="tm-panel" id="tm-p' + i + '"><ul>' + m.items.map(function (x) { return '<li><a href="' + href(x[0]) + '">' + esc(t(x[1])) + '</a></li>'; }).join('') + '</ul></div>';
+      }
+      if (m.label === 'Research' && /\/research\//.test(location.pathname)) li.classList.add('is-page');
+      ul.appendChild(li);
+    });
+    tm.appendChild(ul);
+    var brand = navIn.querySelector('.brand');
+    brand.insertAdjacentElement('afterend', tm);
+    // the lime "Contact" pill on the right
+    var pill = el('a', 'btn sm tm-cta'); pill.href = href('#contact'); pill.textContent = t('Contact');
+    navIn.insertBefore(pill, navIn.querySelector('.menu-btn'));
+
+    var openLi = null, timer = 0;
+    function open(li) { if (openLi && openLi !== li) close(openLi); openLi = li; li.classList.add('open'); li.querySelector('.tm-top').setAttribute('aria-expanded', 'true'); }
+    function close(li) { li.classList.remove('open'); var b = li.querySelector('.tm-top'); if (b) b.setAttribute('aria-expanded', 'false'); if (openLi === li) openLi = null; }
+    [].forEach.call(ul.querySelectorAll('.tm-item'), function (li) {
+      var btn = li.querySelector('button.tm-top'); if (!btn) return;
+      var hover = window.matchMedia('(hover: hover)').matches;
+      if (hover) {
+        li.addEventListener('mouseenter', function () { clearTimeout(timer); open(li); });
+        li.addEventListener('mouseleave', function () { timer = setTimeout(function () { close(li); }, 160); });
+      }
+      // with a mouse, hovering already opens it: a click must not close it again
+      btn.addEventListener('click', function () { if (hover) open(li); else li.classList.contains('open') ? close(li) : open(li); });
+      li.addEventListener('keydown', function (e) {
+        var links = [].slice.call(li.querySelectorAll('.tm-panel a')), k = links.indexOf(document.activeElement);
+        if (e.key === 'Escape') { close(li); btn.focus(); }
+        else if (e.key === 'ArrowDown') { e.preventDefault(); open(li); (links[k + 1] || links[0]).focus(); }
+        else if (e.key === 'ArrowUp' && k > -1) { e.preventDefault(); (links[k - 1] || btn).focus(); }
+      });
+      li.addEventListener('focusout', function (e) { if (!li.contains(e.relatedTarget)) close(li); });
+    });
+    tm.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="#"]'); if (!a) return;
+      e.preventDefault(); if (openLi) close(openLi); scrollToId(a.getAttribute('href').slice(1));
+    });
+    document.addEventListener('click', function (e) { if (openLi && !openLi.contains(e.target)) close(openLi); });
   })();
 })();
