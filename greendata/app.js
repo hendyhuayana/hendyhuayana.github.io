@@ -338,7 +338,7 @@
       var b = e.target.closest('.chip'); if (!b) return;
       setLayer(b.getAttribute('data-k'));
     });
-    var dr = $('date-range'); dr.max = MAX_BACK; dr.value = MAX_BACK;
+    var dr = $('date-range'); dr.max = MAX_BACK; dr.value = MAX_BACK - sat.back;
     dr.addEventListener('input', function () { stopPlay(); sat.back = MAX_BACK - (+dr.value); updateDates(); });
     $('compare').addEventListener('change', function (e) { sat.compare = e.target.checked; updateDates(); });
     $('play').addEventListener('click', function () { sat.playing ? stopPlay() : startPlay(); });
@@ -584,7 +584,7 @@
     riverIdx = i;
     document.querySelectorAll('.rcard').forEach(function (c) { c.setAttribute('aria-pressed', +c.getAttribute('data-i') === i); });
     renderRiver(); paintRiverMarkers();
-    if (scroll) $('rios').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+    if (scroll) $('rivers').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
   }
   function renderRiver() {
     if (!rivers) return;
@@ -713,13 +713,13 @@
     paintCityMarkers();
     if (!city.air) return;
     renderNow(); renderPM(); renderRain();
-    if (scroll) $('ciudades').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+    if (scroll) $('cities').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
   }
   function paintCityMarkers() {
     cityMarkers.clearLayers();
     CITIES.forEach(function (c, i) {
       var a = city.air && city.air[i], st = a && a.pm25 != null ? pmStatus(a.pm25) : null;
-      var m = L.circleMarker([c.lat, c.lon], {
+      var m = L.circleMarker([c.lat, c.lon], { className: "city-mk",
         radius: i === city.idx ? 8 : 6, weight: 2, color: i === city.idx ? '#ffffff' : '#0b1411',
         fillColor: st ? css('--' + st.key) : '#8a958f', fillOpacity: 1
       }).bindTooltip(c.name + (a && a.pm25 != null ? ' · PM2.5 ' + fmt(a.pm25) + ' µg/m³ (' + t(st.label).toLowerCase() + ')' : ''), { className: 'gd-tip', direction: 'top', offset: [0, -6] })
@@ -933,6 +933,14 @@
   } catch (e) {}
   sel.addEventListener('change', function () { selectCity(+sel.value); });
 
+  // A shared link can open a precise view: ?layer=fire&days=3&city=Lima&river=Rímac
+  var Q = new URLSearchParams(location.search);
+  if (Q.get('layer') && LAYERS[Q.get('layer')]) sat.key = Q.get('layer');
+  if (/^\d+$/.test(Q.get('days') || '')) sat.back = Math.min(MAX_BACK, +Q.get('days'));
+  if (Q.get('compare') === '0') { sat.compare = false; $('compare').checked = false; }
+  var qc = CITIES.findIndex(function (c) { return c.name === Q.get('city'); }); if (qc >= 0) city.idx = qc;
+  var qr = RIVERS.findIndex(function (r) { return r.name === Q.get('river'); }); if (qr >= 0) riverIdx = qr;
+
   initMap();
   document.querySelectorAll('a[data-layer]').forEach(function (el) {
     el.addEventListener('click', function () { setLayer(el.getAttribute('data-layer')); });
@@ -942,6 +950,17 @@
   $('ov-cities').addEventListener('change', function (e) { e.target.checked ? cityMarkers.addTo(map) : map.removeLayer(cityMarkers); });
   $('ov-rivers').addEventListener('change', function (e) { e.target.checked ? riverMarkers.addTo(map) : map.removeLayer(riverMarkers); });
   renderProof();
+
+  // Hooks for the search palette, the share button and the welcome tour (ux.js)
+  window.gdApp = {
+    layers: Object.keys(LAYERS).map(function (k) { return { key: k, label: t(LAYERS[k].label) }; }),
+    cities: CITIES.map(function (c) { return { name: c.name, region: c.region }; }),
+    rivers: RIVERS.map(function (r) { return { name: r.name, place: r.place }; }),
+    showLayer: function (k) { setLayer(k); $('satellite').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' }); },
+    showCity: function (i) { selectCity(i, true); },
+    showRiver: function (i) { if (rivers) selectRiver(i, true); else { riverIdx = i; $('rivers').scrollIntoView(); } },
+    state: function () { return { layer: sat.key, days: sat.back, compare: sat.compare, city: CITIES[city.idx].name, river: RIVERS[riverIdx].name }; }
+  };
   loadEnso();
   loadRivers();
   loadCities();
