@@ -449,6 +449,7 @@
         '<div class="v">' + signed(oni[3], 2) + '<small>°C</small></div>' +
         '<div class="s">Central Pacific · ' + SEASON_ES[oni[0]] + ' ' + oni[1] + '</div>' +
         '<span class="badge">' + oniClass(oni[3]) + '</span>';
+      live.n12 = last[1]; live.oni = [oni[3], oniClass(oni[3])]; updateTicker(); countKpis();
       if (record) {
         $('hero-h').innerHTML = 'Did you know Peru\'s ocean is <span class="hl">' + signed(last[1], 1) + ' °C</span> warmer than normal?';
         $('hero-lede').innerHTML = 'The highest value in the satellite record since 1981: <strong>coastal El Niño</strong>, live. Drag the white line to compare with one year ago.';
@@ -511,7 +512,7 @@
 
   // ---------------------------------------------------------------- Rivers (GloFAS via Open-Meteo)
   var RIVERS = [
-    { name: 'Amazonas', place: 'Iquitos, Loreto', lat: -3.57, lon: -73.2 },
+    { name: 'Amazon', place: 'Iquitos, Loreto', lat: -3.57, lon: -73.2 },
     { name: 'Marañón', place: 'Nauta, Loreto', lat: -4.5, lon: -73.58 },
     { name: 'Ucayali', place: 'Pucallpa, Ucayali', lat: -8.38, lon: -74.52 },
     { name: 'Huallaga', place: 'Yurimaguas, Loreto', lat: -5.9, lon: -76.1 },
@@ -546,6 +547,8 @@
       $('kpi-rivers').innerHTML = '<div class="k">Rivers with rising discharge</div>' +
         '<div class="v">' + rising + '<small>of ' + rivers.length + '</small></div>' +
         '<div class="s">Up more than 10% vs. 7 days ago · GloFAS</div>';
+      live.river = [RIVERS[0].name, qfmt(rivers[0].q[rivers[0].now])]; updateTicker(); countKpis();
+      if (window.gdReveal) window.gdReveal($('river-cards'));
     }).catch(function (e) {
       console.error(e);
       $('river-cards').innerHTML = '<div class="msg">Could not load river discharge. <button type="button" id="river-retry">Retry</button></div>';
@@ -688,6 +691,7 @@
       var valid = city.air.filter(function (a) { return a.pm25 != null; }).length;
       $('kpi-air').innerHTML = '<div class="k">Cities above the WHO air guideline</div>' +
         '<div class="v">' + over + '<small>of ' + valid + '</small></div><div class="s">24 h mean PM2.5 above 15 µg/m³ · CAMS</div>';
+      live.air = over + ' of ' + valid; updateTicker(); countKpis();
       selectCity(city.idx);
     }).catch(function (e) {
       console.error(e);
@@ -834,11 +838,35 @@
         });
       });
       renderProj();
+      var pc = d.cities[proj.city], pt = projSeries(pc, 0);
+      var dT = avgYears(pt, 2040, 2049) - avgYears(pt, d.baseline[0], d.baseline[1]);
+      if (isFinite(dT)) { live.proj = [proj.city, dT]; updateTicker(); }
     }).catch(function () {
       $('projections').hidden = true;
     });
   }
 
+
+
+  // ---------------------------------------------------------------- live ticker + count-up (only real, loaded values)
+  var live = {};
+  function countKpis() {
+    if (!window.gdCount) return;
+    document.querySelectorAll('.kpi .v').forEach(function (el) { window.gdCount(el); });
+  }
+  function updateTicker() {
+    var items = [];
+    if (live.n12) items.push(['Niño 1+2', signed(live.n12, 1) + ' °C above normal']);
+    if (live.oni) items.push(['El Niño index (ONI)', signed(live.oni[0], 2) + ' °C · ' + live.oni[1]]);
+    if (live.river) items.push([live.river[0] + ' River', live.river[1] + ' m³/s today']);
+    if (live.air) items.push(['Air quality', live.air + ' cities above the WHO PM2.5 guideline']);
+    if (live.proj) items.push([live.proj[0] + ' by the 2040s', signed(live.proj[1], 1) + ' °C warmer (CMIP6)']);
+    if (!items.length) return;
+    var one = items.map(function (it) { return '<span class="tk-item"><b>' + esc(it[0]) + '</b> ' + esc(it[1]) + '</span>'; }).join('<span class="tk-dot" aria-hidden="true">●</span>');
+    $('ticker-track').innerHTML = '<span class="tk-live"><i aria-hidden="true"></i>LIVE</span>' + one +
+      '<span class="tk-copy" aria-hidden="true"><span class="tk-dot">●</span><span class="tk-live"><i></i>LIVE</span>' + one + '</span>';
+    $('ticker').hidden = false;
+  }
 
   // ---------------------------------------------------------------- proof strip
   function renderProof() {
