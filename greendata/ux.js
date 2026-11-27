@@ -352,7 +352,18 @@
     try { seen = localStorage.getItem('gd-tour') === '1'; } catch (e) { seen = true; }
     var qs = new URLSearchParams(location.search);
     if (qs.get('tour') === '1' || (!seen && qs.get('tour') !== '0' && !location.hash && !navigator.webdriver)) {
-      setTimeout(function () { if (window.scrollY < 120 && (!pal || pal.hidden)) startTour(); }, 2200);
+      var heroEl = $('satellite'), started = false;
+      var tryTour = function () {
+        if (started) return;
+        var r = heroEl.getBoundingClientRect();
+        if (r.top < 140 && r.bottom > window.innerHeight * 0.6 && (!pal || pal.hidden)) {
+          started = true; window.removeEventListener('scroll', onSc);
+          setTimeout(function () { var r2 = heroEl.getBoundingClientRect(); if (r2.top < 160 && r2.bottom > 300) startTour(); else started = false; }, 900);
+        }
+      };
+      var onSc = function () { tryTour(); };
+      window.addEventListener('scroll', onSc, { passive: true });
+      setTimeout(tryTour, 2200);
     }
   }
 
@@ -367,13 +378,14 @@
     // step aside while the contact block itself is on screen
     // and while the satellite map is on screen, so it never covers the layer panel
     if ('IntersectionObserver' in window) {
-      var vis = {}, hero = $('satellite');
+      var vis = {}, hero = $('satellite'), orbitEl = $('orbit');
       var io = new IntersectionObserver(function (en) {
         en.forEach(function (x) { vis[x.target.id] = x.isIntersecting; });
-        a.classList.toggle('away', !!(vis.contact || vis.satellite));
+        a.classList.toggle('away', !!(vis.contact || vis.satellite || vis.orbit));
       }, { threshold: 0.2 });
       if (target) io.observe(target);
       if (hero) io.observe(hero);
+      if (orbitEl) io.observe(orbitEl);
     }
   })();
 
@@ -428,38 +440,14 @@
     foot.appendChild(big); foot.appendChild(bar);
   })();
 
-  // ------------------------------------------------------------------ "Find me online": card carousel (home)
-  (function () {
-    var about = $('about'); if (!about) return;
-    var NETS = [
-      ['LinkedIn', 'in/hendy-huayana', 'https://www.linkedin.com/in/hendy-huayana/', 'My professional profile: experience, skills and how to reach me.', 'Connect'],
-      ['TikTok', '@hendy.greendata', 'https://www.tiktok.com/@hendy.greendata', 'Hendy in Green Data: climate, satellites and the environment, explained simply.', 'Watch'],
-      ['GitHub', 'hendyhuayana', 'https://github.com/hendyhuayana', 'Open code: this observatory, AHP risk mapping and GPM rainfall alerts.', 'View code'],
-      ['ORCID', '0009-0000-9348-6078', 'https://orcid.org/0009-0000-9348-6078', 'My researcher ID and academic record.', 'View record']
-    ];
-    var ICO = {
-      LinkedIn: '<path d="M6 9.5v8M6 6.2v.1M10 17.5v-8M10 13c0-2 1.2-3.5 3-3.5s3 1.2 3 3.5v4.5"/><rect x="2.5" y="2.5" width="19" height="19" rx="4"/>',
-      TikTok: '<path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2.2 4.4 5 4.6"/>',
-      GitHub: '<path d="M9 19c-4 1.3-4-2-6-2.5M15 21.5v-3.6c0-1 .1-1.5-.5-2.1 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1-.3-3.4 1.3a11.6 11.6 0 0 0-6.2 0C6.6 3.1 5.5 3.4 5.5 3.4a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.8c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2.1v3.6"/>',
-      ORCID: '<circle cx="12" cy="12" r="9.5"/><path d="M8.5 10v7M8.5 7v.1M11.5 17v-7h2.2a3.5 3.5 0 0 1 0 7z"/>'
-    };
-    function svg(p, cls) { return '<svg class="' + (cls || '') + '" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>'; }
-    var sec = el('section', 'social-sec'); sec.id = 'online'; sec.setAttribute('aria-labelledby', 'online-h');
-    sec.innerHTML = '<div class="wrap"><div class="sec-head social-head"><div><p class="kicker">' + esc(t('Social media')) + '</p><h2 id="online-h">' + t('Where to <span class="hl">find me</span>') + '</h2></div>' +
-      '<div class="car-nav"><button type="button" class="car-btn" data-d="-1" aria-label="' + esc(t('Previous')) + '">' + svg('<path d="M15 6l-6 6 6 6"/>') + '</button>' +
-      '<button type="button" class="car-btn" data-d="1" aria-label="' + esc(t('Next')) + '">' + svg('<path d="M9 6l6 6-6 6"/>') + '</button></div></div></div>' +
-      '<div class="car-track" tabindex="0" role="region" aria-roledescription="carousel" aria-label="' + esc(t('Where to find me')) + '">' +
-      NETS.map(function (n, i) {
-        return '<a class="car-card" href="' + n[2] + '" target="_blank" rel="noopener" aria-label="' + esc(n[0] + ' · ' + n[1]) + '" data-i="' + i + '">' +
-          '<span class="car-logo">' + svg(ICO[n[0]]) + '<b>' + n[0] + '</b></span>' +
-          '<span class="car-text">' + esc(t(n[3])) + '</span>' +
-          '<span class="car-foot"><span><b>' + esc(n[1]) + '</b><small>' + esc(t(n[4])) + ' →</small></span>' + svg('<path d="M7 17L17 7M8 7h9v9"/>', 'car-mark') + '</span></a>';
-      }).join('') + '</div>' +
-      '<div class="car-dots" aria-hidden="true">' + NETS.map(function () { return '<i></i>'; }).join('') + '</div>';
-    about.insertAdjacentElement('afterend', sec);
-    var band = el('div', 'lime-band'); band.setAttribute('aria-hidden', 'true'); sec.insertAdjacentElement('afterend', band);
-
-    var track = sec.querySelector('.car-track'), cards = [].slice.call(track.children), dots = [].slice.call(sec.querySelectorAll('.car-dots i')), cur = 0;
+  // ------------------------------------------------------------------ card carousel (research page)
+  // Centre card lit, side cards dimmed; arrows, drag, swipe, keyboard and dots.
+  function carousel(root) {
+    var track = root.querySelector('.car-track'), cards = [].slice.call(track.children), cur = 0, dragged = false;
+    var dotsBox = root.querySelector('.car-dots');
+    if (dotsBox) dotsBox.innerHTML = cards.map(function () { return '<i></i>'; }).join('');
+    var dots = dotsBox ? [].slice.call(dotsBox.children) : [];
+    cards.forEach(function (c, i) { c.dataset.ci = i; c.classList.add('car-card'); });
     function center(i, smooth) {
       i = Math.max(0, Math.min(cards.length - 1, i));
       var c = cards[i];
@@ -474,25 +462,91 @@
     }
     var raf = 0;
     track.addEventListener('scroll', function () { cancelAnimationFrame(raf); raf = requestAnimationFrame(mark); }, { passive: true });
-    sec.querySelectorAll('.car-btn').forEach(function (b) { b.addEventListener('click', function () { center(cur + +b.dataset.d, true); }); });
+    root.querySelectorAll('.car-btn').forEach(function (b) { b.addEventListener('click', function () { center(cur + +b.dataset.d, true); }); });
     track.addEventListener('keydown', function (e) {
       if (e.key === 'ArrowRight') { e.preventDefault(); center(cur + 1, true); }
       else if (e.key === 'ArrowLeft') { e.preventDefault(); center(cur - 1, true); }
     });
-    // a side card first comes to the centre; only the centre card opens the link
+    // a side card first comes to the centre; only the centre card opens its link
     track.addEventListener('click', function (e) {
       var c = e.target.closest('.car-card'); if (!c) return;
       if (dragged) { e.preventDefault(); return; }
-      if (!c.classList.contains('is-center')) { e.preventDefault(); center(+c.dataset.i, true); }
+      if (!c.classList.contains('is-center')) { e.preventDefault(); center(+c.dataset.ci, true); }
     });
-    // drag with the mouse
-    var down = false, sx = 0, sl = 0, dragged = false;
-    track.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse') return; down = true; dragged = false; sx = e.clientX; sl = track.scrollLeft; track.classList.add('grab'); });
-    window.addEventListener('pointermove', function (e) { if (!down) return; var dx = e.clientX - sx; if (Math.abs(dx) > 5) dragged = true; track.scrollLeft = sl - dx; });
+    var down = false, sx = 0, sl = 0;
+    track.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse') return; down = true; dragged = false; sx = e.clientX; sl = track.scrollLeft; });
+    window.addEventListener('pointermove', function (e) { if (!down) return; var dx = e.clientX - sx; if (Math.abs(dx) > 5) { dragged = true; track.classList.add('grab'); } track.scrollLeft = sl - dx; });
     window.addEventListener('pointerup', function () { if (!down) return; down = false; track.classList.remove('grab'); mark(); center(cur, true); setTimeout(function () { dragged = false; }, 0); });
     track.addEventListener('dragstart', function (e) { e.preventDefault(); });
     window.addEventListener('resize', function () { center(cur); });
     requestAnimationFrame(function () { center(0); mark(); });
-    if (window.gdReveal) window.gdReveal(sec);
+  }
+  function makeCarousel(grid, head, label, linkSel) {
+    var root = el('div', 'car-root');
+    grid.parentNode.insertBefore(root, grid); root.appendChild(grid);
+    grid.classList.add('car-track'); grid.tabIndex = 0;
+    grid.setAttribute('role', 'region'); grid.setAttribute('aria-roledescription', 'carousel'); grid.setAttribute('aria-label', label);
+    var arrow = '<svg class="car-mark" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9"/></svg>';
+    [].forEach.call(grid.children, function (c) { var o = c.querySelector(linkSel); if (o) o.insertAdjacentHTML('afterend', arrow); });
+    var nav = el('div', 'car-nav');
+    nav.innerHTML = '<button type="button" class="car-btn" data-d="-1" aria-label="' + esc(t('Previous')) + '"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>' +
+      '<button type="button" class="car-btn" data-d="1" aria-label="' + esc(t('Next')) + '"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>';
+    head.classList.add('car-head'); head.appendChild(nav);
+    var dots = el('div', 'car-dots'); dots.setAttribute('aria-hidden', 'true'); root.appendChild(dots);
+    // the arrows live in the heading, outside root: wire them to this carousel
+    root.appendChild(nav.cloneNode(true)).hidden = true;
+    carousel(root);
+    nav.querySelectorAll('.car-btn').forEach(function (b, i) { b.addEventListener('click', function () { root.querySelectorAll('.car-btn')[i].click(); }); });
+  }
+  // research page: projects
+  (function () {
+    var grid = document.querySelector('.research-grid'); if (!grid) return;
+    makeCarousel(grid, grid.closest('section').querySelector('.sec-head'), t('Scientific research'), '.r-open');
+  })();
+  // home: featured projects
+  (function () {
+    var grid = document.querySelector('.cta .services'); if (!grid) return;
+    var h = grid.previousElementSibling;
+    if (!h || !h.classList.contains('block-h')) return;
+    var head = el('div', 'car-headrow'); h.parentNode.insertBefore(head, h); head.appendChild(h);
+    grid.classList.add('proj-car');
+    makeCarousel(grid, head, h.textContent, 'a');
+  })();
+
+  // lime band before the footer, on every page
+  (function () {
+    var f = document.querySelector('.footer'); if (!f) return;
+    var band = el('div', 'lime-band'); band.setAttribute('aria-hidden', 'true'); f.parentNode.insertBefore(band, f);
+  })();
+
+  // ------------------------------------------------------------------ intro: descent from orbit (home)
+  (function () {
+    var sec = $('orbit'); if (!sec) return;
+    var earth = $('orbit-earth'), now = $('orbit-now'), hint = $('orbit-hint'), word = sec.querySelector('.orbit-word'), fog = sec.querySelector('.orbit-fog');
+    // NASA Blue Marble over South America (GIBS WMS, EPSG:4326: BBOX is minLat,minLon,maxLat,maxLon)
+    var img = 'https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=BlueMarble_ShadedRelief_Bathymetry&STYLES=&CRS=EPSG:4326&BBOX=-45,-110,15,-30&WIDTH=2400&HEIGHT=1800&FORMAT=image/jpeg';
+    earth.style.backgroundImage = 'url("' + img + '")';
+    var ticks = $('orbit-ticks'), TOP = 800;
+    for (var k = TOP; k >= 0; k -= 100) ticks.insertAdjacentHTML('beforeend', '<li><span>' + k + '</span></li>');
+    if (reduce) { sec.classList.add('still'); return; }
+    var nf = new Intl.NumberFormat(window.GD_LOCALE || 'en-US');
+    var tick = false;
+    function ease(x) { return x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2; }
+    function frame() {
+      tick = false;
+      var r = sec.getBoundingClientRect(), span = r.height - window.innerHeight;
+      var p = Math.max(0, Math.min(1, -r.top / (span || 1))), e = ease(p);
+      earth.style.transform = 'scale(' + (1 + 2.3 * e).toFixed(4) + ')';
+      fog.style.opacity = Math.max(0, 1 - p * 1.25).toFixed(3);
+      word.style.opacity = Math.max(0, 1 - p * 2.2).toFixed(3);
+      word.style.transform = 'translateY(' + (p * 60).toFixed(1) + 'px)';
+      sec.style.setProperty('--p', p.toFixed(4));
+      now.textContent = nf.format(Math.round(TOP * (1 - e))) + ' km';
+      hint.classList.toggle('gone', p > 0.04);
+    }
+    window.addEventListener('scroll', function () { if (!tick) { tick = true; requestAnimationFrame(frame); } }, { passive: true });
+    window.addEventListener('resize', frame);
+    frame();
+    sec.querySelector('.orbit-skip').addEventListener('click', function (e) { e.preventDefault(); scrollToId('satellite'); });
   })();
 })();
