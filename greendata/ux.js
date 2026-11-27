@@ -427,4 +427,72 @@
     if (fine) bar.appendChild(fine);
     foot.appendChild(big); foot.appendChild(bar);
   })();
+
+  // ------------------------------------------------------------------ "Find me online": card carousel (home)
+  (function () {
+    var about = $('about'); if (!about) return;
+    var NETS = [
+      ['LinkedIn', 'in/hendy-huayana', 'https://www.linkedin.com/in/hendy-huayana/', 'My professional profile: experience, skills and how to reach me.', 'Connect'],
+      ['TikTok', '@hendy.greendata', 'https://www.tiktok.com/@hendy.greendata', 'Hendy in Green Data: climate, satellites and the environment, explained simply.', 'Watch'],
+      ['GitHub', 'hendyhuayana', 'https://github.com/hendyhuayana', 'Open code: this observatory, AHP risk mapping and GPM rainfall alerts.', 'View code'],
+      ['ORCID', '0009-0000-9348-6078', 'https://orcid.org/0009-0000-9348-6078', 'My researcher ID and academic record.', 'View record']
+    ];
+    var ICO = {
+      LinkedIn: '<path d="M6 9.5v8M6 6.2v.1M10 17.5v-8M10 13c0-2 1.2-3.5 3-3.5s3 1.2 3 3.5v4.5"/><rect x="2.5" y="2.5" width="19" height="19" rx="4"/>',
+      TikTok: '<path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2.2 4.4 5 4.6"/>',
+      GitHub: '<path d="M9 19c-4 1.3-4-2-6-2.5M15 21.5v-3.6c0-1 .1-1.5-.5-2.1 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1-.3-3.4 1.3a11.6 11.6 0 0 0-6.2 0C6.6 3.1 5.5 3.4 5.5 3.4a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.8c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2.1v3.6"/>',
+      ORCID: '<circle cx="12" cy="12" r="9.5"/><path d="M8.5 10v7M8.5 7v.1M11.5 17v-7h2.2a3.5 3.5 0 0 1 0 7z"/>'
+    };
+    function svg(p, cls) { return '<svg class="' + (cls || '') + '" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>'; }
+    var sec = el('section', 'social-sec'); sec.id = 'online'; sec.setAttribute('aria-labelledby', 'online-h');
+    sec.innerHTML = '<div class="wrap"><div class="sec-head social-head"><div><p class="kicker">' + esc(t('Social media')) + '</p><h2 id="online-h">' + t('Where to <span class="hl">find me</span>') + '</h2></div>' +
+      '<div class="car-nav"><button type="button" class="car-btn" data-d="-1" aria-label="' + esc(t('Previous')) + '">' + svg('<path d="M15 6l-6 6 6 6"/>') + '</button>' +
+      '<button type="button" class="car-btn" data-d="1" aria-label="' + esc(t('Next')) + '">' + svg('<path d="M9 6l6 6-6 6"/>') + '</button></div></div></div>' +
+      '<div class="car-track" tabindex="0" role="region" aria-roledescription="carousel" aria-label="' + esc(t('Where to find me')) + '">' +
+      NETS.map(function (n, i) {
+        return '<a class="car-card" href="' + n[2] + '" target="_blank" rel="noopener" aria-label="' + esc(n[0] + ' · ' + n[1]) + '" data-i="' + i + '">' +
+          '<span class="car-logo">' + svg(ICO[n[0]]) + '<b>' + n[0] + '</b></span>' +
+          '<span class="car-text">' + esc(t(n[3])) + '</span>' +
+          '<span class="car-foot"><span><b>' + esc(n[1]) + '</b><small>' + esc(t(n[4])) + ' →</small></span>' + svg('<path d="M7 17L17 7M8 7h9v9"/>', 'car-mark') + '</span></a>';
+      }).join('') + '</div>' +
+      '<div class="car-dots" aria-hidden="true">' + NETS.map(function () { return '<i></i>'; }).join('') + '</div>';
+    about.insertAdjacentElement('afterend', sec);
+    var band = el('div', 'lime-band'); band.setAttribute('aria-hidden', 'true'); sec.insertAdjacentElement('afterend', band);
+
+    var track = sec.querySelector('.car-track'), cards = [].slice.call(track.children), dots = [].slice.call(sec.querySelectorAll('.car-dots i')), cur = 0;
+    function center(i, smooth) {
+      i = Math.max(0, Math.min(cards.length - 1, i));
+      var c = cards[i];
+      track.scrollTo({ left: c.offsetLeft - (track.clientWidth - c.offsetWidth) / 2, behavior: smooth && !reduce ? 'smooth' : 'auto' });
+    }
+    function mark() {
+      var mid = track.scrollLeft + track.clientWidth / 2, best = 0, bd = Infinity;
+      cards.forEach(function (c, i) { var d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid); if (d < bd) { bd = d; best = i; } });
+      cur = best;
+      cards.forEach(function (c, i) { c.classList.toggle('is-center', i === best); });
+      dots.forEach(function (d, i) { d.classList.toggle('on', i === best); });
+    }
+    var raf = 0;
+    track.addEventListener('scroll', function () { cancelAnimationFrame(raf); raf = requestAnimationFrame(mark); }, { passive: true });
+    sec.querySelectorAll('.car-btn').forEach(function (b) { b.addEventListener('click', function () { center(cur + +b.dataset.d, true); }); });
+    track.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { e.preventDefault(); center(cur + 1, true); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); center(cur - 1, true); }
+    });
+    // a side card first comes to the centre; only the centre card opens the link
+    track.addEventListener('click', function (e) {
+      var c = e.target.closest('.car-card'); if (!c) return;
+      if (dragged) { e.preventDefault(); return; }
+      if (!c.classList.contains('is-center')) { e.preventDefault(); center(+c.dataset.i, true); }
+    });
+    // drag with the mouse
+    var down = false, sx = 0, sl = 0, dragged = false;
+    track.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse') return; down = true; dragged = false; sx = e.clientX; sl = track.scrollLeft; track.classList.add('grab'); });
+    window.addEventListener('pointermove', function (e) { if (!down) return; var dx = e.clientX - sx; if (Math.abs(dx) > 5) dragged = true; track.scrollLeft = sl - dx; });
+    window.addEventListener('pointerup', function () { if (!down) return; down = false; track.classList.remove('grab'); mark(); center(cur, true); setTimeout(function () { dragged = false; }, 0); });
+    track.addEventListener('dragstart', function (e) { e.preventDefault(); });
+    window.addEventListener('resize', function () { center(cur); });
+    requestAnimationFrame(function () { center(0); mark(); });
+    if (window.gdReveal) window.gdReveal(sec);
+  })();
 })();
