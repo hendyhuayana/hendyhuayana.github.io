@@ -555,6 +555,31 @@
     var pill = el('a', 'btn sm tm-cta'); pill.href = href('#contact'); pill.textContent = t('Contact');
     navIn.insertBefore(pill, navIn.querySelector('.menu-btn'));
 
+    // phone: the same groups inside the ☰ drawer, as folding rows
+    var drawerNav = $('site-nav');
+    if (drawerNav) {
+      var dm = el('div', 'dm');
+      dm.innerHTML = MENU.map(function (m, i) {
+        if (m.href) return '<a class="dm-top" href="' + href(m.href) + '">' + esc(t(m.label)) + '</a>';
+        return '<div class="dm-group"><button type="button" class="dm-top" aria-expanded="false" aria-controls="dm-p' + i + '">' + esc(t(m.label)) + chev + '</button>' +
+          '<div class="dm-panel" id="dm-p' + i + '" hidden>' + m.items.map(function (x) { return '<a href="' + href(x[0]) + '">' + esc(t(x[1])) + '</a>'; }).join('') + '</div></div>';
+      }).join('') + '<a class="btn dm-cta" href="' + href('#contact') + '">' + esc(t('Contact')) + '</a>';
+      drawerNav.insertBefore(dm, drawerNav.firstChild);
+      dm.addEventListener('click', function (e) {
+        var b = e.target.closest('button.dm-top');
+        if (b) {
+          var o = b.getAttribute('aria-expanded') !== 'true';
+          dm.querySelectorAll('button.dm-top').forEach(function (x) { x.setAttribute('aria-expanded', 'false'); $(x.getAttribute('aria-controls')).hidden = true; });
+          b.setAttribute('aria-expanded', o); $(b.getAttribute('aria-controls')).hidden = !o;
+          return;
+        }
+        var a = e.target.closest('a[href^="#"]');
+        if (a && isHome) { e.preventDefault(); document.body.classList.remove('menu-open'); var mb = document.querySelector('.menu-btn'); if (mb) mb.setAttribute('aria-expanded', 'false'); scrollToId(a.getAttribute('href').slice(1)); }
+      });
+      var back = el('div', 'drawer-back'); back.setAttribute('aria-hidden', 'true'); document.body.appendChild(back);
+      back.addEventListener('click', function () { document.body.classList.remove('menu-open'); var mb = document.querySelector('.menu-btn'); if (mb) mb.setAttribute('aria-expanded', 'false'); });
+    }
+
     var openLi = null, timer = 0;
     function open(li) { if (openLi && openLi !== li) close(openLi); openLi = li; li.classList.add('open'); li.querySelector('.tm-top').setAttribute('aria-expanded', 'true'); }
     function close(li) { li.classList.remove('open'); var b = li.querySelector('.tm-top'); if (b) b.setAttribute('aria-expanded', 'false'); if (openLi === li) openLi = null; }
