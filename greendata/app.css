@@ -991,3 +991,24 @@ html, body { overflow-x: clip; }
   .nav nav#site-nav { transform: none; clip-path: inset(0 0 0 100%); transition: clip-path .32s cubic-bezier(.2,.8,.2,1), visibility 0s .32s; }
   .menu-open .nav nav#site-nav { clip-path: inset(0 0 0 0); transition: clip-path .32s cubic-bezier(.2,.8,.2,1); }
 }
+/* header tagline: plain, quiet text */
+.nm .tagline { font: 500 .74rem/1.25 var(--font); color: var(--hud-muted); letter-spacing: .01em; }
+/* phone: the "Did you know" card becomes a small label on the map */
+@media (max-width: 720px) {
+  .hero-copy { position: absolute; top: 10px; left: 10px; right: 62px; order: 0; padding: 0; background: none; z-index: 500; pointer-events: none; }
+  .hero-copy .wrap { padding: 0; }
+  .copy-col { display: inline-block; max-width: 100%; padding: 9px 12px 10px; border-radius: 12px; background: rgba(10,33,22,.86); border: 1px solid var(--hud-line); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); pointer-events: auto; }
+  .hero .eyebrow { font-size: .6rem; margin: 0 0 4px; letter-spacing: .06em; }
+  .hero h1 { font-size: .98rem; line-height: 1.2; margin: 0; letter-spacing: 0; }
+  .hero h1 .hl { padding: 0 .12em; }
+  .hero .lede, .hero .handle { display: none; }
+  #map { height: 58vh; min-height: 380px; }
+}
+/* desktop: a smaller, proportional card over the map */
+@media (min-width: 981px) {
+  .copy-col { max-width: 360px; padding: 16px 18px; }
+  .hero h1 { font-size: clamp(1.2rem, 1.75vw, 1.5rem); margin-bottom: 8px; }
+  .hero .lede { font-size: .9rem; line-height: 1.5; margin-bottom: 0; }
+  .hero .eyebrow { font-size: .68rem; }
+  .hero .handle { display: none; }
+}
