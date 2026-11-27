@@ -261,7 +261,7 @@
         ['#cities', 'The air in your city', 'Live PM2.5, UV and rain for cities across Peru.'],
         ['#rivers', 'Rivers today', 'How much water the big rivers carry, with a 30-day forecast.']] }
     ];
-    var sec = el('section', 'wrap section paths'); sec.id = 'start'; sec.setAttribute('aria-labelledby', 'paths-h');
+    var sec = el('section', 'wrap section paths sec-light'); sec.id = 'start'; sec.setAttribute('aria-labelledby', 'paths-h');
     sec.innerHTML = '<div class="sec-head"><p class="kicker">' + esc(t('Start here')) + '</p><h2 id="paths-h">' + t('What brings you <span class="hl">here</span>?') + '</h2></div>' +
       '<div class="path-tabs" role="tablist" aria-label="' + esc(t('Choose your path')) + '"></div><div class="path-panel" role="tabpanel" id="path-panel" tabindex="0"></div>' +
       '<p class="path-tip">' + t('Tip: press {0} to search anything on this site.', '<kbd>' + (IS_MAC ? '⌘' : 'Ctrl') + ' K</kbd>') + '</p>';
@@ -355,4 +355,76 @@
       setTimeout(function () { if (window.scrollY < 120 && (!pal || pal.hidden)) startTour(); }, 2200);
     }
   }
+
+  // ------------------------------------------------------------------ vertical "Contact" tab on the right edge
+  (function () {
+    var target = $('contact');
+    var a = el('a', 'side-contact');
+    a.href = target ? '#contact' : withLang(BASE + 'index.html#contact');
+    a.textContent = t('Contact');
+    if (target) a.addEventListener('click', function (e) { e.preventDefault(); scrollToId('contact'); });
+    document.body.appendChild(a);
+    // step aside while the contact block itself is on screen
+    // and while the satellite map is on screen, so it never covers the layer panel
+    if ('IntersectionObserver' in window) {
+      var vis = {}, hero = $('satellite');
+      var io = new IntersectionObserver(function (en) {
+        en.forEach(function (x) { vis[x.target.id] = x.isIntersecting; });
+        a.classList.toggle('away', !!(vis.contact || vis.satellite));
+      }, { threshold: 0.2 });
+      if (target) io.observe(target);
+      if (hero) io.observe(hero);
+    }
+  })();
+
+  // ------------------------------------------------------------------ cursor dot (mouse only)
+  if (!reduce && window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    var dot = el('div', 'cursor-dot'); dot.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(dot);
+    var mx = -100, my = -100, dx = -100, dy = -100, running = false;
+    var loop = function () {
+      dx += (mx - dx) * 0.22; dy += (my - dy) * 0.22;
+      dot.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      if (Math.abs(mx - dx) > 0.1 || Math.abs(my - dy) > 0.1) requestAnimationFrame(loop); else running = false;
+    };
+    document.addEventListener('pointermove', function (e) {
+      mx = e.clientX; my = e.clientY; dot.classList.add('on');
+      // grow over things you can click, hide over the map so it never hides what you are looking at
+      var tgt = e.target.closest ? e.target : null;
+      dot.classList.toggle('big', !!(tgt && tgt.closest('a, button, [role="tab"], [role="option"], .chip, label')));
+      dot.classList.toggle('off', !!(tgt && tgt.closest('.leaflet-container, input, select, textarea, .gd-pal')));
+      if (!running) { running = true; requestAnimationFrame(loop); }
+    }, { passive: true });
+    document.addEventListener('pointerleave', function () { dot.classList.remove('on'); });
+    document.documentElement.addEventListener('mouseleave', function () { dot.classList.remove('on'); });
+  }
+
+  // ------------------------------------------------------------------ footer: credentials, giant wordmark, social bar
+  (function () {
+    var foot = document.querySelector('.footer'), wrap = foot && foot.querySelector('.wrap');
+    if (!wrap) return;
+    var BADGES = [['Esri Young Professionals Network', 'Community Ambassador 2026'], ['Women in GIS', 'Member'], ['Women Techmakers', 'Member'],
+      ['GEO Mountains', 'Network'], ['Mountain Research Initiative', 'Expert database']];
+    var top = el('div', 'foot-top');
+    top.innerHTML = '<ul class="foot-badges">' + BADGES.map(function (b) { return '<li><b>' + esc(b[0]) + '</b><span>' + esc(t(b[1])) + '</span></li>'; }).join('') + '</ul>' +
+      '<p class="foot-claim">' + esc(t('Communities and networks I am part of')) + '</p>';
+    wrap.insertBefore(top, wrap.firstChild);
+    var SOC = [
+      ['https://www.linkedin.com/in/hendy-huayana/', 'LinkedIn', '<path d="M6 9.5v8M6 6.2v.1M10 17.5v-8M10 13c0-2 1.2-3.5 3-3.5s3 1.2 3 3.5v4.5"/><rect x="2.5" y="2.5" width="19" height="19" rx="4"/>'],
+      ['https://github.com/hendyhuayana', 'GitHub', '<path d="M9 19c-4 1.3-4-2-6-2.5M15 21.5v-3.6c0-1 .1-1.5-.5-2.1 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1-.3-3.4 1.3a11.6 11.6 0 0 0-6.2 0C6.6 3.1 5.5 3.4 5.5 3.4a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.8c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2.1v3.6"/>'],
+      ['https://orcid.org/0009-0000-9348-6078', 'ORCID', '<circle cx="12" cy="12" r="9.5"/><path d="M8.5 10v7M8.5 7v.1M11.5 17v-7h2.2a3.5 3.5 0 0 1 0 7z"/>'],
+      ['https://www.tiktok.com/@hendy.greendata', 'TikTok', '<path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2.2 4.4 5 4.6"/>']
+    ];
+    var brand = foot.querySelector('.brand'); if (brand) brand.hidden = true;
+    var fine = foot.querySelector('.fine');
+    var big = el('div', 'foot-giant');
+    big.innerHTML = '<svg viewBox="0 0 1000 118" role="img" aria-label="Hendy in Green Data"><text x="2" y="104" textLength="996" lengthAdjust="spacingAndGlyphs">HENDY<tspan class="in" dx="10">in</tspan><tspan class="g" dx="10">GREEN</tspan><tspan dx="12">DATA</tspan></text></svg>';
+    var bar = el('div', 'wrap foot-bar');
+    bar.innerHTML = '<p class="foot-copy">© ' + new Date().getFullYear() + ' Hendy Mayumi Huayana</p>' +
+      '<ul class="foot-social" aria-label="' + esc(t('Find me on')) + '">' + SOC.map(function (x) {
+        return '<li><a href="' + x[0] + '" aria-label="' + x[1] + '" title="' + x[1] + '"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + x[2] + '</svg></a></li>';
+      }).join('') + '</ul>';
+    if (fine) bar.appendChild(fine);
+    foot.appendChild(big); foot.appendChild(bar);
+  })();
 })();

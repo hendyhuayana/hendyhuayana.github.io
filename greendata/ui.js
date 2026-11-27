@@ -39,7 +39,7 @@
       });
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
     window.gdReveal = function (root) {
-      (root || document).querySelectorAll('.sec-head, .card, .kpi, .xp, .svc, .tl-item, .explain > div, .rcard').forEach(function (el, i) {
+      (root || document).querySelectorAll('.sec-head, .card, .kpi, .xp, .svc, .tl-item, .explain > div, .rcard, .contact').forEach(function (el, i) {
         if (el.dataset.rv) return;
         el.dataset.rv = '1';
         el.style.setProperty('--rv-delay', (i % 4) * 70 + 'ms');

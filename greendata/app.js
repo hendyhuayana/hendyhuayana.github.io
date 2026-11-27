@@ -573,7 +573,7 @@
       return '<button class="rcard" data-i="' + i + '" aria-pressed="' + (i === riverIdx) + '">' +
         '<div class="rn">' + esc(t(RIVERS[i].name)) + '</div><div class="rp">' + esc(RIVERS[i].place) + '</div>' +
         '<div class="rv">' + qfmt(r.q[r.now]) + ' <small>m³/s</small></div><div class="rt">' + trend(r.chg) + '</div>' +
-        sparkline(r.q.slice(Math.max(0, r.now - 60), r.now + 1), css('--series-1')) + '</button>';
+        sparkline(r.q.slice(Math.max(0, r.now - 60), r.now + 1), 'var(--series-1)') + '</button>';
     }).join('');
     $('river-cards').onclick = function (e) {
       var b = e.target.closest('.rcard'); if (!b) return;
