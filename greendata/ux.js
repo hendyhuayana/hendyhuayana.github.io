@@ -615,4 +615,35 @@
     contact.parentNode.insertBefore(box, contact);
     if (window.gdReveal) window.gdReveal(box);
   })();
+
+  // ------------------------------------------------------------------ phone: lighter page (home)
+  (function () {
+    if (!isHome || window.innerWidth > 720) return;
+    // "About" sub-blocks fold into tap-to-open rows (experience, education, skills…)
+    var chevS = '<svg class="acc-chev" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+    document.querySelectorAll('.cta h3.block-h').forEach(function (h, n) {
+      if (h.closest('.contact, .collabs, .car-headrow')) return;
+      var body = el('div', 'acc-body'), sib = h.nextElementSibling, list = [];
+      while (sib && !(sib.matches && sib.matches('h3.block-h, .car-headrow, .collabs, .contact, .proof'))) { list.push(sib); sib = sib.nextElementSibling; }
+      if (!list.length) return;
+      list.forEach(function (x) { body.appendChild(x); });
+      h.insertAdjacentElement('afterend', body);
+      body.id = 'acc-' + n; body.hidden = true;
+      var b = el('button', 'acc-btn'); b.type = 'button'; b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-controls', body.id);
+      while (h.firstChild) b.appendChild(h.firstChild);
+      b.insertAdjacentHTML('beforeend', chevS);
+      h.appendChild(b); h.classList.add('acc-h');
+      b.addEventListener('click', function () { var o = b.getAttribute('aria-expanded') !== 'true'; b.setAttribute('aria-expanded', o); body.hidden = !o; if (o && window.gdReveal) window.gdReveal(body); });
+    });
+    // the layer panel starts folded: the map shows first, layers open on demand
+    var tg = $('panel-toggle'), body = $('panel-body');
+    if (tg && body) {
+      tg.setAttribute('aria-expanded', 'false'); body.hidden = true;
+      var head = tg.closest('.panel-head'), cur = el('span', 'panel-cur');
+      head.insertBefore(cur, tg);
+      var upd = function () { var c = document.querySelector('#layers .chip[aria-checked="true"]'); cur.textContent = c ? c.textContent : ''; };
+      upd(); new MutationObserver(upd).observe($('layers'), { attributes: true, subtree: true, attributeFilter: ['aria-checked'] });
+      head.addEventListener('click', function (e) { if (e.target !== tg && !tg.contains(e.target)) tg.click(); });
+    }
+  })();
 })();

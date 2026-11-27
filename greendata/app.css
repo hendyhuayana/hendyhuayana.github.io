@@ -889,3 +889,53 @@ html.pal-open { overflow: hidden; }
 .collab-grid b { color: #fff; font: 800 .95rem/1.25 var(--display); }
 .collab-grid li > span:last-child { color: var(--hud-muted); font-size: .84rem; line-height: 1.4; }
 .collab-mark { position: absolute; left: 16px; top: 18px; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--lime); color: var(--on-lime); font: 900 .72rem/1 var(--display); text-align: center; }
+
+/* ===== Phone: lighter, shorter page ===== */
+@media (max-width: 720px) {
+  .section { padding-top: 48px; }
+  .sec-light { padding-bottom: 48px; }
+  .section h2, .cta h2 { font-size: clamp(1.45rem, 7vw, 1.9rem); }
+  .sec-lede { font-size: .95rem; }
+  /* folded layer panel: one tap row */
+  .panel-head { cursor: pointer; }
+  .panel-cur { flex: 1; margin: 0 10px; text-align: right; color: var(--lime); font-weight: 700; font-size: .85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* indicators: 2 x 2 */
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding-top: 18px; }
+  .kpi { padding: 14px; }
+  .kpi .v { font-size: 1.55rem; }
+  .kpi .s, .kpi .badge { font-size: .72rem; }
+  /* passion cards: only the sentence and the link */
+  .xp ul { display: none; }
+  .xp { padding: 18px; }
+  .xp h3 { margin-top: 10px; font-size: 1rem; }
+  .xp .svc-ico { width: 42px; height: 42px; }
+  /* swipeable rows instead of long stacked lists */
+  .expertise, .river-grid, .collab-grid, .path-panel { display: flex; grid-template-columns: none; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; gap: 10px; margin-left: -16px; margin-right: -16px; padding: 4px 16px 10px; }
+  .expertise::-webkit-scrollbar, .river-grid::-webkit-scrollbar, .collab-grid::-webkit-scrollbar, .path-panel::-webkit-scrollbar { display: none; }
+  .river-grid > *, .collab-grid > li { flex: 0 0 72%; scroll-snap-align: start; }
+  .expertise > .xp { flex: 0 0 80%; scroll-snap-align: start; grid-column: auto; }
+  .path-panel > .path-card { flex: 0 0 80%; scroll-snap-align: start; padding-right: 22px; min-height: 0; }
+  .path-panel .path-card i { position: static; margin-top: 10px; }
+  .path-tip { display: none; }
+  /* El Niño explainers: tighter */
+  .explain > div { padding: 14px; }
+  /* skills and communities: smaller chips */
+  .tags li { font-size: .78rem; padding: 6px 10px; }
+  .timeline { gap: 10px; }
+  .tl-item { padding: 14px; }
+  .tl-item ul { font-size: .86rem; }
+  /* footer: compact */
+  .foot-badges { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .foot-badges li { min-height: 0; padding: 10px 12px; }
+  .foot-badges li:last-child { grid-column: span 2; }
+  .foot-top { padding: 28px 0 20px; }
+  .sources { font-size: .76rem; }
+}
+/* phone: folding rows in "About" */
+.acc-h { margin: 0 !important; border-top: 1px solid var(--hud-line); }
+.acc-btn { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 18px 2px; border: 0; background: none; color: #fff; font: inherit; text-transform: inherit; letter-spacing: inherit; text-align: left; cursor: pointer; }
+.acc-btn:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+.acc-chev { width: 20px; height: 20px; color: var(--lime); flex: none; transition: transform .25s; }
+.acc-btn[aria-expanded="true"] .acc-chev { transform: rotate(180deg); }
+.acc-body { padding: 4px 0 20px; }
+.acc-body [data-rv] { opacity: 1 !important; transform: none !important; }
