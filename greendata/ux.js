@@ -671,4 +671,16 @@
       head.addEventListener('click', function (e) { if (e.target !== tg && !tg.contains(e.target)) tg.click(); });
     }
   })();
+
+  // ------------------------------------------------------------------ phone: long notes fold away (every page)
+  (function () {
+    if (window.innerWidth > 720) return;
+    function fold(node, label) {
+      if (!node) return;
+      var d = el('details', 'fold'); var sm = el('summary'); sm.textContent = label;
+      node.parentNode.insertBefore(d, node); d.appendChild(sm); d.appendChild(node);
+    }
+    fold(document.querySelector('.proj-note'), t('About the method'));
+    fold(document.querySelector('.footer .sources'), t('Sources and disclaimer'));
+  })();
 })();

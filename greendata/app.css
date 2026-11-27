@@ -968,3 +968,26 @@ html.pal-open { overflow: hidden; }
 }
 @media (max-width: 720px) and (prefers-reduced-motion: reduce) { .nav nav#site-nav, .drawer-back { transition: none; } }
 @media (max-width: 720px) { .nav nav .dm a.dm-top { display: flex !important; padding: 16px 6px; border-radius: 0; font-size: 1.05rem; } }
+/* phone: more compact El Niño, projections, footer and thesis banner */
+@media (max-width: 720px) {
+  .explain { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; gap: 10px; margin-left: -16px; margin-right: -16px; padding: 4px 16px 10px; }
+  .explain::-webkit-scrollbar { display: none; }
+  .explain > div { flex: 0 0 82%; scroll-snap-align: start; }
+  #proj-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  #proj-kpis .proj-kpi { margin: 0; padding: 0; border: 0; }
+  #proj-kpis .v { font-size: 1.6rem; }
+  #proj-kpis .s, #proj-kpis .k { font-size: .74rem; }
+  details.fold { margin: 12px 0 0; }
+  details.fold > summary { cursor: pointer; padding: 10px 0; font-weight: 700; font-size: .86rem; color: var(--lime); list-style: none; }
+  details.fold > summary::-webkit-details-marker { display: none; }
+  details.fold > summary::after { content: " ▾"; }
+  details.fold[open] > summary::after { content: " ▴"; }
+  .footer details.fold { border-top: 1px solid var(--hud-line); margin-top: 10px; }
+  .demo-banner { top: 60px; font-size: .74rem; padding: 7px 10px; letter-spacing: .03em; }
+}
+/* nothing may widen the page on phones (the closed drawer sits off-screen) */
+html, body { overflow-x: clip; }
+@media (max-width: 720px) {
+  .nav nav#site-nav { transform: none; clip-path: inset(0 0 0 100%); transition: clip-path .32s cubic-bezier(.2,.8,.2,1), visibility 0s .32s; }
+  .menu-open .nav nav#site-nav { clip-path: inset(0 0 0 0); transition: clip-path .32s cubic-bezier(.2,.8,.2,1); }
+}
