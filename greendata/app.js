@@ -5,6 +5,8 @@
   'use strict';
 
   var TZ = 'America/Lima';
+  var LOC = window.GD_LOCALE || 'en-US';
+  var t = window.t || function (x) { var a = arguments; return String(x).replace(/\{(\d)\}/g, function (_, i) { return a[+i + 1]; }); };
   var DAY = 864e5;
 
   // ---------------------------------------------------------------- helpers
@@ -13,16 +15,17 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function fmt(v, d) {
     if (v == null || isNaN(v)) return '–';
-    return v.toLocaleString('en-US', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 });
+    return v.toLocaleString(LOC, { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 });
   }
   function signed(v, d) { return v == null ? '–' : (v > 0 ? '+' : v < 0 ? '−' : '') + fmt(Math.abs(v), d); }
   function iso(d) { return d.toISOString().slice(0, 10); }
   function utcToday() { var n = new Date(); return new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate())); }
-  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  var DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  function dShort(s) { var d = new Date(s + 'T12:00:00Z'); return MONTHS[d.getUTCMonth()] + ' ' + d.getUTCDate(); }
+  var MONTHS = Array.from({ length: 12 }, function (_, m) { return new Intl.DateTimeFormat(LOC, { month: 'short', timeZone: 'UTC' }).format(Date.UTC(2020, m, 15)); });
+  var DAYS = Array.from({ length: 7 }, function (_, i) { return new Intl.DateTimeFormat(LOC, { weekday: 'short', timeZone: 'UTC' }).format(Date.UTC(2020, 0, 5 + i)); });
+  var DFS = new Intl.DateTimeFormat(LOC, { month: 'short', day: 'numeric', timeZone: 'UTC' }), DFL = new Intl.DateTimeFormat(LOC, { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+  function dShort(s) { return DFS.format(new Date(s + 'T12:00:00Z')); }
   function dHour(t) { return dShort(t.slice(0, 10)) + ', ' + t.slice(11, 16); }
-  function dLong(s) { var d = new Date(s + 'T12:00:00Z'); return MONTHS[d.getUTCMonth()] + ' ' + d.getUTCDate() + ', ' + d.getUTCFullYear(); }
+  function dLong(s) { return DFL.format(new Date(s + 'T12:00:00Z')); }
   function fetchJSON(url, retried) {
     return fetch(url).then(function (r) {
       if (r.status === 429 && !retried) return new Promise(function (ok) { setTimeout(ok, 4000); }).then(function () { return fetchJSON(url, true); });
@@ -129,7 +132,7 @@
     if (o.now != null) {
       var nx = x(o.now).toFixed(1);
       s += '<line x1="' + nx + '" x2="' + nx + '" y1="' + m.t + '" y2="' + (m.t + ih) + '" stroke="var(--muted)"/>' +
-           '<text x="' + (+nx + 5) + '" y="' + (m.t + 4) + '" class="lbl">' + esc(o.nowLabel || 'Today') + '</text>';
+           '<text x="' + (+nx + 5) + '" y="' + (m.t + 4) + '" class="lbl">' + esc(o.nowLabel || t('Today')) + '</text>';
     }
     (o.ann || []).forEach(function (a) {
       var ax = x(a.i), ay = y(a.v);
@@ -189,7 +192,7 @@
       s += '<rect class="hit" data-i="' + i + '" x="' + (m.l + bw * i) + '" y="' + m.t + '" width="' + bw + '" height="' + ih + '" fill="transparent"/>';
     });
     s += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + (m.t + ih) + '" y2="' + (m.t + ih) + '" stroke="var(--line)"/></svg>';
-    if (maxRaw < 0.1) s += '<p class="card-sub" style="margin:6px 0 0">No rain expected this week.</p>';
+    if (maxRaw < 0.1) s += '<p class="card-sub" style="margin:6px 0 0">' + t('No rain expected this week.') + '</p>';
     box.innerHTML = s;
     var svg = box.querySelector('svg'), tip = tipFor(box);
     svg.querySelectorAll('.hit').forEach(function (el) {
@@ -327,8 +330,8 @@
 
   function buildLayerUI() {
     $('layers').innerHTML = GROUPS.map(function (g) {
-      return '<div><p class="lg-name">' + g.name + '</p><div class="chips">' + g.layers.map(function (k) {
-        return '<button class="chip" role="radio" data-k="' + k + '" aria-checked="' + (k === sat.key) + '">' + esc(LAYERS[k].label) + '</button>';
+      return '<div><p class="lg-name">' + t(g.name) + '</p><div class="chips">' + g.layers.map(function (k) {
+        return '<button class="chip" role="radio" data-k="' + k + '" aria-checked="' + (k === sat.key) + '">' + esc(t(LAYERS[k].label)) + '</button>';
       }).join('') + '</div></div>';
     }).join('');
     $('layers').addEventListener('click', function (e) {
@@ -363,9 +366,9 @@
     sat.key = key;
     document.querySelectorAll('#layers .chip').forEach(function (c) { c.setAttribute('aria-checked', c.getAttribute('data-k') === key); });
     var L0 = LAYERS[key];
-    $('layer-info').innerHTML = L0.info + '<span class="meta">' + esc(L0.meta) + '</span>';
+    $('layer-info').innerHTML = t(L0.info) + '<span class="meta">' + esc(t(L0.meta)) + '</span>';
     var lg = $('legend');
-    if (L0.legend) { lg.src = 'https://gibs.earthdata.nasa.gov/legends/' + L0.legend; lg.alt = 'Legend for ' + L0.label; lg.hidden = false; }
+    if (L0.legend) { lg.src = 'https://gibs.earthdata.nasa.gov/legends/' + L0.legend; lg.alt = t('Legend for {0}', t(L0.label)); lg.hidden = false; }
     else { lg.hidden = true; lg.removeAttribute('src'); }
     if (satNow) map.removeLayer(satNow);
     if (satCmp) map.removeLayer(satCmp);
@@ -406,7 +409,7 @@
     var frames = 14, i = frames;
     sat.playing = true; $('compare').disabled = true;
     $('play-icon').setAttribute('d', 'M7 5h4v14H7zM13 5h4v14h-4z');
-    $('play').setAttribute('aria-label', 'Stop animation');
+    $('play').setAttribute('aria-label', t('Stop animation'));
     function tick() {
       if (!sat.playing) return;
       i = i <= 0 ? frames : i - 1;
@@ -419,7 +422,7 @@
     if (!sat.playing) return;
     clearTimeout(sat.playing); sat.playing = null; $('compare').disabled = false;
     $('play-icon').setAttribute('d', 'M8 5v14l11-7z');
-    $('play').setAttribute('aria-label', 'Animate the last 14 days');
+    $('play').setAttribute('aria-label', t('Animate the last 14 days'));
     updateDates();
   }
 
@@ -430,7 +433,8 @@
     { min: 0.5, label: 'Weak El Niño' }, { min: -0.5, label: 'Neutral' }, { min: -1.0, label: 'Weak La Niña' },
     { min: -1.5, label: 'Moderate La Niña' }, { min: -Infinity, label: 'Strong La Niña' }
   ];
-  function oniClass(v) { for (var i = 0; i < ONI_CLASS.length; i++) if (v >= ONI_CLASS[i].min) return ONI_CLASS[i].label; }
+  function oniClass(v) { for (var i = 0; i < ONI_CLASS.length; i++) if (v >= ONI_CLASS[i].min) return t(ONI_CLASS[i].label); }
+  function seasonLabel(c) { return MONTHS.at((c + 10) % 12) + '–' + MONTHS.at(c % 12); }
   var SEASON_ES = { DJF: 'Dec–Feb', JFM: 'Jan–Mar', FMA: 'Feb–Apr', MAM: 'Mar–May', AMJ: 'Apr–Jun', MJJ: 'May–Jul', JJA: 'Jun–Aug', JAS: 'Jul–Sep', ASO: 'Aug–Oct', SON: 'Sep–Nov', OND: 'Oct–Dec', NDJ: 'Nov–Jan' };
 
   function loadEnso() {
@@ -441,25 +445,25 @@
       var recentMax = w.slice(-26).reduce(function (b, r) { return r[1] > b[1] ? r : b; }, w[w.length - 26]);
       var record = recentMax[1] > prev[1];
       var oni = d.oni.rows[d.oni.rows.length - 1];
-      $('kpi-n12').innerHTML = '<div class="k">Ocean off northern Peru · Niño 1+2</div>' +
+      $('kpi-n12').innerHTML = '<div class="k">' + t('Ocean off northern Peru · Niño 1+2') + '</div>' +
         '<div class="v">' + signed(last[1], 1) + '<small>°C</small></div>' +
-        '<div class="s">above normal · week of ' + dShort(last[0]) + '</div>' +
-        (record ? '<span class="badge">▲ Record since 1981 (' + signed(recentMax[1], 1) + ' °C)</span>' : '');
-      $('kpi-oni').innerHTML = '<div class="k">Official El Niño index · ONI</div>' +
+        '<div class="s">' + t('above normal · week of {0}', dShort(last[0])) + '</div>' +
+        (record ? '<span class="badge">▲ ' + t('Record since 1981 ({0} °C)', signed(recentMax[1], 1)) + '</span>' : '');
+      $('kpi-oni').innerHTML = '<div class="k">' + t('Official El Niño index · ONI') + '</div>' +
         '<div class="v">' + signed(oni[3], 2) + '<small>°C</small></div>' +
-        '<div class="s">Central Pacific · ' + SEASON_ES[oni[0]] + ' ' + oni[1] + '</div>' +
+        '<div class="s">' + t('Central Pacific · {0} {1}', seasonLabel(oni[2]), oni[1]) + '</div>' +
         '<span class="badge">' + oniClass(oni[3]) + '</span>';
       live.n12 = last[1]; live.oni = [oni[3], oniClass(oni[3])]; updateTicker(); countKpis();
       if (record) {
-        $('hero-h').innerHTML = 'Did you know Peru\'s ocean is <span class="hl">' + signed(last[1], 1) + ' °C</span> warmer than normal?';
-        $('hero-lede').innerHTML = 'The highest value in the satellite record since 1981: <strong>coastal El Niño</strong>, live. Drag the white line to compare with one year ago.';
-        $('nino-lede').innerHTML = 'Niño 1+2 reached <strong>' + signed(recentMax[1], 1) + ' °C</strong> in the week of ' + dLong(recentMax[0]) + ', above the 1982-83 peak (' + signed(prev[1], 1) + ' °C). Weekly sea surface temperature anomaly relative to normal.';
+        $('hero-h').innerHTML = t('Did you know Peru\'s ocean is <span class="hl">{0} °C</span> warmer than normal?', signed(last[1], 1));
+        $('hero-lede').innerHTML = t('The highest value in the satellite record since 1981: <strong>coastal El Niño</strong>, live. Drag the white line to compare with one year ago.');
+        $('nino-lede').innerHTML = t('Niño 1+2 reached <strong>{0} °C</strong> in the week of {1}, above the 1982-83 peak ({2} °C). Weekly sea surface temperature anomaly relative to normal.', signed(recentMax[1], 1), dLong(recentMax[0]), signed(prev[1], 1));
       }
       renderEnso();
     }).catch(function (e) {
       console.error(e);
-      ['kpi-n12', 'kpi-oni'].forEach(function (id) { $(id).innerHTML = '<div class="k">El Niño</div><div class="s">Could not load the indices.</div>'; });
-      $('enso-chart').innerHTML = '<div class="msg">Could not load the El Niño indices.</div>';
+      ['kpi-n12', 'kpi-oni'].forEach(function (id) { $(id).innerHTML = '<div class="k">El Niño</div><div class="s">' + t('Could not load the indices.') + '</div>'; });
+      $('enso-chart').innerHTML = '<div class="msg">' + t('Could not load the El Niño indices.') + '</div>';
     });
   }
 
@@ -477,7 +481,7 @@
       if (every) { if (yv !== lastY && yv % every === 0 && mo === 1) { ticks.push({ i: i, label: String(yv) }); lastY = yv; } }
       else if (r[0].slice(8, 10) <= '07' && (mo - 1) % 3 === 0) { ticks.push({ i: i, label: MONTHS[mo - 1] + (mo === 1 ? ' ' + yv : '') }); }
     });
-    var events = [['1982-09', '1983-09', '1983'], ['1997-03', '1998-09', '1997-98'], ['2017-01', '2017-06', 'Coastal 2017'], ['2023-01', '2024-03', '2023'], ['2025-06', '2027-12', 'Now']];
+    var events = [['1982-09', '1983-09', '1983'], ['1997-03', '1998-09', '1997-98'], ['2017-01', '2017-06', t('Coastal 2017')], ['2023-01', '2024-03', '2023'], ['2025-06', '2027-12', t('Now')]];
     var ann = [];
     events.forEach(function (ev) {
       var best = -1;
@@ -485,7 +489,7 @@
       if (best >= 0 && rows[best][1] >= 2) ann.push({ i: best, v: rows[best][1], label: ev[2] + ': ' + signed(rows[best][1], 1) + '°' });
     });
     lineChart($('enso-chart'), {
-      n: n, label: 'Weekly sea surface temperature anomaly in the Niño 1+2 and Niño 3.4 regions',
+      n: n, label: t('Weekly sea surface temperature anomaly in the Niño 1+2 and Niño 3.4 regions'),
       series: [
         { values: rows.map(function (r) { return r[1]; }), color: 'var(--warm)', width: n > 600 ? 1.4 : 2, diverging: true },
         { values: rows.map(function (r) { return r[2]; }), color: 'var(--ref)', width: 1.5, dash: '4 3' }
@@ -493,13 +497,13 @@
       xTicks: ticks, ann: ann, height: 300,
       tip: function (i) {
         var r = rows[i];
-        return '<b>Week of ' + dLong(r[0]) + '</b><br><i class="sw" style="background:var(--warm)"></i>Niño 1+2: ' + signed(r[1], 1) + ' °C<br>' +
+        return '<b>' + t('Week of {0}', dLong(r[0])) + '</b><br><i class="sw" style="background:var(--warm)"></i>Niño 1+2: ' + signed(r[1], 1) + ' °C<br>' +
           '<i class="sw" style="background:var(--ref)"></i>Niño 3.4: ' + signed(r[2], 1) + ' °C';
       }
     });
-    $('enso-table').innerHTML = '<table><thead><tr><th>Week</th><th class="n">Niño 1+2 (°C)</th><th class="n">Niño 3.4 (°C)</th></tr></thead><tbody>' +
+    $('enso-table').innerHTML = '<table><thead><tr><th>' + t('Week') + '</th><th class="n">Niño 1+2 (°C)</th><th class="n">Niño 3.4 (°C)</th></tr></thead><tbody>' +
       enso.weekly.rows.slice(-12).reverse().map(function (r) { return '<tr><td>' + dLong(r[0]) + '</td><td class="n">' + signed(r[1], 1) + '</td><td class="n">' + signed(r[2], 1) + '</td></tr>'; }).join('') +
-      '</tbody></table><p class="card-sub" style="margin-top:8px">Source: ' + esc(enso.source) + '. Updated: ' + dLong(enso.updated) + '.</p>';
+      '</tbody></table><p class="card-sub" style="margin-top:8px">' + t('Source: {0}. Updated: {1}.', esc(enso.source), dLong(enso.updated)) + '</p>';
   }
 
   document.querySelectorAll('#nino .seg button').forEach(function (b) {
@@ -544,30 +548,30 @@
       });
       renderRiverCards(); renderRiver(); paintRiverMarkers();
       var rising = rivers.filter(function (r) { return r.chg != null && r.chg > 10; }).length;
-      $('kpi-rivers').innerHTML = '<div class="k">Rivers with rising discharge</div>' +
-        '<div class="v">' + rising + '<small>of ' + rivers.length + '</small></div>' +
-        '<div class="s">Up more than 10% vs. 7 days ago · GloFAS</div>';
+      $('kpi-rivers').innerHTML = '<div class="k">' + t('Rivers with rising discharge') + '</div>' +
+        '<div class="v">' + rising + '<small>' + t('of {0}', rivers.length) + '</small></div>' +
+        '<div class="s">' + t('Up more than 10% vs. 7 days ago · GloFAS') + '</div>';
       live.river = [RIVERS[0].name, qfmt(rivers[0].q[rivers[0].now])]; updateTicker(); countKpis();
       if (window.gdReveal) window.gdReveal($('river-cards'));
     }).catch(function (e) {
       console.error(e);
-      $('river-cards').innerHTML = '<div class="msg">Could not load river discharge. <button type="button" id="river-retry">Retry</button></div>';
+      $('river-cards').innerHTML = '<div class="msg">' + t('Could not load river discharge.') + ' <button type="button" id="river-retry">' + t('Retry') + '</button></div>';
       $('river-retry').addEventListener('click', loadRivers);
       $('river-chart').innerHTML = '';
-      $('kpi-rivers').innerHTML = '<div class="k">Rivers</div><div class="s">GloFAS is unavailable.</div>';
+      $('kpi-rivers').innerHTML = '<div class="k">' + t('Rivers') + '</div><div class="s">' + t('GloFAS is unavailable.') + '</div>';
     });
   }
   function trend(chg) {
     if (chg == null) return '';
-    if (chg > 10) return '<span aria-hidden="true">▲</span> Up ' + fmt(chg) + '% in 7 days';
-    if (chg < -10) return '<span aria-hidden="true">▼</span> Down ' + fmt(-chg) + '% in 7 days';
-    return '<span aria-hidden="true">▬</span> Stable over 7 days';
+    if (chg > 10) return '<span aria-hidden="true">▲</span> ' + t('Up {0}% in 7 days', fmt(chg));
+    if (chg < -10) return '<span aria-hidden="true">▼</span> ' + t('Down {0}% in 7 days', fmt(-chg));
+    return '<span aria-hidden="true">▬</span> ' + t('Stable over 7 days');
   }
   function qfmt(v) { return v >= 100 ? fmt(v) : fmt(v, 1); }
   function renderRiverCards() {
     $('river-cards').innerHTML = rivers.map(function (r, i) {
       return '<button class="rcard" data-i="' + i + '" aria-pressed="' + (i === riverIdx) + '">' +
-        '<div class="rn">' + esc(RIVERS[i].name) + '</div><div class="rp">' + esc(RIVERS[i].place) + '</div>' +
+        '<div class="rn">' + esc(t(RIVERS[i].name)) + '</div><div class="rp">' + esc(RIVERS[i].place) + '</div>' +
         '<div class="rv">' + qfmt(r.q[r.now]) + ' <small>m³/s</small></div><div class="rt">' + trend(r.chg) + '</div>' +
         sparkline(r.q.slice(Math.max(0, r.now - 60), r.now + 1), css('--series-1')) + '</button>';
     }).join('');
@@ -585,33 +589,33 @@
   function renderRiver() {
     if (!rivers) return;
     var r = rivers[riverIdx], R = RIVERS[riverIdx];
-    $('river-title').textContent = R.name + ' River · ' + R.place;
-    $('river-sub').textContent = 'Today: ' + qfmt(r.q[r.now]) + ' m³/s · 90-day mean: ' + qfmt(r.mean90) + ' m³/s · forecast peak: ' + qfmt(r.fmax) + ' m³/s';
+    $('river-title').textContent = t('{0} River · {1}', t(R.name), R.place);
+    $('river-sub').textContent = t('Today: {0} m³/s · 90-day mean: {1} m³/s · forecast peak: {2} m³/s', qfmt(r.q[r.now]), qfmt(r.mean90), qfmt(r.fmax));
     var ticks = [];
     r.t.forEach(function (t, i) { if (t.slice(8, 10) === '01') ticks.push({ i: i, label: MONTHS[+t.slice(5, 7) - 1] }); });
     var lo = r.p25.map(function (v, i) { return i >= r.now ? v : null; }), hi = r.p75.map(function (v, i) { return i >= r.now ? v : null; });
     lineChart($('river-chart'), {
-      n: r.t.length, label: 'Daily discharge of the ' + R.name + ' River', now: r.now, nowLabel: 'Today',
+      n: r.t.length, label: t('Daily discharge of the {0} River', t(R.name)), now: r.now, nowLabel: t('Today'),
       series: [{ values: r.q, color: 'var(--series-1)', forecastDash: true }],
       band: { lo: lo, hi: hi }, xTicks: ticks, yMin: 0,
       tip: function (i) {
-        var s = '<b>' + dLong(r.t[i]) + (i > r.now ? ' · forecast' : '') + '</b><br>' + qfmt(r.q[i]) + ' m³/s';
-        if (i >= r.now && r.p25[i] != null) s += '<br>Likely range: ' + qfmt(r.p25[i]) + '–' + qfmt(r.p75[i]);
+        var s = '<b>' + dLong(r.t[i]) + (i > r.now ? ' · ' + t('forecast') : '') + '</b><br>' + qfmt(r.q[i]) + ' m³/s';
+        if (i >= r.now && r.p25[i] != null) s += '<br>' + t('Likely range: {0}–{1}', qfmt(r.p25[i]), qfmt(r.p75[i]));
         return s;
       }
     });
     var rowsH = '';
     for (var i = r.t.length - 1; i >= 0; i -= 1) {
-      rowsH += '<tr><td>' + dLong(r.t[i]) + '</td><td class="n">' + qfmt(r.q[i]) + '</td><td>' + (i > r.now ? 'Forecast' : 'Modelled') + '</td></tr>';
+      rowsH += '<tr><td>' + dLong(r.t[i]) + '</td><td class="n">' + qfmt(r.q[i]) + '</td><td>' + (i > r.now ? t('Forecast') : t('Modelled')) + '</td></tr>';
     }
-    $('river-table').innerHTML = '<div class="table-scroll"><table><thead><tr><th>Date</th><th class="n">Discharge (m³/s)</th><th>Type</th></tr></thead><tbody>' + rowsH + '</tbody></table></div>';
+    $('river-table').innerHTML = '<div class="table-scroll"><table><thead><tr><th>' + t('Date') + '</th><th class="n">' + t('Discharge (m³/s)') + '</th><th>' + t('Type') + '</th></tr></thead><tbody>' + rowsH + '</tbody></table></div>';
   }
   function paintRiverMarkers() {
     riverMarkers.clearLayers();
     RIVERS.forEach(function (R, i) {
       var r = rivers && rivers[i];
       var m = L.circleMarker([R.lat, R.lon], { radius: i === riverIdx ? 9 : 7, weight: 2, color: '#ffffff', fillColor: '#3987e5', fillOpacity: 1 })
-        .bindTooltip(R.name + ' River' + (r ? ': ' + qfmt(r.q[r.now]) + ' m³/s' : ''), { className: 'gd-tip', direction: 'top', offset: [0, -8] })
+        .bindTooltip(t('{0} River', t(R.name)) + (r ? ': ' + qfmt(r.q[r.now]) + ' m³/s' : ''), { className: 'gd-tip', direction: 'top', offset: [0, -8] })
         .on('click', function () { selectRiver(i, true); });
       riverMarkers.addLayer(m);
     });
@@ -686,19 +690,19 @@
       var now = limaHour();
       city.air = (Array.isArray(res[0]) ? res[0] : [res[0]]).map(function (a) { return summarizeAir(a.hourly, now); });
       city.wx = (Array.isArray(res[1]) ? res[1] : [res[1]]).map(function (w) { return w.daily; });
-      $('updated').textContent = 'Updated: ' + new Date().toLocaleString('en-US', { timeZone: TZ, day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' (Lima time)';
+      $('updated').textContent = t('Updated: {0} (Lima time)', new Date().toLocaleString(LOC, { timeZone: TZ, day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }));
       var over = city.air.filter(function (a) { return a.pm25 != null && a.pm25 > WHO_PM25; }).length;
       var valid = city.air.filter(function (a) { return a.pm25 != null; }).length;
-      $('kpi-air').innerHTML = '<div class="k">Cities above the WHO air guideline</div>' +
-        '<div class="v">' + over + '<small>of ' + valid + '</small></div><div class="s">24 h mean PM2.5 above 15 µg/m³ · CAMS</div>';
-      live.air = over + ' of ' + valid; updateTicker(); countKpis();
+      $('kpi-air').innerHTML = '<div class="k">' + t('Cities above the WHO air guideline') + '</div>' +
+        '<div class="v">' + over + '<small>' + t('of {0}', valid) + '</small></div><div class="s">' + t('24 h mean PM2.5 above 15 µg/m³ · CAMS') + '</div>';
+      live.air = t('{0} of {1}', over, valid); updateTicker(); countKpis();
       selectCity(city.idx);
     }).catch(function (e) {
       console.error(e);
-      var html = '<div class="msg">Could not load air quality and weather data.<br><button type="button" class="retry">Retry</button></div>';
+      var html = '<div class="msg">' + t('Could not load air quality and weather data.') + '<br><button type="button" class="retry">' + t('Retry') + '</button></div>';
       ['tiles', 'pm-chart', 'rain-chart'].forEach(function (id) { $(id).innerHTML = html; });
-      $('city-title').textContent = 'Data unavailable';
-      $('kpi-air').innerHTML = '<div class="k">Air quality</div><div class="s">CAMS is unavailable.</div>';
+      $('city-title').textContent = t('Data unavailable');
+      $('kpi-air').innerHTML = '<div class="k">' + t('Air quality') + '</div><div class="s">' + t('CAMS is unavailable.') + '</div>';
       document.querySelectorAll('.retry').forEach(function (b) { b.addEventListener('click', loadCities); });
     });
   }
@@ -718,7 +722,7 @@
       var m = L.circleMarker([c.lat, c.lon], {
         radius: i === city.idx ? 8 : 6, weight: 2, color: i === city.idx ? '#ffffff' : '#0b1411',
         fillColor: st ? css('--' + st.key) : '#8a958f', fillOpacity: 1
-      }).bindTooltip(c.name + (a && a.pm25 != null ? ' · PM2.5 ' + fmt(a.pm25) + ' µg/m³ (' + st.label.toLowerCase() + ')' : ''), { className: 'gd-tip', direction: 'top', offset: [0, -6] })
+      }).bindTooltip(c.name + (a && a.pm25 != null ? ' · PM2.5 ' + fmt(a.pm25) + ' µg/m³ (' + t(st.label).toLowerCase() + ')' : ''), { className: 'gd-tip', direction: 'top', offset: [0, -6] })
         .on('click', function () { selectCity(i, true); });
       cityMarkers.addLayer(m);
     });
@@ -729,42 +733,42 @@
   function renderNow() {
     var c = CITIES[city.idx], a = city.air[city.idx], w = city.wx[city.idx];
     $('city-title').textContent = c.name;
-    $('city-sub').textContent = c.region + ' region · now and today';
+    $('city-sub').textContent = t('{0} region · now and today', c.region);
     var pmSt = a.pm25 != null ? pmStatus(a.pm25) : null, uv = w.uv_index_max[0], uvSt = uv != null ? uvStatus(uv) : null;
     $('tiles').innerHTML = '<div class="tiles">' +
-      tile('PM2.5 · 24 h mean', fmt(a.pm25), 'µg/m³',
-        pmSt ? '<span class="status">' + swatch(pmSt) + pmSt.label + ' air · ' + pmSt.long + '</span>' : '<span class="note">Not enough data</span>',
+      tile(t('PM2.5 · 24 h mean'), fmt(a.pm25), 'µg/m³',
+        pmSt ? '<span class="status">' + swatch(pmSt) + t('{0} air · {1}', t(pmSt.label), t(pmSt.long)) + '</span>' : '<span class="note">' + t('Not enough data') + '</span>',
         'PM10: ' + fmt(a.pm10) + ' µg/m³') +
-      tile('Max UV index today', fmt(uv, 1), '', uvSt ? '<span class="status">' + swatch({ key: uvSt.key }) + uvSt.label + '</span>' : '',
-        uv >= 8 ? 'Avoid the sun from 10 am to 4 pm' : uv >= 3 ? 'Wear sunscreen' : 'Minimal protection needed') +
-      tile('Rain today', fmt(w.precipitation_sum[0], 1), 'mm', '',
-        'Max probability: ' + fmt(w.precipitation_probability_max[0]) + '% · ' + fmt(w.temperature_2m_min[0]) + '° to ' + fmt(w.temperature_2m_max[0]) + ' °C') +
+      tile(t('Max UV index today'), fmt(uv, 1), '', uvSt ? '<span class="status">' + swatch({ key: uvSt.key }) + t(uvSt.label) + '</span>' : '',
+        uv >= 8 ? t('Avoid the sun from 10 am to 4 pm') : uv >= 3 ? t('Wear sunscreen') : t('Minimal protection needed')) +
+      tile(t('Rain today'), fmt(w.precipitation_sum[0], 1), 'mm', '',
+        t('Max probability: {0}% · {1}° to {2} °C', fmt(w.precipitation_probability_max[0]), fmt(w.temperature_2m_min[0]), fmt(w.temperature_2m_max[0]))) +
       '</div>';
   }
   function renderPM() {
     var a = city.air[city.idx], box = $('pm-chart');
-    if (a.series.filter(function (p) { return p.v != null; }).length < 2) { box.innerHTML = '<div class="msg">No hay datos horarios de PM2.5 para esta ciudad.</div>'; $('pm-table').innerHTML = ''; return; }
+    if (a.series.filter(function (p) { return p.v != null; }).length < 2) { box.innerHTML = '<div class="msg">' + t('No hourly PM2.5 data for this city.') + '</div>'; $('pm-table').innerHTML = ''; return; }
     var narrow = (box.clientWidth || 600) < 420;
     var ticks = [];
     a.series.forEach(function (p, i) { if (+p.t.slice(11, 13) % (narrow ? 12 : 6) === 0) ticks.push({ i: i, label: p.t.slice(11, 16) }); });
     lineChart(box, {
-      n: a.series.length, label: 'Hourly PM2.5 in ' + CITIES[city.idx].name, now: a.nowIndex, nowLabel: 'Now', height: 220,
+      n: a.series.length, label: t('Hourly PM2.5 in {0}', CITIES[city.idx].name), now: a.nowIndex, nowLabel: t('Now'), height: 220,
       series: [{ values: a.series.map(function (p) { return p.v; }), color: 'var(--series-1)', forecastDash: true }],
-      refs: [{ v: WHO_PM25, label: 'WHO 15' }, { v: ECA_PM25, label: 'Peru 50' }], xTicks: ticks, yMin: 0,
-      tip: function (i) { var p = a.series[i]; return '<b>' + fmt(p.v, 1) + ' µg/m³</b><br>' + dHour(p.t) + (i > a.nowIndex ? ' · forecast' : ''); }
+      refs: [{ v: WHO_PM25, label: t('WHO 15') }, { v: ECA_PM25, label: t('Peru 50') }], xTicks: ticks, yMin: 0,
+      tip: function (i) { var p = a.series[i]; return '<b>' + fmt(p.v, 1) + ' µg/m³</b><br>' + dHour(p.t) + (i > a.nowIndex ? ' · ' + t('forecast') : ''); }
     });
-    $('pm-table').innerHTML = '<div class="table-scroll"><table><thead><tr><th>Time</th><th class="n">PM2.5 (µg/m³)</th><th>Type</th></tr></thead><tbody>' +
-      a.series.map(function (p, i) { return '<tr><td>' + dHour(p.t) + '</td><td class="n">' + fmt(p.v, 1) + '</td><td>' + (i > a.nowIndex ? 'Forecast' : 'Estimated') + '</td></tr>'; }).join('') +
+    $('pm-table').innerHTML = '<div class="table-scroll"><table><thead><tr><th>' + t('Time') + '</th><th class="n">PM2.5 (µg/m³)</th><th>' + t('Type') + '</th></tr></thead><tbody>' +
+      a.series.map(function (p, i) { return '<tr><td>' + dHour(p.t) + '</td><td class="n">' + fmt(p.v, 1) + '</td><td>' + (i > a.nowIndex ? t('Forecast') : t('Estimated')) + '</td></tr>'; }).join('') +
       '</tbody></table></div>';
   }
   function renderRain() {
     var w = city.wx[city.idx];
-    var labels = w.time.map(function (t, i) { if (i === 0) return 'Today'; var d = new Date(t + 'T12:00:00Z'); return DAYS[d.getUTCDay()] + ' ' + d.getUTCDate(); });
+    var labels = w.time.map(function (t, i) { if (i === 0) return t('Today'); var d = new Date(t + 'T12:00:00Z'); return DAYS[d.getUTCDay()] + ' ' + d.getUTCDate(); });
     barChart($('rain-chart'), {
-      values: w.precipitation_sum, labels: labels, label: 'Daily rainfall in ' + CITIES[city.idx].name,
-      tip: function (i) { return '<b>' + labels[i] + ': ' + fmt(w.precipitation_sum[i], 1) + ' mm</b><br>Max probability: ' + fmt(w.precipitation_probability_max[i]) + '%'; }
+      values: w.precipitation_sum, labels: labels, label: t('Daily rainfall in {0}', CITIES[city.idx].name),
+      tip: function (i) { return '<b>' + labels[i] + ': ' + fmt(w.precipitation_sum[i], 1) + ' mm</b><br>' + t('Max probability: {0}%', fmt(w.precipitation_probability_max[i])); }
     });
-    $('rain-table').innerHTML = '<table><thead><tr><th>Day</th><th class="n">Rain (mm)</th><th class="n">Prob. (%)</th><th class="n">Max UV</th></tr></thead><tbody>' +
+    $('rain-table').innerHTML = '<table><thead><tr><th>' + t('Day') + '</th><th class="n">' + t('Rain (mm)') + '</th><th class="n">' + t('Prob. (%)') + '</th><th class="n">' + t('Max UV') + '</th></tr></thead><tbody>' +
       labels.map(function (l, i) { return '<tr><td>' + l + '</td><td class="n">' + fmt(w.precipitation_sum[i], 1) + '</td><td class="n">' + fmt(w.precipitation_probability_max[i]) + '</td><td class="n">' + fmt(w.uv_index_max[i], 1) + '</td></tr>'; }).join('') +
       '</tbody></table>';
   }
@@ -798,7 +802,7 @@
     var an = T.mean.map(function (v) { return v == null ? null : v - t0; });
     var lim = Math.max.apply(null, an.filter(function (x) { return x != null; }).map(Math.abs)) || 1;
     var n = an.length, sw = W / n, nowI = new Date().getUTCFullYear() - firstYear;
-    var svg = '<svg viewBox="0 0 ' + W + ' ' + (H + mb) + '" role="img" aria-label="Warming stripes for ' + esc(city) + ', ' + T.years[0] + '–' + T.years[n - 1] + '">';
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + (H + mb) + '" role="img" aria-label="' + esc(t('Warming stripes for {0}, {1}–{2}', city, T.years[0], T.years[n - 1])) + '">';
     an.forEach(function (a, i) {
       if (a == null) return;
       svg += '<rect data-i="' + i + '" x="' + (i * sw).toFixed(2) + '" y="0" width="' + (sw + 0.6).toFixed(2) + '" height="' + H + '" fill="' + stripeColor(a, lim) + '"/>';
@@ -806,18 +810,18 @@
     if (nowI > 0 && nowI < n) {
       var nx = (nowI * sw).toFixed(1);
       svg += '<line x1="' + nx + '" x2="' + nx + '" y1="0" y2="' + H + '" stroke="#fff" stroke-width="2"/>' +
-        '<text x="' + (+nx + 6) + '" y="16" class="stripe-lbl">Today · projections →</text>';
+        '<text x="' + (+nx + 6) + '" y="16" class="stripe-lbl">' + t('Today · projections →') + '</text>';
     }
     T.years.forEach(function (y, i) { if (y % 10 === 0) svg += '<text x="' + (i === 0 ? 0 : i * sw + sw / 2) + '" y="' + (H + 16) + '" text-anchor="' + (i === 0 ? 'start' : 'middle') + '">' + y + '</text>'; });
     svg += '</svg>';
     box.innerHTML = svg;
-    $('stripes-title').textContent = 'Warming stripes · ' + city;
+    $('stripes-title').textContent = t('Warming stripes · {0}', city);
     $('stripes-legend').innerHTML = '<span>' + signed(-lim, 1) + ' °C</span><i style="background:linear-gradient(90deg,' + STRIPES.join(',') + ')"></i><span>' + signed(lim, 1) + ' °C</span>';
     var svgEl = box.querySelector('svg'), tip = tipFor(box);
     svgEl.addEventListener('pointermove', function (e) {
       var r = svgEl.getBoundingClientRect(), i = Math.max(0, Math.min(n - 1, Math.floor((e.clientX - r.left) / r.width * n)));
       if (an[i] == null) return;
-      tip.innerHTML = '<b>' + T.years[i] + (i > nowI ? ' · projection' : '') + '</b><br>' + signed(an[i], 2) + ' °C vs 1981–2010';
+      tip.innerHTML = '<b>' + T.years[i] + (i > nowI ? ' · ' + t('projection') : '') + '</b><br>' + t('{0} °C vs 1981–2010', signed(an[i], 2));
       tip.style.left = Math.max(70, Math.min(r.width - 70, (i + 0.5) / n * r.width)) + 'px';
       tip.style.top = '8px'; tip.style.opacity = 1;
     });
@@ -831,10 +835,10 @@
     var t0 = avgYears(T, B[0], B[1]), t1 = avgYears(T, 2040, 2049), p0 = avgYears(P, B[0], B[1]), p1 = avgYears(P, 2040, 2049);
     var dp = p0 ? (p1 - p0) / p0 * 100 : null;
     $('proj-kpis').innerHTML =
-      '<div class="proj-kpi"><div class="k">' + esc(proj.city) + ' · warming by the 2040s</div><div class="v">' + signed(t1 - t0, 1) + '<small>°C</small></div>' +
-      '<div class="s">2040–2049 vs ' + B[0] + '–' + B[1] + ' (' + fmt(t0, 1) + ' → ' + fmt(t1, 1) + ' °C)</div></div>' +
-      '<div class="proj-kpi"><div class="k">Rainfall change by the 2040s</div><div class="v">' + signed(dp, 0) + '<small>%</small></div>' +
-      '<div class="s">2040–2049 vs ' + B[0] + '–' + B[1] + ' · relative change; models often disagree on rainfall</div></div>';
+      '<div class="proj-kpi"><div class="k">' + esc(t('{0} · warming by the 2040s', proj.city)) + '</div><div class="v">' + signed(t1 - t0, 1) + '<small>°C</small></div>' +
+      '<div class="s">' + t('2040–2049 vs {0}–{1} ({2} → {3} °C)', B[0], B[1], fmt(t0, 1), fmt(t1, 1)) + '</div></div>' +
+      '<div class="proj-kpi"><div class="k">' + t('Rainfall change by the 2040s') + '</div><div class="v">' + signed(dp, 0) + '<small>%</small></div>' +
+      '<div class="s">' + t('2040–2049 vs {0}–{1} · relative change; models often disagree on rainfall', B[0], B[1]) + '</div></div>';
     var pct = function (x) { return x == null || !p0 ? null : (x - p0) / p0 * 100; };
     var S = v === 0 ? T : { years: P.years, mean: P.mean.map(pct), lo: P.lo.map(pct), hi: P.hi.map(pct) };
     renderStripes(T, t0, proj.city, d.first_year);
@@ -842,22 +846,22 @@
     var nowI = new Date().getUTCFullYear() - d.first_year;
     var ticks = S.years.map(function (y, i) { return y % 10 === 0 ? { i: i, label: String(y) } : null; }).filter(Boolean);
     lineChart($('proj-chart'), {
-      n: S.years.length, label: (v === 0 ? 'Annual mean temperature' : 'Annual rainfall change vs 1981–2010') + ' in ' + proj.city + ', 1960–2049',
+      n: S.years.length, label: t('{0} in {1}, 1960–2049', v === 0 ? t('Annual mean temperature') : t('Annual rainfall change vs 1981–2010'), proj.city),
       series: [{ values: S.mean, color: 'var(--series-1)', width: 2.2 }],
-      band: { lo: S.lo, hi: S.hi }, refs: [{ v: base, label: B[0] + '–' + B[1] + (v === 0 ? ' avg' : ' baseline') }],
-      now: nowI >= 0 && nowI < S.years.length ? nowI : null, nowLabel: 'Today', xTicks: ticks, yMin: v === 0 ? Math.floor(Math.min.apply(null, S.lo.filter(function (x) { return x != null; })) - 1) : null,
+      band: { lo: S.lo, hi: S.hi }, refs: [{ v: base, label: v === 0 ? t('{0}–{1} avg', B[0], B[1]) : t('{0}–{1} baseline', B[0], B[1]) }],
+      now: nowI >= 0 && nowI < S.years.length ? nowI : null, nowLabel: t('Today'), xTicks: ticks, yMin: v === 0 ? Math.floor(Math.min.apply(null, S.lo.filter(function (x) { return x != null; })) - 1) : null,
       tip: function (i) {
         var f = v === 0 ? function (x) { return fmt(x, 1); } : function (x) { return signed(x, 0); };
-        return '<b>' + S.years[i] + '</b><br>Models average: ' + f(S.mean[i]) + ' ' + unit +
-          (S.lo[i] != null ? '<br>Range: ' + f(S.lo[i]) + ' to ' + f(S.hi[i]) + ' ' + unit : '');
+        return '<b>' + S.years[i] + '</b><br>' + t('Models average: {0} {1}', f(S.mean[i]), unit) +
+          (S.lo[i] != null ? '<br>' + t('Range: {0} to {1} {2}', f(S.lo[i]), f(S.hi[i]), unit) : '');
       }
     });
     var rows = '';
     for (var y0 = d.first_year; y0 <= d.last_year; y0 += 10) {
       var pd = avgYears(P, y0, y0 + 9);
-      rows += '<tr><td>' + y0 + 's</td><td class="n">' + fmt(avgYears(T, y0, y0 + 9), 1) + '</td><td class="n">' + signed(p0 ? (pd - p0) / p0 * 100 : null, 0) + '</td></tr>';
+      rows += '<tr><td>' + t('{0}s', y0) + '</td><td class="n">' + fmt(avgYears(T, y0, y0 + 9), 1) + '</td><td class="n">' + signed(p0 ? (pd - p0) / p0 * 100 : null, 0) + '</td></tr>';
     }
-    $('proj-table').innerHTML = '<table><thead><tr><th>Decade</th><th class="n">Mean temperature (°C)</th><th class="n">Rainfall vs 1981–2010 (%)</th></tr></thead><tbody>' + rows + '</tbody></table>';
+    $('proj-table').innerHTML = '<table><thead><tr><th>' + t('Decade') + '</th><th class="n">' + t('Mean temperature (°C)') + '</th><th class="n">' + t('Rainfall vs 1981–2010 (%)') + '</th></tr></thead><tbody>' + rows + '</tbody></table>';
   }
   function loadProj() {
     return fetchJSON('data/climate.json').then(function (d) {
@@ -894,15 +898,15 @@
   }
   function updateTicker() {
     var items = [];
-    if (live.n12) items.push(['Niño 1+2', signed(live.n12, 1) + ' °C above normal']);
-    if (live.oni) items.push(['El Niño index (ONI)', signed(live.oni[0], 2) + ' °C · ' + live.oni[1]]);
-    if (live.river) items.push([live.river[0] + ' River', live.river[1] + ' m³/s today']);
-    if (live.air) items.push(['Air quality', live.air + ' cities above the WHO PM2.5 guideline']);
-    if (live.proj) items.push([live.proj[0] + ' by the 2040s', signed(live.proj[1], 1) + ' °C warmer (CMIP6)']);
+    if (live.n12) items.push(['Niño 1+2', t('{0} °C above normal', signed(live.n12, 1))]);
+    if (live.oni) items.push([t('El Niño index (ONI)'), signed(live.oni[0], 2) + ' °C · ' + live.oni[1]]);
+    if (live.river) items.push([t('{0} River', t(live.river[0])), t('{0} m³/s today', live.river[1])]);
+    if (live.air) items.push([t('Air quality'), t('{0} cities above the WHO PM2.5 guideline', live.air)]);
+    if (live.proj) items.push([t('{0} by the 2040s', live.proj[0]), t('{0} °C warmer (CMIP6)', signed(live.proj[1], 1))]);
     if (!items.length) return;
     var one = items.map(function (it) { return '<span class="tk-item"><b>' + esc(it[0]) + '</b> ' + esc(it[1]) + '</span>'; }).join('<span class="tk-dot" aria-hidden="true">●</span>');
-    $('ticker-track').innerHTML = '<span class="tk-live"><i aria-hidden="true"></i>LIVE</span>' + one +
-      '<span class="tk-copy" aria-hidden="true"><span class="tk-dot">●</span><span class="tk-live"><i></i>LIVE</span>' + one + '</span>';
+    $('ticker-track').innerHTML = '<span class="tk-live"><i aria-hidden="true"></i>' + t('LIVE') + '</span>' + one +
+      '<span class="tk-copy" aria-hidden="true"><span class="tk-dot">●</span><span class="tk-live"><i></i>' + t('LIVE') + '</span>' + one + '</span>';
     $('ticker').hidden = false;
   }
 
@@ -910,11 +914,11 @@
   function renderProof() {
     var sats = 'GHRSST · GPM · MODIS · VIIRS · SMAP';
     $('proof').innerHTML =
-      '<div><b>' + Object.keys(LAYERS).length + '</b><span>daily satellite layers</span></div>' +
-      '<div><b>' + (CITIES.length + RIVERS.length) + '</b><span>cities and rivers monitored</span></div>' +
-      '<div><b>' + (new Date().getUTCFullYear() - 1981) + '</b><span>years of El Niño data</span></div>' +
-      '<div><b>0</b><span>backend servers: static site on open data</span></div>' +
-      '<div style="flex-basis:100%"><span>Satellites and models: ' + sats + ' · Copernicus CAMS and GloFAS · NOAA CPC</span></div>';
+      '<div><b>' + Object.keys(LAYERS).length + '</b><span>' + t('daily satellite layers') + '</span></div>' +
+      '<div><b>' + (CITIES.length + RIVERS.length) + '</b><span>' + t('cities and rivers monitored') + '</span></div>' +
+      '<div><b>' + (new Date().getUTCFullYear() - 1981) + '</b><span>' + t('years of El Niño data') + '</span></div>' +
+      '<div><b>0</b><span>' + t('backend servers: static site on open data') + '</span></div>' +
+      '<div style="flex-basis:100%"><span>' + t('Satellites and models: {0} · Copernicus CAMS and GloFAS · NOAA CPC', sats) + '</span></div>';
   }
 
   // ---------------------------------------------------------------- init
