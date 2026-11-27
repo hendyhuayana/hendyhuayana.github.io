@@ -102,14 +102,14 @@
     function add(group, icon, title, sub, action, extra) { out.push({ g: group, icon: icon, title: title, sub: sub || '', act: action, key: fold(title + ' ' + (sub || '') + ' ' + (extra || '')) }); }
     function link(h) { return function () { go(h.charAt(0) === '#' && !isHome ? withLang(home + h) : (h.charAt(0) === '#' ? h : withLang(h))); }; }
     var S = t('Sections');
-    [['#satellite', 'Satellite map', 'map space nasa'], ['#expertise', 'Expertise', 'skills areas'], ['#nino', 'Ocean & climate', 'el nino enso sea'],
+    [['#satellite', 'Satellite map', 'map space nasa'], ['#expertise', 'My topics', 'expertise skills areas passion'], ['#nino', 'Ocean & climate', 'el nino enso sea'],
      ['#rivers', 'Rivers', 'water discharge flood'], ['#projections', 'Climate projections', 'cmip6 2050 warming stripes'],
      ['#cities', 'Air & weather', 'pm2.5 uv rain air quality'], ['#about', 'About', 'cv profile'], ['#experience', 'Experience', 'jobs oefa work'],
      ['#skills', 'Skills & tools', 'python arcgis gee'], ['#contact', 'Contact', 'email linkedin collaboration papers conferences']].forEach(function (s) {
       add(S, 'section', t(s[1]), '', link(s[0]), s[1] + ' ' + s[2]);
     });
     [['xp-climate', 'Climate Risk'], ['xp-geo', 'Geospatial Analysis'], ['xp-rs', 'Remote Sensing'], ['xp-ews', 'Early Warning'], ['xp-air', 'Air Quality'], ['xp-fire', 'Wildfire']].forEach(function (s) {
-      add(t('Expertise'), 'section', t(s[1]), t('Areas of expertise'), link('#' + s[0]), s[1]);
+      add(t('My topics'), 'section', t(s[1]), t('Topics I love'), link('#' + s[0]), s[1]);
     });
     var R = t('Research');
     add(R, 'research', t('Scientific research'), '', function () { location.href = withLang(BASE + 'research/'); }, 'Research');
@@ -530,7 +530,7 @@
     // desktop menu with dropdowns (the phone keeps the ☰ menu)
     var chev = '<svg class="tm-chev" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
     var MENU = [
-      { label: 'Expertise', items: [['#xp-climate', 'Climate Risk'], ['#xp-geo', 'Geospatial Analysis'], ['#xp-rs', 'Remote Sensing'], ['#xp-ews', 'Early Warning'], ['#xp-air', 'Air Quality'], ['#xp-fire', 'Wildfire']] },
+      { label: 'My topics', items: [['#xp-climate', 'Climate Risk'], ['#xp-geo', 'Geospatial Analysis'], ['#xp-rs', 'Remote Sensing'], ['#xp-ews', 'Early Warning'], ['#xp-air', 'Air Quality'], ['#xp-fire', 'Wildfire']] },
       { label: 'Observatory', items: [['#satellite', 'Satellite map'], ['#nino', 'Ocean & climate'], ['#rivers', 'Rivers'], ['#projections', 'Climate projections'], ['#cities', 'Air & weather']] },
       { label: 'Research', items: [['research/', 'Scientific research'], ['research/quiulacocha/', 'Quiulacocha case study']] },
       { label: 'About', href: '#about' }
