@@ -437,7 +437,7 @@ select { background-color: #153d2c; border-color: rgba(255,255,255,.18); }
 
 [hidden] { display: none !important; }
 
-.demo-banner { position: sticky; top: 64px; z-index: 50; background: #ff2a2a; color: #fff; font: 900 1.05rem/1.2 var(--display); letter-spacing: .05em; text-align: center; padding: 10px 12px; border-radius: 12px; margin-bottom: 18px; }
+.demo-banner { position: sticky; top: 66px; z-index: 50; background: #ff2a2a; color: #fff; font: 900 1.05rem/1.2 var(--display); letter-spacing: .05em; text-align: center; padding: 10px 12px; border-radius: 12px; margin-bottom: 18px; }
 
 /* Research hub */
 .research-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
@@ -834,17 +834,6 @@ html.pal-open { overflow: hidden; }
 
 
 /* ===== Top bar: announcement strip + desktop menu with dropdowns (fixed while scrolling) ===== */
-html.has-bar { scroll-padding-top: 108px; }
-.ann-bar { position: relative; display: flex; align-items: center; justify-content: center; min-height: 38px; padding: 6px 48px; background: var(--lime); color: var(--on-lime); }
-.ann-bar p { margin: 0; font: 500 .84rem/1.35 var(--font); text-align: center; }
-.ann-bar a { color: var(--on-lime); font-weight: 800; text-decoration: none; margin-left: 10px; white-space: nowrap; }
-.ann-bar a:hover { text-decoration: underline; }
-.ann-dot { display: inline-block; width: 8px; height: 8px; margin-right: 10px; border-radius: 50%; background: var(--on-lime); vertical-align: 1px; animation: pulse-d 2s infinite; }
-@keyframes pulse-d { 50% { opacity: .35; } }
-.ann-x { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 50%; background: transparent; color: var(--on-lime); cursor: pointer; }
-.ann-x svg { width: 16px; height: 16px; }
-.ann-x:hover { background: rgba(15,45,31,.12); }
-.ann-x:focus-visible, .ann-bar a:focus-visible { outline: 2px solid var(--on-lime); outline-offset: 2px; }
 .nav { background: rgba(10,33,22,.97); }
 .nav-in { height: 66px; }
 /* desktop: dropdown menu next to the logo, actions on the right */
@@ -875,12 +864,8 @@ html.has-bar { scroll-padding-top: 108px; }
 @media (max-width: 720px) {
   .topmenu, .tm-cta { display: none; }
   .nav-in { height: 60px; }
-  html.has-bar .nav nav { top: calc(60px + var(--ann-h, 54px)); }
-  .ann-bar { padding: 7px 40px 7px 14px; }
-  .ann-bar p { font-size: .78rem; }
 }
-@media (prefers-reduced-motion: reduce) { .ann-dot { animation: none; } .tm-panel, .tm-chev { transition: none; } }
-.has-bar .demo-banner { top: 106px; }
+@media (prefers-reduced-motion: reduce) { .tm-panel, .tm-chev { transition: none; } }
 
 .nav .topmenu a.tm-top { color: #fff; }
 .nav .topmenu .tm-item.is-current > a.tm-top, .nav .topmenu a.tm-top[aria-current] { color: var(--lime); }
@@ -891,3 +876,4 @@ html.has-bar { scroll-padding-top: 108px; }
 .nav-in > .lang-switch { order: 6; } .nav-in > .tm-cta { order: 7; } .nav-in > .menu-btn { order: 8; } .nav-in > #site-nav { order: 9; }
 .nav-in > .lang-switch { margin-left: 8px; }
 .nav .topmenu .tm-item.is-page > .tm-top { color: var(--lime); }
+@media (max-width: 720px) { .demo-banner { top: 60px; } }

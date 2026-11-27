@@ -526,25 +526,7 @@
     var home = isHome ? '' : BASE + 'index.html';
     function href(h) { return h.charAt(0) === '#' ? (isHome ? h : withLang(home + h)) : withLang(BASE + h); }
 
-    // 1) announcement strip (can be dismissed; remembered)
-    var hidden = false; try { hidden = localStorage.getItem('gd-bar') === 'off'; } catch (e) {}
-    if (!hidden) {
-      var bar = el('div', 'ann-bar');
-      bar.innerHTML = '<p><span class="ann-dot" aria-hidden="true"></span>' + esc(t('Open to international roles and collaborations.')) +
-        ' <a href="' + href('#contact') + '">' + esc(t('Get in touch')) + ' <span aria-hidden="true">›</span></a></p>' +
-        '<button type="button" class="ann-x" aria-label="' + esc(t('Close')) + '"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>';
-      header.insertBefore(bar, header.firstChild);
-      document.documentElement.classList.add('has-bar');
-      var setH = function () { document.documentElement.style.setProperty('--ann-h', bar.offsetHeight + 'px'); };
-      setH(); window.addEventListener('resize', setH);
-      bar.querySelector('a').addEventListener('click', function (e) { if (isHome) { e.preventDefault(); scrollToId('contact'); } });
-      bar.querySelector('.ann-x').addEventListener('click', function () {
-        bar.remove(); document.documentElement.classList.remove('has-bar');
-        try { localStorage.setItem('gd-bar', 'off'); } catch (e) {}
-      });
-    }
-
-    // 2) desktop menu with dropdowns (the phone keeps the ☰ menu)
+    // desktop menu with dropdowns (the phone keeps the ☰ menu)
     var chev = '<svg class="tm-chev" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
     var MENU = [
       { label: 'Expertise', items: [['#xp-climate', 'Climate Risk'], ['#xp-geo', 'Geospatial Analysis'], ['#xp-rs', 'Remote Sensing'], ['#xp-ews', 'Early Warning'], ['#xp-air', 'Air Quality'], ['#xp-fire', 'Wildfire']] },
