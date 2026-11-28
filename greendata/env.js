@@ -246,21 +246,87 @@
 
   // ------------------------------------------------------------------ wiring
   var LOADERS = { biota: [loadBiota, renderBiota], soil: [loadSoil, renderSoil], air: [loadAir, renderAir], water: [loadWater, renderWater] };
-  var seq = 0;
+  // ------------------------------------------------------------------ place postcard: every component at a glance, plus "compare"
+  function load(tab) {
+    var k = key(tab);
+    if (cache[k]) return Promise.resolve(cache[k]);
+    return LOADERS[tab][0]().then(function (d) { cache[k] = d; return d; });
+  }
+  function summary(tab, d) {
+    try {
+      if (tab === 'biota') return { n: d.total, photos: d.top.slice(0, 4), groups: d.groups.slice().sort(function (x, y) { return y.count - x.count; }).slice(0, 2) };
+      if (tab === 'soil') return d && d.phh2o != null ? { ph: d.phh2o, soc: d.soc, tex: texture(d) } : null;
+      if (tab === 'air') { var c = d.current || {}; return c.pm2_5 != null ? { pm: c.pm2_5, uv: c.uv_index } : null; }
+      if (tab === 'water') {
+        var q = d.flood.river_discharge, today = new Date().toISOString().slice(0, 10), now = 0;
+        d.flood.time.forEach(function (x, i) { if (x <= today) now = i; });
+        var rain = (d.rain.precipitation_sum || []).reduce(function (a, v) { return a + (v || 0); }, 0);
+        return { q: q[now], rain: rain };
+      }
+    } catch (e) { return null; }
+  }
+  var TITLES = { biota: 'Life', soil: 'Soil', air: 'Air', water: 'Water' };
+  var ICONS = {
+    biota: '<path d="M12 21c-5 0-8-3.5-8-8 6 0 8 3 8 8zM12 21c0-6 3-10 9-10 0 6-4 10-9 10z"/>',
+    soil: '<path d="M3 9h18M3 14h18M3 19h18"/><circle cx="8" cy="5" r="1.5"/><circle cx="15" cy="5" r="1.5"/>',
+    air: '<path d="M4 9h11a3 3 0 1 0-3-3M4 15h15a3 3 0 1 1-3 3"/>',
+    water: '<path d="M12 3s7 7.5 7 12a7 7 0 1 1-14 0c0-4.5 7-12 7-12z"/>'
+  };
+  function headline(tab, s) {
+    if (!s) return '<p class="pc-none">' + esc(t('No data here')) + '</p>';
+    if (tab === 'biota') return '<p class="pc-big">' + fmt(s.n) + '<small>' + esc(t('species recorded')) + '</small></p>' +
+      '<div class="pc-photos">' + s.photos.map(function (x) { var ph = x.taxon.default_photo; return ph ? '<img src="' + esc(ph.square_url || ph.url) + '" alt="' + esc(x.taxon.preferred_common_name || x.taxon.name) + '" title="' + esc(x.taxon.preferred_common_name || x.taxon.name) + '" loading="lazy">' : ''; }).join('') + '</div>';
+    if (tab === 'soil') return '<p class="pc-big">pH ' + fmt(s.ph, 1) + '<small>' + esc(t(phClass(s.ph))) + ' · ' + esc(t(s.tex)) + '</small></p>';
+    if (tab === 'air') return '<p class="pc-big">' + fmt(s.pm) + '<small>µg/m³ PM2.5 · ' + esc(t(s.pm <= 15 ? 'clean air' : s.pm <= 50 ? 'moderate' : 'poor air')) + '</small></p>';
+    if (tab === 'water') return '<p class="pc-big">' + (s.q != null && s.q >= 1 ? fmt(s.q) + '<small>m³/s · ' + esc(t('nearest river')) + '</small>' : fmt(s.rain, 1) + '<small>mm · ' + esc(t('rain this week')) + '</small>') + '</p>';
+  }
+  var seq = 0, pinned = null;
   function show() {
-    var panel = $('panel-env'), tab = state.tab, k = key(tab), my = ++seq;
-    panel.setAttribute('aria-labelledby', 'tab-' + tab);
+    var panel = $('panel-env'), my = ++seq;
     var sub = state.placeId ? t(regionOf()) : (state.sub || fmt(state.lat, 3) + ', ' + fmt(state.lon, 3));
-    var head = '<div class="env-place"><b>' + esc(placeName()) + '</b><span>' + esc(sub) + '</span></div>';
-    if (cache[k]) { panel.innerHTML = head + LOADERS[tab][1](cache[k]); return; }
-    panel.innerHTML = head + '<div class="skeleton tall"></div>';
-    LOADERS[tab][0]().then(function (d) {
-      cache[k] = d;
-      if (my === seq) panel.innerHTML = head + LOADERS[tab][1](d);
-    }).catch(function () {
-      if (my !== seq) return;
-      panel.innerHTML = head + msg(t('This open-data service is busy right now. Please try again in a moment.'), true);
+    var name = placeName();
+    panel.innerHTML = '<div class="pc-head"><div><b>' + esc(name) + '</b><span>' + esc(sub) + '</span></div>' +
+      '<button type="button" class="pc-pin" id="pc-pin">' + esc(pinned ? t('Compare with {0}', pinned.name) : t('Compare with another place')) + '</button></div>' +
+      '<div id="pc-compare"></div><div class="pc-grid">' + ['biota', 'soil', 'air', 'water'].map(function (tab) {
+        return '<section class="pc-card" id="pc-' + tab + '"><h3><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ICONS[tab] + '</svg>' + esc(t(TITLES[tab])) + '</h3><div class="pc-body"><div class="skeleton"></div></div>' +
+          '<details class="pc-more"><summary>' + esc(t('See details')) + '</summary><div class="pc-detail"></div></details></section>';
+      }).join('') + '</div>';
+    var sums = {};
+    ['biota', 'soil', 'air', 'water'].forEach(function (tab) {
+      load(tab).then(function (d) {
+        if (my !== seq) return;
+        sums[tab] = summary(tab, d);
+        var card = $('pc-' + tab); card.querySelector('.pc-body').innerHTML = headline(tab, sums[tab]);
+        card.querySelector('.pc-detail').innerHTML = LOADERS[tab][1](d);
+        renderCompare(sums, name);
+      }).catch(function () {
+        if (my !== seq) return;
+        $('pc-' + tab).querySelector('.pc-body').innerHTML = '<p class="pc-none">' + esc(t('This open-data service is busy right now. Please try again in a moment.')) + '</p>';
+      });
     });
+    $('pc-pin').addEventListener('click', function () {
+      if (pinned && pinned.name !== name) { pinned = null; show(); return; }
+      pinned = { name: name, sums: sums };
+      if (window.gdToast) window.gdToast(t('Now choose another place to compare'));
+      this.textContent = t('Choose another place…');
+    });
+    lastSums = sums;
+  }
+  var lastSums = null;
+  function renderCompare(sums, name) {
+    var box = $('pc-compare'); if (!box) return;
+    if (!pinned || pinned.name === name) { box.innerHTML = ''; return; }
+    var A = pinned.sums, B = sums;
+    function row(label, fa, fb) { return '<tr><th>' + esc(t(label)) + '</th><td>' + fa + '</td><td>' + fb + '</td></tr>'; }
+    function v(o, f) { try { var x = f(o); return x == null ? '–' : x; } catch (e) { return '–'; } }
+    box.innerHTML = '<table class="pc-table"><thead><tr><th></th><th>' + esc(pinned.name) + '</th><th>' + esc(name) + '</th></tr></thead><tbody>' +
+      row('Species recorded', v(A.biota, function (s) { return fmt(s.n); }), v(B.biota, function (s) { return fmt(s.n); })) +
+      row('Soil pH', v(A.soil, function (s) { return fmt(s.ph, 1); }), v(B.soil, function (s) { return fmt(s.ph, 1); })) +
+      row('Organic carbon (g/kg)', v(A.soil, function (s) { return fmt(s.soc); }), v(B.soil, function (s) { return fmt(s.soc); })) +
+      row('PM2.5 (µg/m³)', v(A.air, function (s) { return fmt(s.pm); }), v(B.air, function (s) { return fmt(s.pm); })) +
+      row('UV index', v(A.air, function (s) { return fmt(s.uv, 1); }), v(B.air, function (s) { return fmt(s.uv, 1); })) +
+      row('Rain this week (mm)', v(A.water, function (s) { return fmt(s.rain, 1); }), v(B.water, function (s) { return fmt(s.rain, 1); })) +
+      '</tbody></table>';
   }
   function regionOf() { var p = PLACES.find(function (x) { return x.id === state.placeId; }); return p ? p.region : ''; }
 

@@ -56,7 +56,6 @@
     <div class="env-map" id="env-map" role="application" aria-label="Map: tap to choose a point"></div>
     <aside class="env-float" aria-label="Environmental data">
       <div class="env-float-head">
-        <p class="env-step"><span class="step-n">1</span>Choose a place</p>
         <div class="env-search">
           <svg class="env-search-ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
           <input type="search" id="env-search" placeholder="Search any place in the world: Galápagos, Bogotá, Cusco…" aria-label="Search any place in the world" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="env-results" aria-autocomplete="list">
@@ -64,15 +63,8 @@
         </div>
         <label class="env-lbl" for="env-place">or a featured place · or tap the map</label>
         <select id="env-place"></select>
-        <p class="env-step"><span class="step-n">2</span>What do you want to know?</p>
-        <div class="env-tabs" role="tablist" aria-label="Environmental component">
-          <button type="button" role="tab" id="tab-biota" aria-controls="panel-env" aria-selected="true" data-tab="biota"><b>Biodiversity</b></button>
-          <button type="button" role="tab" id="tab-soil" aria-controls="panel-env" aria-selected="false" data-tab="soil" tabindex="-1"><b>Soil</b></button>
-          <button type="button" role="tab" id="tab-air" aria-controls="panel-env" aria-selected="false" data-tab="air" tabindex="-1"><b>Air</b></button>
-          <button type="button" role="tab" id="tab-water" aria-controls="panel-env" aria-selected="false" data-tab="water" tabindex="-1"><b>Water</b></button>
-        </div>
       </div>
-      <div class="env-panel" id="panel-env" role="tabpanel" aria-labelledby="tab-biota" aria-live="polite">
+      <div class="env-panel" id="panel-env" role="region" aria-label="Place summary" aria-live="polite">
         <div class="skeleton tall"></div>
       </div>
     </aside>
