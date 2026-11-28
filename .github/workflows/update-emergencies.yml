@@ -1,0 +1,32 @@
+name: Update El Niño emergencies
+
+on:
+  schedule:
+    - cron: "53 */3 * * *"   # every 3 hours
+  push:
+    branches: [observatorio]
+    paths:
+      - scripts/update_emergencies.py
+      - .github/workflows/update-emergencies.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download GDACS and ReliefWeb emergencies
+        run: python scripts/update_emergencies.py
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add greendata/data/emergencies.json
+          git diff --cached --quiet || git commit -m "Update El Niño emergencies (GDACS, ReliefWeb)"
+          git push
