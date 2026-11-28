@@ -485,7 +485,31 @@
     window.addEventListener('resize', function () { center(cur); });
     requestAnimationFrame(function () { center(0); mark(); });
     // moves on by itself every few seconds; pauses while someone hovers, touches, drags or reads with the keyboard
-    if (!reduce && cards.length > 1) {
+    var loopN = +track.dataset.loop || 0;
+    if (loopN && !reduce) {
+      if (dotsBox) dotsBox.hidden = true;
+      var held = false, last = 0, speed = 0.045; // px per ms, about 45 px per second
+      var setW = function () { return cards[loopN].offsetLeft - cards[0].offsetLeft; };
+      track.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') held = true; });
+      track.addEventListener('pointerleave', function () { held = false; });
+      track.addEventListener('touchstart', function () { held = true; }, { passive: true });
+      track.addEventListener('touchend', function () { setTimeout(function () { held = false; }, 2500); }, { passive: true });
+      track.style.scrollSnapType = 'none';
+      requestAnimationFrame(function () { track.scrollLeft = setW(); });
+      var spin = function (now) {
+        var dt = last ? Math.min(64, now - last) : 16; last = now;
+        if (!held && !down && !document.hidden) {
+          track.scrollLeft += speed * dt;
+          var w = setW();
+          if (track.scrollLeft >= 2 * w) track.scrollLeft -= w;
+          if (track.scrollLeft < 1) track.scrollLeft += w;
+        }
+        requestAnimationFrame(spin);
+      };
+      requestAnimationFrame(spin);
+      root.querySelectorAll('.car-btn').forEach(function (b) { b.addEventListener('click', function () { var w = setW(); if (track.scrollLeft >= 2 * w - 10) track.scrollLeft -= w; if (track.scrollLeft < 10) track.scrollLeft += w; }); });
+    }
+    if (!loopN && !reduce && cards.length > 1) {
       var paused = false, visible = false, timer2 = null;
       function tick() { if (!paused && visible && !document.hidden && !down) center(cur + 1 >= cards.length ? 0 : cur + 1, true); }
       function start() { clearInterval(timer2); timer2 = setInterval(tick, 3200); }
@@ -512,6 +536,14 @@
     nav.innerHTML = '<button type="button" class="car-btn" data-d="-1" aria-label="' + esc(t('Previous')) + '"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>' +
       '<button type="button" class="car-btn" data-d="1" aria-label="' + esc(t('Next')) + '"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>';
     head.classList.add('car-head'); head.appendChild(nav);
+    // roulette: two extra copies of the cards so it can turn forever
+    var orig = [].slice.call(grid.children);
+    for (var rep = 0; rep < 2; rep++) orig.forEach(function (c) {
+      var k = c.cloneNode(true); k.setAttribute('aria-hidden', 'true'); k.classList.add('is-clone');
+      k.querySelectorAll('a, button').forEach(function (x) { x.tabIndex = -1; });
+      grid.appendChild(k);
+    });
+    grid.dataset.loop = orig.length;
     var dots = el('div', 'car-dots'); dots.setAttribute('aria-hidden', 'true'); root.appendChild(dots);
     // the arrows live in the heading, outside root: wire them to this carousel
     root.appendChild(nav.cloneNode(true)).hidden = true;
@@ -530,6 +562,7 @@
     if (!h || !h.classList.contains('block-h')) return;
     var head = el('div', 'car-headrow'); h.parentNode.insertBefore(head, h); head.appendChild(h);
     grid.classList.add('proj-car');
+
     makeCarousel(grid, head, h.textContent, 'a');
   })();
 

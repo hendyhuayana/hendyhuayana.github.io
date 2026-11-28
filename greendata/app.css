@@ -1284,3 +1284,4 @@ section.env.wrap { max-width: 1680px; padding-left: clamp(16px, 3vw, 48px); padd
 .lg-grid .chips { display: flex; flex-wrap: wrap; gap: 5px; }
 .lg-grid .chip { padding: 6px 9px; font-size: .74rem; border-radius: 8px; }
 .lg-grid .chip[aria-checked="true"] { background: var(--lime); color: var(--on-lime); border-color: var(--lime); font-weight: 700; }
+.car-track[data-loop] .car-card { transition: transform .5s cubic-bezier(.2,.8,.2,1), opacity .5s, filter .5s; }
