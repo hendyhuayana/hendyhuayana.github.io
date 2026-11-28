@@ -401,7 +401,7 @@ select { background-color: #153d2c; border-color: rgba(255,255,255,.18); }
 .proj-note { margin-top: 12px; max-width: 90ch; }
 #projections .picker .seg { margin-left: 4px; }
 
-/* Thesis */
+/* Quiulacocha study */
 #thesis { --initial: #a9c1b2; --pitahaya: #3987e5; --zapallo: #d95926; }
 .thesis-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-weight: 600; color: #fff; }
 .thesis-sub .badge { margin-top: 0; }
@@ -968,7 +968,7 @@ html.pal-open { overflow: hidden; }
 }
 @media (max-width: 720px) and (prefers-reduced-motion: reduce) { .nav nav#site-nav, .drawer-back { transition: none; } }
 @media (max-width: 720px) { .nav nav .dm a.dm-top { display: flex !important; padding: 16px 6px; border-radius: 0; font-size: 1.05rem; } }
-/* phone: more compact El Niño, projections, footer and thesis banner */
+/* phone: more compact El Niño, projections, footer and study banner */
 @media (max-width: 720px) {
   .explain { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; gap: 10px; margin-left: -16px; margin-right: -16px; padding: 4px 16px 10px; }
   .explain::-webkit-scrollbar { display: none; }
