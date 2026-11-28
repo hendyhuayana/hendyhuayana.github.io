@@ -29,6 +29,16 @@
    "soc": 74.9,
    "lat": -11.93,
    "lon": -75.06
+  },
+  "lachay": {
+   "clay": 17.5,
+   "nitrogen": 4.94,
+   "phh2o": 7.4,
+   "sand": 56.4,
+   "silt": 26.0,
+   "soc": 49.7,
+   "lat": -11.36,
+   "lon": -77.37
   }
  },
  "source": "SoilGrids 2.0 (ISRIC), 0-5 cm, 250 m, CC BY 4.0"
