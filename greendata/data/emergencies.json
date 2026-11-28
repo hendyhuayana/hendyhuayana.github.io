@@ -1,0 +1,152 @@
+{
+ "updated": "2026-11-28T14:18:21Z",
+ "events": [
+  {
+   "source": "GDACS",
+   "type": "flood",
+   "title": "Flood in Bolivia",
+   "country": "Bolivia",
+   "lat": -17.4012,
+   "lon": -66.1676,
+   "level": "green",
+   "from": "2026-11-25",
+   "to": "2026-11-27",
+   "url": "https://www.gdacs.org/report.aspx?eventid=1104303&episodeid=2&eventtype=FL"
+  },
+  {
+   "source": "GDACS",
+   "type": "flood",
+   "title": "Flood in Peru",
+   "country": "Peru",
+   "lat": -3.5708,
+   "lon": -80.4596,
+   "level": "green",
+   "from": "2026-10-26",
+   "to": "2026-11-27",
+   "url": "https://www.gdacs.org/report.aspx?eventid=1104259&episodeid=12&eventtype=FL"
+  },
+  {
+   "source": "GDACS",
+   "type": "drought",
+   "title": "Drought in Aruba, , Brazil, Colombia, Costa Rica, , French Guiana, Guyana, Panama, Suriname, Venezuela",
+   "country": "Aruba, , Brazil, Colombia, Costa Rica, , French Guiana, Guyana, Panama, Suriname, Venezuela",
+   "lat": 7.036,
+   "lon": -66.243,
+   "level": "orange",
+   "from": "2022-09-21",
+   "to": "2026-11-26",
+   "url": "https://www.gdacs.org/report.aspx?eventid=1023877&episodeid=15&eventtype=DR"
+  },
+  {
+   "source": "GDACS",
+   "type": "flood",
+   "title": "Flood in Ecuador",
+   "country": "Ecuador",
+   "lat": -1.4941,
+   "lon": -79.5542,
+   "level": "green",
+   "from": "2026-09-15",
+   "to": "2026-11-23",
+   "url": "https://www.gdacs.org/report.aspx?eventid=1104167&episodeid=18&eventtype=FL"
+  },
+  {
+   "source": "GDACS",
+   "type": "flood",
+   "title": "Flood in Chile",
+   "country": "Chile",
+   "lat": -33.1046,
+   "lon": -71.6676,
+   "level": "green",
+   "from": "2026-11-20",
+   "to": "2026-11-22",
+   "url": "https://www.gdacs.org/report.aspx?eventid=1104293&episodeid=1&eventtype=FL"
+  },
+  {
+   "source": "GDACS",
+   "type": "flood",
+   "title": "Flood in Colombia",
+   "country": "Colombia",
+   "lat": 6.2125,
+   "lon": -75.5025,
+   "level": "green",
+   "from": "2026-11-18",
+   "to": "2026-11-20",
+   "url": "https://www.gdacs.org/report.aspx?eventid=1104294&episodeid=1&eventtype=FL"
+  },
+  {
+   "source": "GDACS",
+   "type": "flood",
+   "title": "Flood in Argentina",
+   "country": "Argentina",
+   "lat": -27.7759,
+   "lon": -67.1713,
+   "level": "green",
+   "from": "2026-11-08",
+   "to": "2026-11-16",
+   "url": "https://www.gdacs.org/report.aspx?eventid=1104277&episodeid=3&eventtype=FL"
+  },
+  {
+   "source": "GDACS",
+   "type": "flood",
+   "title": "Flood in Venezuela",
+   "country": "Venezuela",
+   "lat": 10.1756,
+   "lon": -67.9194,
+   "level": "green",
+   "from": "2026-11-07",
+   "to": "2026-11-09",
+   "url": "https://www.gdacs.org/report.aspx?eventid=1104275&episodeid=1&eventtype=FL"
+  },
+  {
+   "source": "GDACS",
+   "type": "flood",
+   "title": "Flood in Colombia",
+   "country": "Colombia",
+   "lat": 4.546,
+   "lon": -75.6715,
+   "level": "green",
+   "from": "2026-09-26",
+   "to": "2026-11-08",
+   "url": "https://www.gdacs.org/report.aspx?eventid=1104200&episodeid=15&eventtype=FL"
+  },
+  {
+   "source": "GDACS",
+   "type": "flood",
+   "title": "Flood in Chile",
+   "country": "Chile",
+   "lat": -36.8271,
+   "lon": -73.0502,
+   "level": "green",
+   "from": "2026-10-06",
+   "to": "2026-10-24",
+   "url": "https://www.gdacs.org/report.aspx?eventid=1104217&episodeid=4&eventtype=FL"
+  },
+  {
+   "source": "GDACS",
+   "type": "flood",
+   "title": "Flood in Peru",
+   "country": "Peru",
+   "lat": -3.5708,
+   "lon": -80.4596,
+   "level": "green",
+   "from": "2026-10-19",
+   "to": "2026-10-21",
+   "url": "https://www.gdacs.org/report.aspx?eventid=1104262&episodeid=1&eventtype=FL"
+  },
+  {
+   "source": "GDACS",
+   "type": "flood",
+   "title": "Flood in Costa Rica",
+   "country": "Costa Rica",
+   "lat": 10.0255,
+   "lon": -84.1256,
+   "level": "green",
+   "from": "2026-10-09",
+   "to": "2026-10-20",
+   "url": "https://www.gdacs.org/report.aspx?eventid=1104227&episodeid=2&eventtype=FL"
+  }
+ ],
+ "errors": [
+  "ReliefWeb: HTTP Error 410: Gone"
+ ]
+}
