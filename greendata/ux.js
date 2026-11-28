@@ -752,7 +752,7 @@
     document.documentElement.classList.add('pal-open');
     var prev = document.activeElement;
     function close() {
-      try { localStorage.setItem('gd-welcome', '1'); } catch (e) {}
+      try { sessionStorage.setItem('gd-welcome2', '1'); } catch (e) {}
       box.classList.remove('open'); document.documentElement.classList.remove('pal-open');
       setTimeout(function () { box.remove(); }, reduce ? 0 : 200);
       document.removeEventListener('keydown', key, true);
@@ -770,7 +770,7 @@
   }
   window.gdWelcome = welcome;
   (function () {
-    var seen = false; try { seen = localStorage.getItem('gd-welcome') === '1'; } catch (e) { seen = true; }
+    var seen = false; try { seen = sessionStorage.getItem('gd-welcome2') === '1'; } catch (e) { seen = true; }
     var qs = new URLSearchParams(location.search);
     if (qs.get('welcome') === '1' || (!seen && !navigator.webdriver && qs.get('welcome') !== '0')) setTimeout(welcome, 600);
     // a "Guide" link in the footer to open it again

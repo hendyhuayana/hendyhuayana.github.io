@@ -270,6 +270,7 @@
     state.label = place ? place.name : found ? found.name : ''; state.sub = found ? found.sub : '';
     if (zoom && map) map.setView([lat, lon], zoom, { animate: !reduce });
     $('env-place').value = place ? place.id : 'custom';
+    document.querySelectorAll('.env-chip').forEach(function (c) { c.setAttribute('aria-pressed', !!place && c.dataset.id === place.id); });
     if (marker) marker.setLatLng([lat, lon]);
     if (map && !zoom) map.panTo([lat, lon], { animate: !reduce });
     show();
@@ -281,6 +282,10 @@
     sel.innerHTML = '<optgroup label="' + esc(t('Peru')) + '">' + opts(PLACES.filter(function (p) { return !p.world; })) + '</optgroup>' +
       '<optgroup label="' + esc(t('Around the world')) + '">' + opts(PLACES.filter(function (p) { return p.world; })) + '</optgroup>' +
       '<option value="custom" hidden>' + esc(t('Point chosen on the map')) + '</option>';
+    // featured places as chips
+    var chips = $('env-chips');
+    chips.innerHTML = PLACES.map(function (p) { return '<button type="button" class="env-chip" data-id="' + p.id + '" aria-pressed="' + (p.id === state.placeId) + '">' + esc(t(p.name)) + '<small>' + esc(t(p.region)) + '</small></button>'; }).join('');
+    chips.addEventListener('click', function (e) { var b = e.target.closest('.env-chip'); if (!b) return; sel.value = b.dataset.id; sel.dispatchEvent(new Event('change')); });
     sel.addEventListener('change', function () { var p = PLACES.find(function (x) { return x.id === sel.value; }); if (p) setPoint(p.lat, p.lon, p, null, 9); });
 
     map = L.map('env-map', { zoomControl: true, scrollWheelZoom: false, attributionControl: true, zoomSnap: 0.25, minZoom: 2, worldCopyJump: true }).setView([10, -30], 2);
