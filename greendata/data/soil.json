@@ -59,6 +59,36 @@
    "soc": 24.6,
    "lat": -15.75,
    "lon": -70.1
+  },
+  "manu": {
+   "clay": 34.9,
+   "nitrogen": 4.39,
+   "phh2o": 5.3,
+   "sand": 28.7,
+   "silt": 36.4,
+   "soc": 61.4,
+   "lat": -12.6,
+   "lon": -71.4
+  },
+  "tambopata": {
+   "clay": 29.5,
+   "nitrogen": 3.16,
+   "phh2o": 4.6,
+   "sand": 36.5,
+   "silt": 34.0,
+   "soc": 44.4,
+   "lat": -12.85,
+   "lon": -69.4
+  },
+  "iquitos": {
+   "clay": 24.4,
+   "nitrogen": 3.16,
+   "phh2o": 4.6,
+   "sand": 45.6,
+   "silt": 30.0,
+   "soc": 53.1,
+   "lat": -3.85,
+   "lon": -73.35
   }
  },
  "source": "SoilGrids 2.0 (ISRIC), 0-5 cm, 250 m, CC BY 4.0"

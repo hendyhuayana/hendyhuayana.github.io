@@ -50,7 +50,7 @@
   function msg(text, retry) {
     return '<div class="msg">' + esc(text) + (retry ? '<br><button type="button" class="env-retry">' + esc(t('Retry')) + '</button>' : '') + '</div>';
   }
-  function placeName() { return state.placeId ? t(state.label) : t('the chosen point'); }
+  function placeName() { return state.placeId ? t(state.label) : (state.label || t('the chosen point')); }
   function key(tab) { return tab + ':' + state.lat.toFixed(3) + ',' + state.lon.toFixed(3); }
 
   // ------------------------------------------------------------------ biodiversity
@@ -205,7 +205,8 @@
   function show() {
     var panel = $('panel-env'), tab = state.tab, k = key(tab), my = ++seq;
     panel.setAttribute('aria-labelledby', 'tab-' + tab);
-    var head = '<div class="env-place"><b>' + esc(placeName()) + '</b><span>' + esc(state.placeId ? t(regionOf()) : fmt(state.lat, 3) + ', ' + fmt(state.lon, 3)) + '</span></div>';
+    var sub = state.placeId ? t(regionOf()) : (state.sub || fmt(state.lat, 3) + ', ' + fmt(state.lon, 3));
+    var head = '<div class="env-place"><b>' + esc(placeName()) + '</b><span>' + esc(sub) + '</span></div>';
     if (cache[k]) { panel.innerHTML = head + LOADERS[tab][1](cache[k]); return; }
     panel.innerHTML = head + '<div class="skeleton tall"></div>';
     LOADERS[tab][0]().then(function (d) {
@@ -219,11 +220,13 @@
   function regionOf() { var p = PLACES.find(function (x) { return x.id === state.placeId; }); return p ? p.region : ''; }
 
   var map, marker;
-  function setPoint(lat, lon, place) {
-    state.lat = lat; state.lon = lon; state.placeId = place ? place.id : null; state.label = place ? place.name : '';
+  function setPoint(lat, lon, place, found, zoom) {
+    state.lat = lat; state.lon = lon; state.placeId = place ? place.id : null;
+    state.label = place ? place.name : found ? found.name : ''; state.sub = found ? found.sub : '';
+    if (zoom && map) map.setView([lat, lon], zoom, { animate: !reduce });
     $('env-place').value = place ? place.id : 'custom';
     if (marker) marker.setLatLng([lat, lon]);
-    if (map) map.panTo([lat, lon], { animate: !reduce });
+    if (map && !zoom) map.panTo([lat, lon], { animate: !reduce });
     show();
   }
 
@@ -231,9 +234,9 @@
     var sel = $('env-place');
     sel.innerHTML = PLACES.map(function (p) { return '<option value="' + p.id + '">' + esc(t(p.name)) + ' (' + esc(p.region) + ')</option>'; }).join('') +
       '<option value="custom" hidden>' + esc(t('Point chosen on the map')) + '</option>';
-    sel.addEventListener('change', function () { var p = PLACES.find(function (x) { return x.id === sel.value; }); if (p) setPoint(p.lat, p.lon, p); });
+    sel.addEventListener('change', function () { var p = PLACES.find(function (x) { return x.id === sel.value; }); if (p) setPoint(p.lat, p.lon, p, null, 9); });
 
-    map = L.map('env-map', { zoomControl: true, scrollWheelZoom: false, attributionControl: true, zoomSnap: 0.25 }).setView([-9.5, -75.5], 5);
+    map = L.map('env-map', { zoomControl: true, scrollWheelZoom: false, attributionControl: true, zoomSnap: 0.25, minZoom: 2, worldCopyJump: true }).setView([-9.5, -75.5], 5);
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 13, attribution: 'Esri, HERE, Garmin, © OpenStreetMap' }).addTo(map);
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', { maxZoom: 13 }).addTo(map);
     // department boundaries (INEI via github.com/juaneladio/peru-geojson, MPL-2.0)
@@ -258,6 +261,39 @@
     marker = L.circleMarker([state.lat, state.lon], { radius: 11, weight: 3, color: '#ffffff', fillColor: '#b6e34f', fillOpacity: .35, interactive: false }).addTo(map);
     map.on('click', function (e) { setPoint(+e.latlng.lat.toFixed(4), +e.latlng.lng.toFixed(4), null); });
     map.once('focus', function () { map.scrollWheelZoom.enable(); });
+
+    // search any place in the world (Open-Meteo geocoding, free and open)
+    var inp = $('env-search'), list = $('env-results'), timerS = 0, found = [], act = -1;
+    function closeList() { list.hidden = true; inp.setAttribute('aria-expanded', 'false'); act = -1; }
+    function choose(r) {
+      inp.value = r.name; closeList();
+      var sub = [r.admin1, r.country].filter(Boolean).join(', ');
+      setPoint(+r.latitude.toFixed(4), +r.longitude.toFixed(4), null, { name: r.name, sub: sub }, 9);
+    }
+    function paint() {
+      list.innerHTML = found.length ? found.map(function (r, i) {
+        return '<li role="option" id="envr-' + i + '" aria-selected="' + (i === act) + '"><b>' + esc(r.name) + '</b><span>' + esc([r.admin1, r.country].filter(Boolean).join(', ')) + '</span></li>';
+      }).join('') : '<li class="env-none">' + esc(t('No places found')) + '</li>';
+      list.hidden = false; inp.setAttribute('aria-expanded', 'true');
+      if (act > -1) inp.setAttribute('aria-activedescendant', 'envr-' + act); else inp.removeAttribute('aria-activedescendant');
+    }
+    inp.addEventListener('input', function () {
+      clearTimeout(timerS); var q = inp.value.trim();
+      if (q.length < 2) { closeList(); return; }
+      timerS = setTimeout(function () {
+        getJSON('https://geocoding-api.open-meteo.com/v1/search?count=8&language=' + (LANG === 'zh' ? 'zh' : LANG) + '&name=' + encodeURIComponent(q), 1)
+          .then(function (d) { found = d.results || []; act = -1; paint(); }).catch(function () { found = []; paint(); });
+      }, 300);
+    });
+    inp.addEventListener('keydown', function (e) {
+      if (list.hidden) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); act = Math.min(found.length - 1, act + 1); paint(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); act = Math.max(0, act - 1); paint(); }
+      else if (e.key === 'Enter') { e.preventDefault(); if (found[act > -1 ? act : 0]) choose(found[act > -1 ? act : 0]); }
+      else if (e.key === 'Escape') closeList();
+    });
+    list.addEventListener('mousedown', function (e) { var li = e.target.closest('li[role="option"]'); if (li) { e.preventDefault(); choose(found[+li.id.split('-')[1]]); } });
+    inp.addEventListener('blur', function () { setTimeout(closeList, 150); });
 
     var tabs = [].slice.call(document.querySelectorAll('.env-tabs [role="tab"]'));
     function pick(b, focus) {

@@ -52,8 +52,8 @@
     document.querySelectorAll('meta[name="description"], meta[property="og:title"], meta[property="og:description"]').forEach(function (m) {
       var v = d[norm(m.content)]; if (v) m.content = v;
     });
-    document.querySelectorAll('[aria-label], [alt]').forEach(function (el) {
-      ['aria-label', 'alt'].forEach(function (a) { var k = el.getAttribute(a); if (k && d[norm(k)]) el.setAttribute(a, d[norm(k)]); });
+    document.querySelectorAll('[aria-label], [alt], [placeholder]').forEach(function (el) {
+      ['aria-label', 'alt', 'placeholder'].forEach(function (a) { var k = el.getAttribute(a); if (k && d[norm(k)]) el.setAttribute(a, d[norm(k)]); });
     });
     // 1) blocks with inline formatting: the translation carries its own markup
     var done = [];

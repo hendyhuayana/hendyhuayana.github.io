@@ -52,10 +52,15 @@
 
     <div class="env-grid">
       <div class="env-side">
-        <label class="env-lbl" for="env-place">Place</label>
+        <label class="env-lbl" for="env-search">Search any place in the world</label>
+        <div class="env-search">
+          <input type="search" id="env-search" placeholder="e.g. Galápagos, Bogotá, Cusco…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="env-results" aria-autocomplete="list">
+          <ul id="env-results" class="env-results" role="listbox" hidden></ul>
+        </div>
+        <label class="env-lbl" for="env-place">Featured places in Peru</label>
         <select id="env-place"></select>
         <div class="env-map" id="env-map" role="application" aria-label="Map: tap to choose a point"></div>
-        <p class="env-hint">Tip: tap the map to explore any point in Peru.</p>
+        <p class="env-hint">Tip: tap the map to explore any point in the world.</p>
       </div>
 
       <div class="env-main">

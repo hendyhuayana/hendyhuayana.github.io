@@ -306,12 +306,13 @@
   }
 
   function initMap() {
-    map = L.map('map', { zoomControl: false, scrollWheelZoom: false, worldCopyJump: true, minZoom: 3, attributionControl: true });
+    map = L.map('map', { zoomControl: false, scrollWheelZoom: false, worldCopyJump: true, minZoom: 3, zoomSnap: 0.25, attributionControl: true });
     L.control.zoom({ position: window.innerWidth > 980 ? 'bottomleft' : 'topright' }).addTo(map);
     var wide = window.innerWidth > 980, W = map.getSize().x;
     var padL = wide ? Math.min(W * 0.45, document.querySelector('.copy-col').getBoundingClientRect().right + 10) : 10;
     var padR = wide ? 370 : 10;
-    map.fitBounds([[-18.6, -84], [0, -68.5]], { paddingTopLeft: [padL, 30], paddingBottomRight: [padR, 20] });
+    // the region El Niño affects most: from Colombia to central Chile, with the Pacific off the coast
+    map.fitBounds([[-30, -84], [7, -67]], { paddingTopLeft: [wide ? Math.min(padL, W * 0.22) : 10, 20], paddingBottomRight: [padR, 10] });
     // put the compare line over the sea just off the northern coast, where El Niño shows
     var coastX = map.latLngToContainerPoint([-7, -82.2]).x;
     sat.ratio = Math.max(wide ? 0.15 : 0.4, Math.min(0.85, coastX / W));
@@ -326,6 +327,21 @@
     labelsLayer = L.tileLayer(ESRI + 'World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', { maxZoom: 12, pane: 'labels' }).addTo(map);
     fetchJSON('data/peru.geojson').then(function (g) {
       L.geoJSON(g, { interactive: false, style: { color: '#ffffff', weight: 1.4, opacity: .85, fill: false } }).addTo(map);
+    }).catch(function () {});
+    // neighbouring countries also hit by El Niño (outlines: Natural Earth, public domain)
+    var NINO_IMPACT = {
+      ECU: 'El Niño brings heavy rain and floods to the coast of Ecuador.',
+      COL: 'In Colombia, El Niño usually means less rain, droughts and more fires.',
+      BOL: 'In Bolivia, El Niño often brings drought to the highlands and floods to the lowlands.',
+      CHL: 'In central Chile, El Niño tends to bring wetter winters.'
+    };
+    fetchJSON('data/nino_neighbours.geojson').then(function (g) {
+      L.geoJSON(g, {
+        style: { color: '#d7f36b', weight: 1.2, opacity: .75, dashArray: '4 3', fill: true, fillOpacity: 0 },
+        onEachFeature: function (f, layer) {
+          layer.bindTooltip('<b>' + esc(t(f.properties.name)) + '</b><br>' + esc(t(NINO_IMPACT[f.properties.iso] || '')), { className: 'gd-tip', sticky: true });
+        }
+      }).addTo(map);
     }).catch(function () {});
     map.on('move zoom resize', clipCompare);
     // allow wheel zoom after the user clicks the map
