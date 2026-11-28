@@ -491,10 +491,11 @@
     // moves on by itself every few seconds; pauses while someone hovers, touches, drags or reads with the keyboard
     if (!reduce && cards.length > 1) {
       var paused = false, visible = false, timer2 = null;
-      function tick() { if (!paused && visible && !document.hidden) center(cur + 1 >= cards.length ? 0 : cur + 1, true); }
+      function tick() { if (!paused && visible && !document.hidden && !track.querySelector('.car-card.is-center:hover')) center(cur + 1 >= cards.length ? 0 : cur + 1, true); }
       function start() { clearInterval(timer2); timer2 = setInterval(tick, 4500); }
-      root.addEventListener('mouseenter', function () { paused = true; });
-      root.addEventListener('mouseleave', function () { paused = false; start(); });
+      // only the card being read (the centre one) holds the slideshow
+      track.addEventListener('mousemove', function () { root.classList.toggle('hold', !!track.querySelector('.car-card.is-center:hover')); });
+      track.addEventListener('mouseleave', function () { root.classList.remove('hold'); });
       root.addEventListener('focusin', function () { paused = true; });
       root.addEventListener('focusout', function () { paused = false; });
       track.addEventListener('touchstart', function () { paused = true; clearTimeout(track._r); }, { passive: true });
