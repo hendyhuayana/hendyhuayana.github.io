@@ -1149,3 +1149,6 @@ section.env.wrap { max-width: 1680px; padding-left: clamp(16px, 3vw, 48px); padd
 .scale-words span:last-child { text-align: right; }
 .scale-words[hidden] { display: none; }
 .seeing .legend-img { margin-top: 6px; }
+/* environmental data page: title and intro use the full width */
+.env .page-h1, .env .sec-head h1 { max-width: none; }
+.env .sec-lede { max-width: none; }
