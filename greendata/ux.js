@@ -488,10 +488,8 @@
     var loopN = +track.dataset.loop || 0;
     if (loopN && !reduce) {
       if (dotsBox) dotsBox.hidden = true;
-      var held = false, last = 0, speed = 0.045; // px per ms, about 45 px per second
+      var held = false, last = 0, speed = 0.06; // px per ms, about 60 px per second; never stops for the mouse
       var setW = function () { return cards[loopN].offsetLeft - cards[0].offsetLeft; };
-      track.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') held = true; });
-      track.addEventListener('pointerleave', function () { held = false; });
       track.addEventListener('touchstart', function () { held = true; }, { passive: true });
       track.addEventListener('touchend', function () { setTimeout(function () { held = false; }, 2500); }, { passive: true });
       track.style.scrollSnapType = 'none';
@@ -512,7 +510,7 @@
     if (!loopN && !reduce && cards.length > 1) {
       var paused = false, visible = false, timer2 = null;
       function tick() { if (!paused && visible && !document.hidden && !down) center(cur + 1 >= cards.length ? 0 : cur + 1, true); }
-      function start() { clearInterval(timer2); timer2 = setInterval(tick, 3200); }
+      function start() { clearInterval(timer2); timer2 = setInterval(tick, 2800); }
       // only the card being read (the centre one) holds the slideshow
 
       root.addEventListener('focusin', function () { paused = !!root.querySelector(':focus-visible'); });
@@ -520,7 +518,7 @@
       track.addEventListener('touchstart', function () { paused = true; clearTimeout(track._r); }, { passive: true });
       track.addEventListener('touchend', function () { clearTimeout(track._r); track._r = setTimeout(function () { paused = false; start(); }, 6000); }, { passive: true });
       root.querySelectorAll('.car-btn').forEach(function (b) { b.addEventListener('click', start); });
-      if ('IntersectionObserver' in window) new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }, { threshold: 0.4 }).observe(track);
+      if ('IntersectionObserver' in window) new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }, { threshold: 0.15 }).observe(track);
       else visible = true;
       start();
     }

@@ -321,9 +321,10 @@
     cmpPane = map.createPane('satCmp'); cmpPane.style.zIndex = 260;
     map.createPane('labels').style.zIndex = 420; map.getPane('labels').style.pointerEvents = 'none';
     var ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/';
-    L.tileLayer(ESRI + 'World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+    var baseLayer = L.tileLayer(ESRI + 'World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 12, maxNativeZoom: 16, attribution: 'Base: Esri, HERE, Garmin, © OpenStreetMap'
     }).addTo(map);
+    if (window.gdMapTools) window.gdMapTools(map, { home: [[-30, -84], [7, -67]], base: baseLayer, position: window.innerWidth > 980 ? 'bottomleft' : 'topright' });
     labelsLayer = L.tileLayer(ESRI + 'World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', { maxZoom: 12, pane: 'labels' }).addTo(map);
     fetchJSON('data/peru.geojson').then(function (g) {
       L.geoJSON(g, { interactive: false, style: { color: '#ffffff', weight: 1.4, opacity: .85, fill: false } }).addTo(map);

@@ -1050,7 +1050,7 @@ html, body { overflow-x: clip; }
 .car-card.is-center .car-mark { animation: car-nudge 1.8s ease-in-out infinite; }
 .car-dots i { position: relative; overflow: hidden; }
 .car-dots i.on { background: rgba(182,227,79,.3); }
-.car-dots i.on::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--lime); transform-origin: left; animation: car-fill 3.2s linear forwards; }
+.car-dots i.on::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--lime); transform-origin: left; animation: car-fill 2.8s linear forwards; }
 .car-root.hold .car-dots i.on::after, .car-root:focus-within .car-dots i.on::after { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) {
   .car-card.is-center, .car-card.is-center .svc-ico, .car-card.is-center .car-mark { animation: none; }
@@ -1297,3 +1297,39 @@ section.env.wrap { max-width: 1680px; padding-left: clamp(16px, 3vw, 48px); padd
 .gw-note { font-size: .72rem; margin-bottom: 12px; }
 .gw-btns .btn { padding: 10px 16px; font-size: .88rem; }
 @media (max-width: 520px) { .gw-guide { grid-template-columns: minmax(0, 1fr); } .gw-guide li:last-child { grid-column: auto; } }
+
+/* map tools */
+.gd-tools { display: flex; flex-direction: column; border: 1px solid var(--hud-line) !important; border-radius: 10px !important; overflow: visible; background: #0c2219; }
+.gd-tool { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-bottom: 1px solid var(--hud-line); background: #0c2219; color: #fff; cursor: pointer; }
+.gd-tool:first-child { border-radius: 10px 10px 0 0; } .gd-tool:last-child { border-bottom: 0; border-radius: 0 0 10px 10px; }
+.gd-tool svg { width: 17px; height: 17px; }
+.gd-tool:hover { background: #163f2d; color: var(--lime); }
+.gd-tool.on { background: var(--lime); color: var(--on-lime); }
+.gd-tool.busy svg { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.gd-tool:focus-visible { outline: 2px solid var(--lime); outline-offset: -2px; }
+.gd-basemenu { position: absolute; left: calc(100% + 8px); bottom: 0; display: flex; flex-direction: column; gap: 2px; min-width: 150px; padding: 6px; border-radius: 12px; background: #0c2219; border: 1px solid var(--hud-line); box-shadow: 0 12px 30px rgba(0,0,0,.4); }
+.leaflet-right .gd-basemenu { left: auto; right: calc(100% + 8px); }
+.gd-basemenu button { padding: 8px 10px; border: 0; border-radius: 8px; background: none; color: #fff; font: 600 .82rem var(--font); text-align: left; cursor: pointer; }
+.gd-basemenu button:hover, .gd-basemenu button[aria-pressed="true"] { background: rgba(182,227,79,.15); color: var(--lime); }
+.gd-coord { padding: 3px 8px; border-radius: 6px; background: rgba(9,16,13,.7); color: #fff; font: 500 .7rem var(--font); font-variant-numeric: tabular-nums; min-height: 0; }
+.gd-coord:empty { display: none; }
+.leaflet-control-scale-line { background: rgba(9,16,13,.7); color: #fff; border-color: #fff; }
+.gd-measuring, .gd-measuring .leaflet-interactive { cursor: crosshair !important; }
+.gd-measure { font-weight: 800; }
+.gd-full { position: fixed !important; inset: 0 !important; z-index: 2500 !important; width: 100vw !important; height: 100vh !important; max-height: none !important; border-radius: 0 !important; }
+html.gd-full-open { overflow: hidden; }
+.foot-giant { max-width: 1180px; padding: 26px 16px 6px; }
+
+/* environmental data: search-first layout, results full width, map on demand */
+.env-grid { display: block; }
+.env-side { position: static; display: block; margin-bottom: 18px; }
+.env-find { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: 14px; align-items: end; padding: 18px; border-radius: 18px; background: rgba(0,0,0,.18); border: 1px solid var(--hud-line); }
+.env-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.env-search input { font-size: 1.02rem; padding: 14px 16px; }
+.env-maptoggle { white-space: nowrap; height: 48px; }
+.env-mapwrap { margin-top: 14px; }
+.env-mapwrap .env-map { height: 440px; min-height: 0; max-height: none; }
+.env-main { width: 100%; }
+.env-tabs { margin-bottom: 16px; }
+@media (max-width: 860px) { .env-find { grid-template-columns: minmax(0, 1fr); } .env-maptoggle { width: 100%; } .env-mapwrap .env-map { height: 320px; } }

@@ -52,15 +52,24 @@
 
     <div class="env-grid">
       <div class="env-side">
-        <label class="env-lbl" for="env-search">Search any place in the world</label>
-        <div class="env-search">
-          <input type="search" id="env-search" placeholder="e.g. Galápagos, Bogotá, Cusco…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="env-results" aria-autocomplete="list">
-          <ul id="env-results" class="env-results" role="listbox" hidden></ul>
+        <div class="env-find">
+          <div class="env-field env-field-search">
+            <label class="env-lbl" for="env-search">Search any place in the world</label>
+            <div class="env-search">
+              <input type="search" id="env-search" placeholder="e.g. Galápagos, Bogotá, Cusco…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="env-results" aria-autocomplete="list">
+              <ul id="env-results" class="env-results" role="listbox" hidden></ul>
+            </div>
+          </div>
+          <div class="env-field">
+            <label class="env-lbl" for="env-place">Featured places</label>
+            <select id="env-place"></select>
+          </div>
+          <button type="button" class="btn ghost env-maptoggle" id="env-maptoggle" aria-expanded="false" aria-controls="env-mapwrap">Choose on the map</button>
         </div>
-        <label class="env-lbl" for="env-place">Featured places</label>
-        <select id="env-place"></select>
-        <div class="env-map" id="env-map" role="application" aria-label="Map: tap to choose a point"></div>
-        <p class="env-hint">Tip: tap the map to explore any point in the world.</p>
+        <div class="env-mapwrap" id="env-mapwrap" hidden>
+          <div class="env-map" id="env-map" role="application" aria-label="Map: tap to choose a point"></div>
+          <p class="env-hint">Tip: tap the map to explore any point in the world.</p>
+        </div>
       </div>
 
       <div class="env-main">
@@ -90,6 +99,7 @@
 </footer>
 
 <script src="../vendor/leaflet.js"></script>
+<script src="../maptools.js"></script>
 <script src="../env.js"></script>
 <script src="../ui.js"></script>
 <script src="../ux.js"></script>
