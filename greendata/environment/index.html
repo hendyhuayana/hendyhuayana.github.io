@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Environmental data · Hendy Mayumi Huayana</title>
+<meta name="description" content="Open data on Peru's environment: biodiversity, soil, air and water for any place, explained in plain language.">
+<meta name="author" content="Hendy Mayumi Huayana">
+<meta property="og:title" content="Environmental data · Hendy Mayumi Huayana">
+<meta property="og:description" content="Open data on Peru's environment: biodiversity, soil, air and water for any place, explained in plain language.">
+<meta property="og:url" content="https://hendyhuayana.github.io/greendata/environment/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://hendyhuayana.github.io/greendata/img/hendy.png">
+<meta name="theme-color" content="#0f2d1f">
+<link rel="canonical" href="https://hendyhuayana.github.io/greendata/environment/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23b6e34f'/%3E%3Cpath d='M9 23c0-8.5 6-14 15-14 0 8.5-5.2 14.4-13.6 14.2M9 23l7-7' fill='none' stroke='%230f2d1f' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../vendor/leaflet.css">
+<link rel="stylesheet" href="../app.css">
+<script src="../i18n.js"></script>
+</head>
+<body class="subpage" data-base="../">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="../" aria-label="Hendy Mayumi Huayana, home">
+      <img class="nav-avatar" src="../img/hendy.png" width="34" height="34" alt="">
+      <span class="nm"><b>Hendy Mayumi Huayana</b><span class="tagline">Environment, data &amp; technology</span></span>
+    </a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><span></span><span></span><span></span></button>
+    <nav aria-label="Sections" id="site-nav">
+      <a class="xp-short" href="../#expertise">My topics</a>
+      <a href="../research/">Research</a>
+      <a href="../environment/" aria-current="page">Environmental data</a>
+      <a href="../#about">About</a>
+      <a class="btn sm" href="../#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="wrap section page-top env" aria-labelledby="env-h">
+    <div class="sec-head">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../">Home</a> / <span>Environmental data</span></nav>
+      <p class="kicker">Environmental data</p>
+      <h1 id="env-h" class="page-h1">What does <span class="hl">open environmental data</span> say?</h1>
+      <p class="sec-lede">Choose a place, or tap anywhere on the map, and explore its biodiversity, soil, air and water with open data from around the world.</p>
+    </div>
+
+  </section>
+
+  <section class="env-stage" aria-label="Environmental data map">
+    <div class="env-map" id="env-map" role="application" aria-label="Map: tap to choose a point"></div>
+    <aside class="env-float" aria-label="Environmental data">
+      <div class="env-float-head">
+        <div class="env-search">
+          <svg class="env-search-ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input type="search" id="env-search" placeholder="Search any place in the world: Galápagos, Bogotá, Cusco…" aria-label="Search any place in the world" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="env-results" aria-autocomplete="list">
+          <ul id="env-results" class="env-results" role="listbox" hidden></ul>
+        </div>
+        <label class="env-lbl" for="env-place">or a featured place · or tap the map</label>
+        <select id="env-place"></select>
+      </div>
+      <div class="env-panel" id="panel-env" role="region" aria-label="Place summary" aria-live="polite">
+        <div class="skeleton tall"></div>
+      </div>
+    </aside>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <a class="brand" href="https://www.tiktok.com/@hendy.greendata" aria-label="Hendy in Green Data on TikTok"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 18.5c0-7.8 5.6-12.8 13.8-12.8 0 7.8-4.8 13.2-12.5 13M5 18.5l6.3-6.3" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="wm" aria-hidden="true"><b>HENDY</b><i>in</i><b class="g">GREEN</b><b>DATA</b></span></a>
+    <div class="sources">
+      <p><strong>Open data sources.</strong> Biodiversity: <a href="https://www.inaturalist.org/">iNaturalist</a> (research-grade observations) and <a href="https://www.gbif.org/">GBIF</a>. Soil: <a href="https://soilgrids.org/">SoilGrids 2.0</a> (ISRIC, CC BY 4.0). Air quality and weather: <a href="https://open-meteo.com/">Open-Meteo</a> with <a href="https://atmosphere.copernicus.eu/">Copernicus CAMS</a> (CC BY 4.0). River discharge: <a href="https://open-meteo.com/en/docs/flood-api">GloFAS (Copernicus)</a> via Open-Meteo. Departments: INEI via <a href="https://github.com/juaneladio/peru-geojson">peru-geojson</a> (MPL-2.0). Basemap: Esri, HERE, Garmin, © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.</p>
+      <p><strong>Disclaimer.</strong> These are global models and citizen-science records, not official measurements. They do not replace data from SENAMHI, ANA, SERFOR, MINAM, OEFA or other authorities. Personal, educational project.</p>
+    </div>
+    <p class="fine">Made in Lima by Hendy Mayumi Huayana · <a href="https://github.com/hendyhuayana/hendyhuayana.github.io/tree/main/greendata">Open source</a></p>
+  </div>
+</footer>
+
+<script src="../vendor/leaflet.js"></script>
+<script src="../maptools.js"></script>
+<script src="../env.js"></script>
+<script src="../ui.js"></script>
+<script src="../ux.js"></script>
+</body>
+</html>

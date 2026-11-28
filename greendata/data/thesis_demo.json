@@ -1,0 +1,119 @@
+{
+ "_comment": "DEMO ONLY. Invented numbers to preview the layout with ?demo=1. Never cite these values. Real results go in thesis_results.json.",
+ "status": "in_progress",
+ "sampling": {
+  "site": "Quiulacocha, Pasco, Peru",
+  "date": "2026-09-12",
+  "points": [
+   {
+    "id": "PM1",
+    "lat": -10.684,
+    "lon": -76.268,
+    "description": "Demo location, not the real sampling point"
+   },
+   {
+    "id": "PM2",
+    "lat": -10.689,
+    "lon": -76.262,
+    "description": "Demo location, not the real sampling point"
+   }
+  ]
+ },
+ "design": {
+  "jar_test_runs": 90
+ },
+ "standard": {
+  "short_name": "Demo standard (not real limits)",
+  "full_name": "",
+  "url": "",
+  "note": "invented values"
+ },
+ "metals": [
+  {
+   "metal": "Fe",
+   "initial_mg_L": 480,
+   "final_pitahaya_mg_L": 60,
+   "final_zapallo_mg_L": 95,
+   "limit_mg_L": 2,
+   "limit_note": ""
+  },
+  {
+   "metal": "Pb",
+   "initial_mg_L": 1.2,
+   "final_pitahaya_mg_L": 0.3,
+   "final_zapallo_mg_L": 0.45,
+   "limit_mg_L": 0.2
+  },
+  {
+   "metal": "Zn",
+   "initial_mg_L": 140,
+   "final_pitahaya_mg_L": 40,
+   "final_zapallo_mg_L": 55,
+   "limit_mg_L": 1.5
+  },
+  {
+   "metal": "Cu",
+   "initial_mg_L": 3.1,
+   "final_pitahaya_mg_L": 0.4,
+   "final_zapallo_mg_L": 0.9,
+   "limit_mg_L": 0.5
+  },
+  {
+   "metal": "Cr",
+   "initial_mg_L": 0.08,
+   "final_pitahaya_mg_L": 0.05,
+   "final_zapallo_mg_L": 0.06,
+   "limit_mg_L": null
+  }
+ ],
+ "optimal_conditions": [
+  {
+   "bioflocculant": "pitahaya",
+   "dose_mg_L": 120,
+   "pH": 7.5,
+   "rapid_mix_rpm": 200,
+   "rapid_mix_min": 2,
+   "slow_mix_rpm": 40,
+   "slow_mix_min": 20,
+   "settling_min": 30
+  },
+  {
+   "bioflocculant": "zapallo",
+   "dose_mg_L": 150,
+   "pH": 8,
+   "rapid_mix_rpm": 180,
+   "rapid_mix_min": 2,
+   "slow_mix_rpm": 35,
+   "slow_mix_min": 25,
+   "settling_min": 30
+  }
+ ],
+ "random_forest": {
+  "target": "metal removal (%)",
+  "r2_test": 0.87,
+  "rmse_test": 6.2,
+  "rmse_unit": "%",
+  "n_train": 72,
+  "n_test": 18,
+  "validation": "demo 80/20 split",
+  "feature_importance": [
+   {
+    "feature": "pH",
+    "importance": 0.41
+   },
+   {
+    "feature": "Dose",
+    "importance": 0.29
+   },
+   {
+    "feature": "Slow mix time",
+    "importance": 0.18
+   },
+   {
+    "feature": "Rapid mix rpm",
+    "importance": 0.12
+   }
+  ]
+ },
+ "limitations": []
+}

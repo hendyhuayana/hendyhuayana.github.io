@@ -1,0 +1,38 @@
+name: Build climate projections
+
+on:
+  push:
+    paths:
+      - scripts/update_climate.py
+      - .github/workflows/update-climate.yml
+  schedule:
+    - cron: "23 * * * *"   # hourly until every city is complete (about 8 runs), then a no-op
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: climate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download and aggregate CMIP6 projections
+        run: python scripts/update_climate.py
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add greendata/data/climate.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Update climate projections (CMIP6 via Open-Meteo)"
+          for i in 1 2 3; do git pull --rebase && git push && exit 0; sleep 10; done
+          exit 1

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiulacocha research · Bioflocculants for acid mine drainage · Hendy Mayumi Huayana</title>
+<meta name="description" content="Removal of heavy metals from Quiulacocha (Pasco) acid mine drainage with natural bioflocculants from pitahaya and zapallo macre. Research at UNFV.">
+<meta name="author" content="Hendy Mayumi Huayana">
+<meta property="og:title" content="Quiulacocha research · Bioflocculants for acid mine drainage · Hendy Mayumi Huayana">
+<meta property="og:description" content="Removal of heavy metals from Quiulacocha (Pasco) acid mine drainage with natural bioflocculants from pitahaya and zapallo macre. Research at UNFV.">
+<meta property="og:url" content="https://hendyhuayana.github.io/greendata/research/quiulacocha/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://hendyhuayana.github.io/greendata/img/hendy.png">
+<meta name="theme-color" content="#0f2d1f">
+<link rel="canonical" href="https://hendyhuayana.github.io/greendata/research/quiulacocha/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23b6e34f'/%3E%3Cpath d='M9 23c0-8.5 6-14 15-14 0 8.5-5.2 14.4-13.6 14.2M9 23l7-7' fill='none' stroke='%230f2d1f' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../vendor/leaflet.css">
+<link rel="stylesheet" href="../../app.css">
+<script src="../../i18n.js"></script>
+</head>
+<body class="subpage" data-base="../../">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="../../" aria-label="Hendy Mayumi Huayana, home">
+      <img class="nav-avatar" src="../../img/hendy.png" width="34" height="34" alt="">
+      <span class="nm"><b>Hendy Mayumi Huayana</b><span class="tagline">Environment, data &amp; technology</span></span>
+    </a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><span></span><span></span><span></span></button>
+    <nav aria-label="Sections" id="site-nav">
+      <a class="xp-link" href="../../#xp-climate">Climate Risk</a>
+      <a class="xp-link" href="../../#xp-geo">Geospatial Analysis</a>
+      <a class="xp-link" href="../../#xp-rs">Remote Sensing</a>
+      <a class="xp-link" href="../../#xp-ews">Early Warning</a>
+      <a class="xp-link" href="../../#xp-air">Air Quality</a>
+      <a class="xp-link" href="../../#xp-fire">Wildfire</a>
+      <a class="xp-short" href="../../#expertise">My topics</a>
+      <a href="../../research/" aria-current="page">Research</a>
+      <a href="../../#about">About</a>
+      <a class="btn sm" href="../../#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <!-- THESIS -->
+  <section class="wrap section page-top" id="thesis" aria-labelledby="thesis-h">
+    <div class="sec-head">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../">Home</a> / <a href="../">Research</a> / <span>Quiulacocha</span></nav>
+      <p class="kicker">Research · Mine water</p>
+      <h1 id="thesis-h" class="page-h1">Can fruit peels clean <span class="hl">mine water</span>?</h1>
+      <p class="sec-lede thesis-sub">Quiulacocha case study <span class="badge" id="thesis-badge">Research in progress</span></p>
+    </div>
+
+    <div class="thesis-top">
+      <div class="card">
+        <h3 class="card-h">Sampling site</h3>
+        <p class="card-sub" id="thesis-site">Quiulacocha, Pasco, Peru</p>
+        <div id="thesis-map" class="thesis-map" aria-label="Map of the sampling points PM1 and PM2 in Quiulacocha" hidden></div>
+        <div class="msg" id="thesis-map-empty">Sampling map coming soon.</div>
+      </div>
+      <div class="card">
+        <h3 class="card-h">The method in brief</h3>
+        <p class="thesis-method">We collected acid mine drainage at two points (PM1 and PM2) in Quiulacocha, Pasco. In the lab, we treated it with natural bioflocculants made from <strong>pitahaya</strong> (<i>Selenicereus undatus</i>) and <strong>zapallo macre</strong> (<i>Cucurbita maxima</i>) in Jar Tests organised with a <strong>Box-Behnken</strong> experimental design<span id="thesis-runs"></span>.</p>
+        <p class="thesis-method">Iron, lead, zinc, copper and chromium were measured by ICP-OES before and after treatment. A <strong>Random Forest</strong> model learned which conditions drive metal removal, and <strong>IDW interpolation</strong> in ArcGIS Pro mapped the results.</p>
+        <ul class="tags thesis-tags"><li>Box-Behnken design</li><li>Jar Test</li><li>ICP-OES</li><li>Random Forest · scikit-learn</li><li>IDW · ArcGIS Pro</li></ul>
+      </div>
+    </div>
+
+    <div id="thesis-results">
+      <div class="card thesis-soon" id="thesis-soon">
+        <span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4h8M13 4v8L6 25a2 2 0 0 0 1.8 3h16.4A2 2 0 0 0 26 25l-7-13V4"/><path d="M9.5 19h13"/></svg></span>
+        <div>
+          <h3 class="card-h">Results coming soon — research in progress</h3>
+          <p class="card-sub">The lab analyses are being completed. Charts with metal concentrations, removal rates, optimal conditions and the Random Forest model will appear here as soon as the results are ready.</p>
+        </div>
+      </div>
+
+      <div class="card" id="thesis-conc" hidden>
+        <div class="card-top">
+          <div><h3 class="card-h">Metal concentrations before and after treatment</h3><p class="card-sub" id="thesis-std"></p></div>
+          <div class="chart-legend">
+            <span><i class="sq-key" style="background:var(--initial)"></i>Raw mine drainage</span>
+            <span><i class="sq-key" style="background:var(--pitahaya)"></i>After pitahaya</span>
+            <span><i class="sq-key" style="background:var(--zapallo)"></i>After zapallo</span>
+            <span><i class="ln dash"></i>Regulatory limit</span>
+          </div>
+        </div>
+        <div class="metal-grid" id="thesis-conc-grid"></div>
+        <details class="table"><summary>Show as a table</summary><div id="thesis-conc-table"></div></details>
+      </div>
+
+      <div class="card" id="thesis-removal" hidden>
+        <div class="card-top">
+          <div><h3 class="card-h">Removal by metal and bioflocculant</h3><p class="card-sub">Share of each metal removed, in %.</p></div>
+          <div class="chart-legend">
+            <span><i class="sq-key" style="background:var(--pitahaya)"></i>Pitahaya</span>
+            <span><i class="sq-key" style="background:var(--zapallo)"></i>Zapallo macre</span>
+          </div>
+        </div>
+        <div class="chart" id="thesis-removal-chart"></div>
+        <details class="table"><summary>Show as a table</summary><div id="thesis-removal-table"></div></details>
+      </div>
+
+      <div class="thesis-two">
+        <div class="card" id="thesis-optimal" hidden>
+          <h3 class="card-h">Optimal conditions (Box-Behnken)</h3>
+          <p class="card-sub">Jar Test settings that maximised removal.</p>
+          <div class="opt-grid" id="thesis-optimal-grid"></div>
+        </div>
+        <div class="card" id="thesis-rf" hidden>
+          <h3 class="card-h">Random Forest model</h3>
+          <p class="card-sub" id="thesis-rf-sub"></p>
+          <div class="rf-metrics" id="thesis-rf-metrics"></div>
+          <div id="thesis-rf-imp-wrap" hidden>
+            <p class="rf-h">Which variables matter most</p>
+            <div class="chart" id="thesis-rf-imp"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="thesis-idw" hidden>
+        <h3 class="card-h">Spatial interpolation (IDW)</h3>
+        <img id="thesis-idw-img" alt="IDW interpolation map exported from ArcGIS Pro" class="idw-img">
+      </div>
+    </div>
+
+    <div class="explain thesis-notes">
+      <div>
+        <h3>Limitations</h3>
+        <ul id="thesis-limits">
+          <li>Lab-scale Jar Tests: full-scale treatment may behave differently.</li>
+          <li>Samples come from two points on a single sampling date.</li>
+          <li>Results apply to this drainage's chemistry and may not transfer to other mine waters.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Credits</h3>
+        <p>Research carried out at Universidad Nacional Federico Villarreal (UNFV), Faculty of Geographic, Environmental and Ecotourism Engineering, with Jar Test experiments at the Environmental Engineering Laboratory of <strong>UTEC</strong>. The paper and the app will be shared soon.</p>
+      </div>
+      <div>
+        <h3>Why it matters</h3>
+        <p>Acid mine drainage releases heavy metals into Andean rivers and lakes. Low-cost bioflocculants made from local plants could help treat it with fewer chemicals.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <a class="brand" href="https://www.tiktok.com/@hendy.greendata" aria-label="Hendy in Green Data on TikTok"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 18.5c0-7.8 5.6-12.8 13.8-12.8 0 7.8-4.8 13.2-12.5 13M5 18.5l6.3-6.3" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="wm" aria-hidden="true"><b>HENDY</b><i>in</i><b class="g">GREEN</b><b>DATA</b></span></a>
+    <div class="sources">
+      <p><strong>Open data sources.</strong> Satellite imagery: <a href="https://www.earthdata.nasa.gov/engage/open-data-services-software/earthdata-developer-portal/gibs-api">NASA GIBS</a> (GHRSST MUR, GPM IMERG, MODIS, VIIRS, SMAP). El Niño indices: <a href="https://www.cpc.ncep.noaa.gov/data/indices/">NOAA CPC</a>, refreshed automatically every week. River discharge: <a href="https://open-meteo.com/en/docs/flood-api">GloFAS (Copernicus)</a> via Open-Meteo. Air quality and weather: <a href="https://open-meteo.com/">Open-Meteo</a> with <a href="https://atmosphere.copernicus.eu/">Copernicus CAMS</a> (CC BY 4.0). Peru boundary: Natural Earth. Basemap: Esri, HERE, Garmin, © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.</p>
+      <p><strong>Disclaimer.</strong> These are satellite products and global models, not official measurements. They do not replace statements from ENFEN, SENAMHI, ANA, MINAM, OEFA or INDECI. Personal, educational project.</p>
+    </div>
+    <p class="fine">Made in Lima by Hendy Mayumi Huayana · <a href="https://github.com/hendyhuayana/hendyhuayana.github.io/tree/main/greendata">Open source</a></p>
+  </div>
+</footer>
+<script src="../../vendor/leaflet.js"></script>
+<script src="../../thesis.js"></script>
+<script src="../../ui.js"></script>
+<script src="../../ux.js"></script>
+</body>
+</html>

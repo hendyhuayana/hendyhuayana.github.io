@@ -1,605 +1,362 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>hendy.greendata · Datos ambientales del Perú</title>
-<meta name="description" content="Calidad del aire, lluvia y radiación UV en ciudades del Perú, explicados de forma simple. Un proyecto de Hendy Huayana, ingeniera ambiental.">
-<meta property="og:title" content="hendy.greendata · Datos ambientales del Perú">
-<meta property="og:description" content="Calidad del aire, lluvia y radiación UV en ciudades del Perú, explicados de forma simple.">
+<title>Hendy Mayumi Huayana · Environmental Engineer · Satellite Data &amp; Climate Risk</title>
+<meta name="description" content="Portfolio of Hendy Mayumi Huayana, Environmental Engineer in Lima, Peru: remote sensing, GIS and climate risk. Includes a live environmental observatory of Peru built on open NASA, NOAA and Copernicus data.">
+<meta name="author" content="Hendy Mayumi Huayana">
+<meta property="og:title" content="Hendy Mayumi Huayana · Environmental Engineer · Satellite Data & Climate Risk">
+<meta property="og:description" content="Remote sensing, GIS and climate risk from Peru. Live observatory: coastal El Niño, ocean, rainfall, rivers and air quality from open satellite data.">
 <meta property="og:url" content="https://hendyhuayana.github.io/greendata/">
-<meta property="og:type" content="website">
+<meta property="og:type" content="profile">
+<meta property="og:image" content="https://hendyhuayana.github.io/greendata/img/hendy.png">
+<meta name="theme-color" content="#0f2d1f">
 <link rel="canonical" href="https://hendyhuayana.github.io/greendata/">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231f6f50'/%3E%3Cpath d='M9 22c0-8 6-13 14-13 0 8-5 14-13 14' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23b6e34f'/%3E%3Cpath d='M9 23c0-8.5 6-14 15-14 0 8.5-5.2 14.4-13.6 14.2M9 23l7-7' fill='none' stroke='%230f2d1f' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://gibs.earthdata.nasa.gov" crossorigin>
 <link rel="stylesheet" href="vendor/leaflet.css">
-<style>
-  :root {
-    color-scheme: light;
-    --bg: #f6f8f6;
-    --surface: #ffffff;
-    --surface-2: #eef3ef;
-    --line: #dde5df;
-    --grid: #e6ebe7;
-    --ink: #13201a;
-    --ink-2: #4a5a52;
-    --muted: #6b7a72;
-    --brand: #1f6f50;
-    --brand-ink: #ffffff;
-    --rain: #2a78d6;
-    --pm: #2a78d6;
-    --ref: #8a958f;
-    --good: #0ca30c;
-    --warning: #fab219;
-    --serious: #ec835a;
-    --critical: #d03b3b;
-    --ring: #ffffff;
-    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.05);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-      --bg: #101412;
-      --surface: #1a1f1c;
-      --surface-2: #222925;
-      --line: #2e3732;
-      --grid: #2a322d;
-      --ink: #eef2ef;
-      --ink-2: #c1cbc5;
-      --muted: #94a19a;
-      --brand: #3fae80;
-      --brand-ink: #0b1510;
-      --rain: #3987e5;
-      --pm: #3987e5;
-      --ref: #7d8a83;
-      --ring: #1a1f1c;
-      --shadow: none;
-    }
-  }
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-    --bg: #101412; --surface: #1a1f1c; --surface-2: #222925; --line: #2e3732; --grid: #2a322d;
-    --ink: #eef2ef; --ink-2: #c1cbc5; --muted: #94a19a; --brand: #3fae80; --brand-ink: #0b1510;
-    --rain: #3987e5; --pm: #3987e5; --ref: #7d8a83; --ring: #1a1f1c; --shadow: none;
-  }
-
-  * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
-  body {
-    margin: 0; background: var(--bg); color: var(--ink);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    line-height: 1.55; font-size: 16px;
-  }
-  a { color: var(--brand); }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
-
-  /* Header */
-  header.top { padding: 28px 0 8px; }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.15rem; letter-spacing: -.01em; }
-  .logo { width: 34px; height: 34px; border-radius: 9px; background: var(--brand); display: grid; place-items: center; flex: none; }
-  .logo svg { width: 22px; height: 22px; }
-  .brand .dot { color: var(--brand); }
-  h1 { font-size: clamp(1.6rem, 4.5vw, 2.4rem); line-height: 1.15; margin: 22px 0 8px; letter-spacing: -.02em; max-width: 22ch; text-wrap: balance; }
-  .lede { color: var(--ink-2); margin: 0 0 20px; max-width: 62ch; }
-
-  /* City picker */
-  .picker { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 4px 0 18px; }
-  .picker label { font-size: .9rem; color: var(--ink-2); }
-  select {
-    font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line);
-    border-radius: 10px; padding: 9px 36px 9px 12px; min-width: 220px; max-width: 100%;
-    appearance: none; -webkit-appearance: none;
-    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
-    background-position: calc(100% - 18px) 55%, calc(100% - 13px) 55%;
-    background-size: 5px 5px; background-repeat: no-repeat;
-  }
-  .updated { font-size: .82rem; color: var(--muted); }
-
-  /* Layout */
-  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 16px; align-items: start; }
-  @media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
-  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 18px; min-width: 0; }
-  .card h2 { font-size: 1rem; margin: 0 0 2px; }
-  .card .sub { font-size: .85rem; color: var(--muted); margin: 0 0 14px; }
-
-  #map { height: 520px; border-radius: 10px; background: var(--surface-2); z-index: 0; }
-  @media (max-width: 860px) { #map { height: 360px; } }
-  .leaflet-container { font: inherit; }
-  .leaflet-control-attribution { font-size: .68rem; }
-  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; font-size: .82rem; color: var(--ink-2); }
-  .legend span { display: inline-flex; align-items: center; gap: 6px; }
-
-  .stack { display: grid; gap: 16px; min-width: 0; }
-
-  /* Tiles */
-  .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-  @media (max-width: 520px) { .tiles { grid-template-columns: minmax(0, 1fr); } }
-  .tile { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; min-width: 0; }
-  .tile .k { font-size: .78rem; color: var(--ink-2); }
-  .tile .v { font-size: 1.7rem; font-weight: 650; letter-spacing: -.02em; line-height: 1.2; margin-top: 2px; font-variant-numeric: tabular-nums; }
-  .tile .v small { font-size: .8rem; font-weight: 500; color: var(--muted); margin-left: 3px; }
-  .tile .note { font-size: .78rem; color: var(--muted); margin-top: 2px; }
-
-  .status { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; font-weight: 600; margin-top: 6px; color: var(--ink); }
-  .sw { width: 10px; height: 10px; border-radius: 50%; flex: none; display: inline-block; }
-  .sw.sq { border-radius: 2px; }
-  .sw.tri { width: 0; height: 0; border-radius: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid currentColor; background: none !important; }
-
-  /* Charts */
-  .chart { position: relative; width: 100%; }
-  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
-  .chart text { font-size: 11px; fill: var(--muted); font-family: inherit; }
-  .chart .lbl { fill: var(--ink-2); font-weight: 600; }
-  .tip {
-    position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font-size: .8rem;
-    padding: 6px 9px; border-radius: 8px; white-space: nowrap; transform: translate(-50%, -100%);
-    opacity: 0; transition: opacity .12s; z-index: 2; line-height: 1.35;
-  }
-  .tip b { font-weight: 650; }
-  .chart-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .78rem; color: var(--ink-2); margin-top: 8px; }
-  .chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
-  .ln { width: 16px; height: 0; border-top: 2px solid var(--pm); display: inline-block; }
-  .ln.dash { border-top: 2px dashed var(--ref); }
-
-  details.table { margin-top: 10px; font-size: .82rem; }
-  details.table summary { cursor: pointer; color: var(--ink-2); }
-  details.table table { border-collapse: collapse; width: 100%; margin-top: 8px; font-variant-numeric: tabular-nums; }
-  details.table th, details.table td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line); }
-  details.table td.n, details.table th.n { text-align: right; }
-
-  /* Learn */
-  section.learn { margin: 40px 0 0; }
-  section.learn > h2 { font-size: 1.3rem; margin: 0 0 4px; letter-spacing: -.01em; }
-  section.learn > p { color: var(--ink-2); margin: 0 0 16px; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
-  .cards .card h3 { font-size: .98rem; margin: 0 0 6px; }
-  .cards .card p { margin: 0; color: var(--ink-2); font-size: .92rem; }
-
-  .msg { padding: 14px; border-radius: 10px; background: var(--surface-2); color: var(--ink-2); font-size: .92rem; }
-  .msg button { font: inherit; margin-top: 8px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
-  .skeleton { height: 120px; border-radius: 10px; background: linear-gradient(90deg, var(--surface-2), var(--line), var(--surface-2)); background-size: 200% 100%; animation: sh 1.4s infinite linear; }
-  @keyframes sh { to { background-position: -200% 0; } }
-
-  footer { margin: 48px 0 0; padding: 24px 0 40px; border-top: 1px solid var(--line); font-size: .85rem; color: var(--muted); }
-  footer .links { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 8px 0 14px; }
-  footer p { margin: 6px 0; max-width: 80ch; }
-  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } .tip { transition: none; } }
-</style>
+<link rel="stylesheet" href="app.css">
+<script src="i18n.js"></script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Person","name":"Hendy Mayumi Huayana Cjuro","alternateName":["Hendy Mayumi Huayana","Mayumi Huayana","Hendy Huayana"],"jobTitle":"Environmental Engineer","image":"https://hendyhuayana.github.io/greendata/img/hendy.png","address":{"@type":"PostalAddress","addressLocality":"Lima","addressCountry":"PE"},"url":"https://hendyhuayana.github.io/greendata/","sameAs":["https://www.linkedin.com/in/hendy-huayana/","https://github.com/hendyhuayana","https://orcid.org/0009-0000-9348-6078","https://www.tiktok.com/@hendy.greendata"],"knowsAbout":["Remote sensing","Geographic Information Systems","Climate risk","El Niño","Early warning systems","Google Earth Engine","Python","PostGIS"],"knowsLanguage":["es","qu","en"]}
+</script>
 </head>
 <body>
-<div class="wrap">
-  <header class="top">
-    <div class="brand">
-      <span class="logo" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M5 18c0-7.5 5.5-12 13-12 0 7.5-4.6 12.6-12 12.4M5 18l6-6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </span>
-      <span>hendy<span class="dot">.</span>greendata</span>
-    </div>
-    <h1>Datos ambientales del Perú, explicados simple</h1>
-    <p class="lede">¿Cómo está el aire en tu ciudad? ¿Va a llover esta semana? ¿Qué tan fuerte está el sol? Elige una ciudad en el mapa o en la lista y te lo explico con datos abiertos.</p>
-    <div class="picker">
-      <label for="city">Ciudad</label>
-      <select id="city" aria-label="Elegir ciudad"></select>
-      <span class="updated" id="updated" aria-live="polite"></span>
-    </div>
-  </header>
+<a class="skip" href="#main">Skip to content</a>
 
-  <main class="grid">
-    <div class="card">
-      <h2>Calidad del aire en el Perú</h2>
-      <p class="sub">Promedio de PM2.5 en las últimas 24 horas. Toca un punto para ver la ciudad.</p>
-      <div id="map" role="application" aria-label="Mapa de ciudades del Perú coloreadas por calidad del aire"></div>
-      <div class="legend" id="map-legend"></div>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="Hendy Mayumi Huayana, home">
+      <img class="nav-avatar" src="img/hendy.png" width="34" height="34" alt="">
+      <span class="nm"><b>Hendy Mayumi Huayana</b><span class="tagline">Environment, data &amp; technology</span></span>
+    </a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><span></span><span></span><span></span></button>
+    <nav aria-label="Sections" id="site-nav">
+      <a class="xp-link" href="#xp-climate">Climate Risk</a>
+      <a class="xp-link" href="#xp-geo">Geospatial Analysis</a>
+      <a class="xp-link" href="#xp-rs">Remote Sensing</a>
+      <a class="xp-link" href="#xp-ews">Early Warning</a>
+      <a class="xp-link" href="#xp-air">Air Quality</a>
+      <a class="xp-link" href="#xp-fire">Wildfire</a>
+      <a class="xp-short" href="#expertise">My topics</a>
+      <a href="research/">Research</a>
+      <a href="#about">About</a>
+      <a class="btn sm" href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <!-- HERO MAP -->
+  <section class="hero" id="satellite" aria-label="Satellite map">
+    <div id="map" aria-label="Satellite map of Peru"></div>
+
+    <div class="hero-copy" id="top">
+      <div class="wrap"><div class="copy-col">
+        <p class="eyebrow"><span class="live" aria-hidden="true"></span>Live environmental observatory · Peru</p>
+        <h1 id="hero-h">Did you know you can watch Peru <span class="hl">from space</span>?</h1>
+        <p class="lede" id="hero-lede">Daily satellite data from NASA, Copernicus and NOAA. Drag the white line to compare with one year ago.</p>
+        <a class="handle" href="#about"><img src="img/hendy.png" width="26" height="26" alt="">Built by Hendy Mayumi Huayana · Hendy in Green Data</a>
+      </div></div>
     </div>
 
-    <div class="stack">
-      <div class="card" id="now">
-        <h2 id="city-title">Cargando datos…</h2>
-        <p class="sub" id="city-sub">&nbsp;</p>
-        <div id="tiles"><div class="skeleton"></div></div>
+    <div class="swipe" id="swipe" hidden>
+      <div class="swipe-line" aria-hidden="true"><span class="swipe-knob" id="swipe-knob" role="slider" tabindex="0" aria-label="Compare dates: drag or use the arrow keys" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><svg viewBox="0 0 24 24"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      <span class="swipe-tag left" id="swipe-left"></span>
+      <span class="swipe-tag right" id="swipe-right"></span>
+    </div>
+
+    <aside class="panel" aria-label="Satellite layers">
+      <div class="panel-head">
+        <span class="panel-title">Satellite layer</span>
+        <button class="icon-btn" id="panel-toggle" aria-expanded="true" aria-controls="panel-body" title="Show or hide">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
       </div>
-
-      <div class="card">
-        <h2>Partículas finas (PM2.5), 48 horas</h2>
-        <p class="sub">Últimas 24 h y pronóstico de las próximas 24 h, en µg/m³.</p>
-        <div class="chart" id="pm-chart"><div class="skeleton"></div></div>
-        <div class="chart-legend">
-          <span><i class="ln"></i>PM2.5 por hora</span>
-          <span><i class="ln dash"></i>Guía OMS (15) y ECA Perú (50), promedio 24 h</span>
+      <div id="panel-body">
+        <p class="step-h"><span class="step-n">1</span>What do you want to see?</p>
+        <div class="layer-groups" id="layers"></div>
+        <div class="seeing">
+          <p class="seeing-h">What you are seeing</p>
+          <div class="layer-info" id="layer-info"></div>
+          <div class="scale-words" id="scale-words" hidden></div>
+          <img class="legend-img" id="legend" alt="" hidden>
         </div>
-        <details class="table"><summary>Ver como tabla</summary><div id="pm-table"></div></details>
+        <div class="time">
+          <p class="step-h"><span class="step-n">2</span>Which day?</p>
+          <div class="time-row">
+            <button class="icon-btn play" id="play" aria-label="Animate the last 14 days" title="Animate the last 14 days">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path id="play-icon" d="M8 5v14l11-7z" fill="currentColor"/></svg>
+            </button>
+            <input type="range" id="date-range" min="0" max="60" value="60" aria-label="Image date">
+            <output id="date-label" for="date-range"></output>
+          </div>
+          <p class="step-h"><span class="step-n">3</span>Compare and show</p>
+          <label class="check"><input type="checkbox" id="compare" checked> Compare with one year ago</label>
+          <p class="step-tip">Drag the white line on the map: left is one year ago, right is today.</p>
+          <div class="overlay-toggles">
+            <label class="check"><input type="checkbox" id="ov-cities" checked> Cities (air quality)</label>
+            <label class="check"><input type="checkbox" id="ov-rivers" checked> Rivers (discharge)</label>
+          </div>
+        </div>
       </div>
+    </aside>
+  </section>
 
-      <div class="card">
-        <h2>Lluvia de los próximos 7 días</h2>
-        <p class="sub">Precipitación acumulada por día, en milímetros.</p>
-        <div class="chart" id="rain-chart"><div class="skeleton"></div></div>
-        <details class="table"><summary>Ver como tabla</summary><div id="rain-table"></div></details>
-      </div>
+  <div class="ticker" id="ticker" aria-label="Live indicators" hidden><div class="ticker-track" id="ticker-track"></div></div>
+
+  <!-- KPIs -->
+  <section class="wrap kpis" aria-label="Key indicators" id="kpis">
+    <div class="kpi" id="kpi-n12"><div class="skeleton"></div></div>
+    <div class="kpi" id="kpi-oni"><div class="skeleton"></div></div>
+    <div class="kpi" id="kpi-air"><div class="skeleton"></div></div>
+    <div class="kpi" id="kpi-rivers"><div class="skeleton"></div></div>
+  </section>
+
+  <!-- EXPERTISE -->
+  <section class="wrap section sec-light" id="expertise" aria-labelledby="exp-h">
+    <div class="sec-head">
+      <p class="kicker"><span class="k-num">01</span>Topics I love</p>
+      <h2 id="exp-h">What I'm <span class="hl">passionate</span> about</h2>
+      <p class="sec-lede">Six topics I love to explore, learn about and share, each with a live example on this page.</p>
     </div>
-  </main>
-
-  <section class="learn" aria-labelledby="learn-h">
-    <h2 id="learn-h">Aprende en 1 minuto</h2>
-    <p>Lo que hay detrás de cada número.</p>
-    <div class="cards">
-      <div class="card">
-        <h3>¿Qué es el PM2.5?</h3>
-        <p>Partículas de menos de 2.5 micras, unas 30 veces más finas que un cabello. Entran hasta los pulmones y la sangre. Vienen del tráfico, la quema de residuos y de bosques, la industria y el polvo.</p>
-      </div>
-      <div class="card">
-        <h3>OMS vs. ECA Perú</h3>
-        <p>La guía de la OMS (2021) recomienda no superar 15 µg/m³ de PM2.5 en promedio de 24 h. El Estándar de Calidad Ambiental del Perú (D.S. 003-2017-MINAM) fija 50 µg/m³. Estar bajo el ECA no significa que el aire sea del todo sano.</p>
-      </div>
-      <div class="card">
-        <h3>¿Por qué el UV es tan alto en los Andes?</h3>
-        <p>Por la altitud y la cercanía al ecuador: en Cusco o Puno hay menos atmósfera que filtre el sol, y el índice UV llega a 11 o más (extremo). Usa protector, lentes y sombrero, incluso si está nublado.</p>
-      </div>
-      <div class="card">
-        <h3>Lluvias y El Niño</h3>
-        <p>En la costa norte, varios días seguidos con lluvias intensas pueden causar huaicos e inundaciones, sobre todo en años de El Niño. Sigue siempre los avisos oficiales de SENAMHI e INDECI.</p>
-      </div>
+    <div class="expertise">
+      <article class="xp" id="xp-climate"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4 3 27h26z"/><path d="M16 12v7M16 23v.5"/></svg></span><h3>Climate Risk</h3><p>I love understanding how hazard, exposure and vulnerability come together, so that people can prepare before a disaster.</p><ul><li>Part of the team behind OEFA's El Niño 2026–2027 risk framework, applied to regulated facilities and the Northern Peruvian Oil Pipeline</li><li>AHP weighting and consistency checks, open-sourced in Python</li></ul><a href="#nino">See El Niño live →</a></article>
+      <article class="xp" id="xp-geo"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8l8-3 8 3 8-3v19l-8 3-8-3-8 3z"/><path d="M12 5v19M20 8v19"/></svg></span><h3>Geospatial Analysis</h3><p>I am fascinated by how maps and spatial data turn a territory into stories and answers.</p><ul><li>Institutional geospatial database and ArcGIS Enterprise dashboards at OEFA</li><li>District-level reports automated with ArcPy, working with PostGIS and Oracle SDE</li></ul><a href="environment/#air">Explore city data →</a></article>
+      <article class="xp" id="xp-rs"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="12.5" y="12.5" width="7" height="7" rx="1.2" transform="rotate(45 16 16)"/><path d="M11 11 6.5 6.5M8.5 4.2 4.2 8.5l4.3 4.3 4.3-4.3z"/><path d="M21 21l4.5 4.5M23.5 19.2l4.3 4.3-4.3 4.3-4.3-4.3z"/><path d="M20.5 6.5a5 5 0 0 1 5 5M20.5 2.8a8.7 8.7 0 0 1 8.7 8.7"/></svg></span><h3>Remote Sensing</h3><p>Seeing the planet from space never stops amazing me: from Andean glaciers to rain over the Amazon.</p><ul><li>Sentinel-2, Landsat and GPM IMERG workflows; Random Forest land-cover classification</li><li>Research on iron oxides in deglaciated Andean areas</li></ul><a href="#satellite">Open the satellite map →</a></article>
+      <article class="xp" id="xp-ews"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 5a7 7 0 0 0-7 7v5l-2.5 4h19L23 17v-5a7 7 0 0 0-7-7z"/><path d="M13 25a3 3 0 0 0 6 0"/><path d="M25.5 6.5a8 8 0 0 1 2.5 5M6.5 6.5A8 8 0 0 0 4 11.5"/></svg></span><h3>Early Warning Systems</h3><p>I care about alerts arriving in time, before the rain turns into floods or debris flows.</p><ul><li>Daily early-warning workflow at OEFA: terrain susceptibility × GPM 24/48 h rainfall for floods, mass movements and debris flows</li><li>Support for the SANDRA environmental risk alert system</li></ul><a href="#rivers">See river forecasts →</a></article>
+      <article class="xp" id="xp-air"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h15a3.5 3.5 0 1 0-3.5-3.5"/><path d="M4 17h21a3.5 3.5 0 1 1-3.5 3.5"/><path d="M4 23h9"/></svg></span><h3>Air Quality & Environmental Monitoring</h3><p>I believe everyone deserves to know what they breathe, with data that is clear and reliable.</p><ul><li>Quality control of water, air and soil monitoring data; indicators for the public AppICA dashboard</li><li>Supported the consolidation of Lima's 2008–2020 air-quality records and the specification of low-cost sensors (ATU)</li></ul><a href="environment/#air">Check air quality →</a></article>
+      <article class="xp" id="xp-fire"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 28c-5.5 0-9-3.6-9-8.4 0-4.6 3.4-7.4 4.8-11.6 1.6 2.2 2.4 4 2.4 6 2-1.2 3.4-4.4 3.2-9 4.6 3 8.6 8.4 8.6 14.6 0 4.8-3.5 8.4-10 8.4z"/><path d="M16 28c-2.4 0-4-1.6-4-3.8 0-2.4 2-3.6 2.8-5.6 2 1.4 5.2 3 5.2 5.8 0 2.2-1.6 3.6-4 3.6z"/></svg></span><h3>Wildfire Monitoring</h3><p>Wildfires fascinate me: I follow them from space every day to understand where they start and how they spread.</p><ul><li>Daily VIIRS active-fire layer on this observatory; licensed drone pilot</li></ul><a href="#satellite" data-layer="fire">See active fires →</a></article>
     </div>
   </section>
 
-  <footer>
-    <div class="brand" style="font-size:1rem"><span>hendy<span class="dot">.</span>greendata</span></div>
-    <div class="links">
-      <a href="https://www.tiktok.com/@hendy.greendata">TikTok</a>
-      <a href="https://hendyhuayana.github.io/">Sobre mí</a>
-      <a href="https://github.com/hendyhuayana">GitHub</a>
-      <a href="https://www.linkedin.com/in/hendy-huayana/">LinkedIn</a>
+  <!-- EL NIÑO -->
+  <section class="wrap section" id="nino" aria-labelledby="nino-h">
+    <div class="sec-head">
+      <p class="kicker"><span class="k-num">02</span>Ocean &amp; climate</p>
+      <h2 id="nino-h">How strong is <span class="hl">El Niño</span> this year?</h2>
+      <p class="sec-lede" id="nino-lede">Sea surface temperature anomaly: how much warmer (or colder) the ocean is than normal.</p>
     </div>
-    <p><strong>Fuentes:</strong> pronóstico del tiempo y calidad del aire de <a href="https://open-meteo.com/">Open-Meteo</a> (CC BY 4.0), que usa modelos meteorológicos y el servicio europeo de calidad del aire <a href="https://atmosphere.copernicus.eu/">Copernicus CAMS</a>. Mapa base © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, © <a href="https://carto.com/attributions">CARTO</a>.</p>
-    <p><strong>Importante:</strong> son estimaciones de modelos con una resolución de decenas de kilómetros, no mediciones de estaciones. No reflejan bien fuentes locales (una fábrica, una avenida) y no reemplazan la información oficial de SENAMHI, MINAM u OEFA. Proyecto personal y educativo.</p>
-  </footer>
-</div>
+    <div class="card">
+      <div class="card-top">
+        <div class="seg" role="tablist" aria-label="Period">
+          <button role="tab" data-range="all" aria-selected="true">1981 – today</button>
+          <button role="tab" data-range="10" aria-selected="false">10 years</button>
+          <button role="tab" data-range="2" aria-selected="false">2 years</button>
+        </div>
+        <div class="chart-legend">
+          <span><i class="ln warm"></i>Niño 1+2 · coast of Peru &amp; Ecuador</span>
+          <span><i class="ln dash"></i>Niño 3.4 · central Pacific</span>
+        </div>
+      </div>
+      <div class="chart" id="enso-chart" style="min-height:300px"><div class="skeleton tall"></div></div>
+      <details class="table"><summary>Show the last 12 weeks as a table</summary><div id="enso-table"></div></details>
+    </div>
+    <div class="explain">
+      <div><h3>Niño 1+2 or Niño 3.4?</h3><p><strong>Niño 1+2</strong> tracks the ocean off northern Peru and Ecuador: it drives heavy rain, debris flows and fishery shifts along the coast. <strong>Niño 3.4</strong> tracks the central Pacific and defines El Niño globally.</p></div>
+      <div><h3>Why does +1 °C matter?</h3><p>A 1 °C warmer ocean evaporates more water and reshapes winds. In 1983 and 1998, anomalies of about +4 °C brought the worst rainfall of the 20th century to Tumbes and Piura.</p></div>
+      <div><h3>Who issues official alerts?</h3><p>Peru's multisector commission <strong>ENFEN</strong> issues the official statements and the coastal index (ICEN). This site is educational: always follow ENFEN, SENAMHI and INDECI.</p></div>
+    </div>
+  </section>
+
+  <!-- RIVERS -->
+  <section class="wrap section sec-light" id="rivers" aria-labelledby="rios-h">
+    <div class="sec-head">
+      <p class="kicker"><span class="k-num">03</span>Water</p>
+      <h2 id="rios-h">How much water are the rivers of <span class="hl">Peru and its neighbours</span> carrying?</h2>
+      <p class="sec-lede">Daily discharge for the last 90 days and a 30-day forecast from the GloFAS global hydrological model (Copernicus). Pick a river.</p>
+    </div>
+    <div class="river-layout">
+    <div class="river-grid" id="river-cards"><div class="skeleton"></div></div>
+    <div class="card river-main">
+      <div class="card-top">
+        <div><h3 class="card-h" id="river-title">&nbsp;</h3><p class="card-sub" id="river-sub">&nbsp;</p></div>
+        <div class="chart-legend">
+          <span><i class="ln"></i>Daily discharge</span>
+          <span><i class="band"></i>Likely forecast range (p25–p75)</span>
+        </div>
+      </div>
+      <div class="chart" id="river-chart" style="min-height:260px"><div class="skeleton tall"></div></div>
+      <details class="table"><summary>Show as a table</summary><div id="river-table"></div></details>
+    </div>
+    </div>
+  </section>
+
+  <!-- CLIMATE PROJECTIONS -->
+  <section class="wrap section" id="projections" aria-labelledby="proj-h" hidden>
+    <div class="sec-head">
+      <p class="kicker"><span class="k-num">04</span>Climate projections</p>
+      <h2 id="proj-h">How will Peru's climate change <span class="hl">by 2050</span>?</h2>
+      <p class="sec-lede">Annual mean temperature and relative rainfall change from 1960 to 2049 in two high-resolution CMIP6 climate models, compared with the 1981–2010 baseline.</p>
+      <div class="picker">
+        <label for="proj-city">City</label>
+        <select id="proj-city"></select>
+        <div class="seg" role="tablist" aria-label="Variable">
+          <button role="tab" data-var="0" aria-selected="true">Temperature</button>
+          <button role="tab" data-var="1" aria-selected="false">Rainfall</button>
+        </div>
+      </div>
+    </div>
+    <div class="card stripes-card">
+      <div class="card-top">
+        <div><h3 class="card-h" id="stripes-title">Warming stripes</h3>
+        <p class="card-sub">Each stripe is one year: annual mean temperature compared with the 1981–2010 average. Years to the right of “Today” are model projections.</p></div>
+        <div class="stripes-legend" id="stripes-legend" aria-hidden="true"></div>
+      </div>
+      <div class="chart" id="stripes"></div>
+    </div>
+    <div class="proj-grid">
+      <div class="card" id="proj-kpis"><div class="skeleton"></div></div>
+      <div class="card">
+        <div class="chart" id="proj-chart" style="min-height:280px"><div class="skeleton tall"></div></div>
+        <div class="chart-legend">
+          <span><i class="ln"></i>Average of the models</span>
+          <span><i class="band"></i>Range between models</span>
+          <span><i class="ln dash"></i>1981–2010 baseline</span>
+        </div>
+        <details class="table"><summary>Show decade averages as a table</summary><div id="proj-table"></div></details>
+      </div>
+    </div>
+    <p class="card-sub proj-note">Rainfall is shown as a relative change because coarse model grids cannot reproduce absolute rainfall in Peru's hyper-arid coast. Projections are not forecasts: they show the long-term trend under a high-emissions pathway (close to RCP8.5), not the weather of a given year. Models: EC-Earth3P-HR and MRI-AGCM3-2-S (CMIP6 HighResMIP), bias corrected by <a href="https://open-meteo.com/en/docs/climate-api">Open-Meteo</a>. Built by an automated pipeline on GitHub Actions.</p>
+  </section>
+
+  <!-- CITIES -->
+
+
+  <!-- PORTFOLIO -->
+  <section class="cta" id="about" aria-labelledby="about-h">
+    <div class="wrap">
+      <div class="cta-intro">
+        <img class="avatar" src="img/hendy.png" width="178" height="178" alt="Portrait of Hendy Mayumi Huayana with the Hendy in Green Data logo">
+        <div>
+          <p class="kicker"><span class="k-num">06</span>About me</p>
+          <h2 id="about-h">Technology at the service of the <span class="hl">environment</span></h2>
+          <p class="sec-lede">I'm <strong>Hendy Mayumi Huayana</strong> (Mayumi to many), an Environmental Engineering professional from Lima, Peru, passionate about technology and innovation for the environment. For more than three years at OEFA, Peru's environmental assessment and enforcement agency, I have been part of a team working on climate risk, environmental monitoring and early warning. I love learning new tools, from data science to satellites, and sharing what I learn so that more people understand their environment.</p>
+          <ul class="tags focus" aria-label="Focus areas">
+            <li>Disaster Risk Management</li><li>Climate Resilience &amp; Adaptation</li><li>ENSO / El Niño</li><li>Early Warning Systems</li><li>Technology &amp; Innovation for the Environment</li><li>Latin America &amp; the Caribbean</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 class="block-h" id="experience">Experience</h3>
+      <div class="timeline">
+        <div class="tl-item">
+          <p class="tl-org">OEFA · GIS Coordination Unit · Lima <span class="tl-date">Nov 2024 – Present</span></p>
+          <h4>Environmental and Territorial Information Management Assistant</h4>
+          <p class="tl-sub">Previously Geospatial Information Management Assistant (Nov 2024 – May 2026)</p>
+          <ul>
+            <li>Contributed, as part of the team, to OEFA's multicriteria El Niño 2026–2027 risk framework (hazard × exposure × vulnerability), applied to regulated facilities and the Northern Peruvian Oil Pipeline in an official technical report.</li>
+            <li>Worked with the team on a daily early-warning workflow for floods, mass movements and debris flows that combines terrain susceptibility with GPM 24/48-hour satellite precipitation.</li>
+            <li>Satellite monitoring in Google Earth Engine and Python, including Random Forest land-cover classification.</li>
+            <li>Quality control of environmental monitoring data (water, air, soil), the institutional geospatial database and indicators for the public AppICA dashboard.</li>
+            <li>Supported district-level reporting with ArcPy and ReportLab, ArcGIS Enterprise dashboards and an Angular app that catalogues ArcGIS services.</li>
+          </ul>
+        </div>
+        <div class="tl-item">
+          <p class="tl-org">OEFA · Directorate of Policies and Strategies in Environmental Enforcement <span class="tl-date">Oct – Dec 2023 · May – Oct 2024</span></p>
+          <h4>Environmental Supervisor · Environmental Data Analyst</h4>
+          <ul><li>Supported the design of the data structure used to track environmental monitoring reports (IMA module) and the automation of information by subsector and regional office.</li></ul>
+        </div>
+        <div class="tl-item">
+          <p class="tl-org">ATU · Urban Transport Authority for Lima and Callao, incl. Protransporte <span class="tl-date">Jul 2019 – Mar 2022</span></p>
+          <h4>Environmental Services Consultant · Environmental Assistant</h4>
+          <ul>
+            <li>Helped consolidate 2008–2020 air-quality monitoring results and prepared map layers for 100 air-quality and noise monitoring points.</li>
+            <li>Tracked environmental commitments of Lima Metro Lines 1 and 2 and defined requirements for low-cost air-quality sensors.</li>
+          </ul>
+        </div>
+        <div class="tl-item">
+          <p class="tl-org">Private sector · ATIQ Proyectos, DKO Proyectos <span class="tl-date">2022 – 2024</span></p>
+          <h4>Environmental Analyst · Health, Safety and Environment Supervisor</h4>
+          <ul><li>Annual environmental report for an electricity distribution company using geoprocessing and thematic mapping; HSE compliance supervision.</li></ul>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <h3 class="block-h">Education &amp; training</h3>
+          <div class="tl-item plain">
+            <p class="tl-org">Universidad Nacional Federico Villarreal (UNFV) <span class="tl-date">2015 – 2020</span></p>
+            <h4>School of Environmental Engineering</h4>
+            <ul>
+              <li>Python Programming in ArcGIS (120 h, 2024) · GIS Specialist, ArcGIS Pro (120 h, 2024).</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <h3 class="block-h">Teaching, research &amp; service</h3>
+          <div class="tl-item plain">
+            <ul>
+              <li>Volunteer Lecturer, Spatial Databases and Geographic Information Technologies, UNFV (2026).</li>
+              <li>Science interpreter, Ciencia Climática platform, Geophysical Institute of Peru (IGP), 2023.</li>
+              <li>Research in progress: heavy-metal removal from Quiulacocha acid mine drainage with natural bioflocculants. <a href="research/quiulacocha/">See the study →</a></li>
+              <li>Research in preparation: iron oxides in deglaciated areas of the Huaytapallana Cordillera (Google Earth Engine).</li>
+              <li>Licensed drone pilot.</li>
+              <li>Science communicator: <a href="https://www.tiktok.com/@hendy.greendata">Hendy in Green Data</a>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="block-h">Featured projects</h3>
+      <div class="services">
+        <div class="svc"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="12.5" y="12.5" width="7" height="7" rx="1.2" transform="rotate(45 16 16)"/><path d="M11 11 6.5 6.5M8.5 4.2 4.2 8.5l4.3 4.3 4.3-4.3z"/><path d="M21 21l4.5 4.5M23.5 19.2l4.3 4.3-4.3 4.3-4.3-4.3z"/><path d="M20.5 6.5a5 5 0 0 1 5 5M20.5 2.8a8.7 8.7 0 0 1 8.7 8.7"/></svg></span><h3>Peru environmental observatory</h3><p>This page: 11 daily NASA satellite layers, including active fires, El Niño indices since 1981 refreshed weekly by GitHub Actions, river forecasts and air quality.</p><a href="https://github.com/hendyhuayana/hendyhuayana.github.io/tree/main/greendata">View code →</a></div>
+        <div class="svc"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="24" height="18" rx="2.5"/><path d="M12 28h8M16 23v5"/><path d="M9 18v-3M13.5 18v-6M18 18v-4.5M22.5 18V10"/></svg></span><h3>AHP climate risk mapping</h3><p>Python tool for multicriteria risk maps: AHP weights, consistency check and a classified risk index from rasters.</p><a href="https://github.com/hendyhuayana/ahp-risk-mapping">View project →</a></div>
+        <div class="svc"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 19.5h13a5 5 0 0 0 .6-10A7 7 0 0 0 9.8 11.4 4.1 4.1 0 0 0 9.5 19.5z"/><path d="M11 23.5l-1.5 3.5M16.5 23.5 15 27M22 23.5l-1.5 3.5"/></svg></span><h3>GPM rainfall alert for Peru</h3><p>Google Earth Engine script that turns NASA GPM IMERG precipitation into 24 h and 48 h alert levels by region.</p><a href="https://github.com/hendyhuayana/gpm-rainfall-alert-peru">View project →</a></div>
+      </div>
+      <div class="proof" id="proof"></div>
+
+      <div class="two-col">
+        <div>
+          <h3 class="block-h" id="skills">Skills &amp; tools</h3>
+          <ul class="tags">
+            <li>Google Earth Engine</li><li>Sentinel-2 · Landsat · GPM IMERG</li><li>ArcGIS Pro</li><li>ArcGIS Enterprise · Dashboards · Experience Builder</li><li>Survey123</li><li>QGIS</li>
+            <li>Python (ArcPy, GeoPandas, Rasterio, scikit-learn)</li><li>R</li><li>SQL · PostGIS · Oracle SDE</li><li>Power BI</li><li>Angular · JavaScript · Leaflet</li>
+            <li>Multicriteria risk analysis (AHP)</li><li>Hazard early warning</li><li>Random Forest</li><li>Spatial interpolation</li><li>Environmental quality indices</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="block-h">Languages &amp; communities</h3>
+          <ul class="tags">
+            <li>Spanish · native</li><li>English</li><li>Quechua</li>
+            <li>Esri Young Professionals Network · Community Ambassador 2026</li><li>Women in GIS</li><li>Women Techmakers</li><li>GEO Mountains</li><li>Mountain Research Initiative Expert Database</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="contact" id="contact">
+        <h3 class="block-h contact-h">Let's <span class="hl">connect</span></h3>
+        <p class="sec-lede">Write to me about <span class="hl">research collaborations, papers and conferences</span>.</p>
+        <div class="cta-row">
+          <a class="btn" href="https://www.linkedin.com/in/hendy-huayana/">Connect on LinkedIn</a>
+          <a class="btn ghost" href="https://github.com/hendyhuayana">GitHub</a>
+          <a class="btn ghost" href="https://orcid.org/0009-0000-9348-6078">ORCID</a>
+          <a class="btn ghost" href="https://www.tiktok.com/@hendy.greendata">TikTok</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <a class="brand" href="https://www.tiktok.com/@hendy.greendata" aria-label="Hendy in Green Data on TikTok"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 18.5c0-7.8 5.6-12.8 13.8-12.8 0 7.8-4.8 13.2-12.5 13M5 18.5l6.3-6.3" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="wm" aria-hidden="true"><b>HENDY</b><i>in</i><b class="g">GREEN</b><b>DATA</b></span></a>
+    <div class="sources">
+      <p><strong>Open data sources.</strong> Satellite imagery: <a href="https://www.earthdata.nasa.gov/engage/open-data-services-software/earthdata-developer-portal/gibs-api">NASA GIBS</a> (GHRSST MUR, GPM IMERG, MODIS, VIIRS, SMAP). El Niño indices: <a href="https://www.cpc.ncep.noaa.gov/data/indices/">NOAA CPC</a>, refreshed automatically every week. River discharge: <a href="https://open-meteo.com/en/docs/flood-api">GloFAS (Copernicus)</a> via Open-Meteo. Air quality and weather: <a href="https://open-meteo.com/">Open-Meteo</a> with <a href="https://atmosphere.copernicus.eu/">Copernicus CAMS</a> (CC BY 4.0). Peru boundary: Natural Earth. Basemap: Esri, HERE, Garmin, © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.</p>
+      <p><strong>Disclaimer.</strong> These are satellite products and global models, not official measurements. They do not replace statements from ENFEN, SENAMHI, ANA, MINAM, OEFA or INDECI. Personal, educational project.</p>
+    </div>
+    <p class="fine">Made in Lima by Hendy Mayumi Huayana · <a href="https://github.com/hendyhuayana/hendyhuayana.github.io/tree/main/greendata">Open source</a></p>
+  </div>
+</footer>
 
 <script src="vendor/leaflet.js"></script>
-<script>
-(function () {
-  'use strict';
-
-  var CITIES = [
-    { name: 'Tumbes', region: 'Tumbes', lat: -3.567, lon: -80.451 },
-    { name: 'Piura', region: 'Piura', lat: -5.194, lon: -80.632 },
-    { name: 'Chiclayo', region: 'Lambayeque', lat: -6.771, lon: -79.841 },
-    { name: 'Cajamarca', region: 'Cajamarca', lat: -7.164, lon: -78.510 },
-    { name: 'Trujillo', region: 'La Libertad', lat: -8.112, lon: -79.029 },
-    { name: 'Chimbote', region: 'Áncash', lat: -9.074, lon: -78.594 },
-    { name: 'Huaraz', region: 'Áncash', lat: -9.527, lon: -77.528 },
-    { name: 'Iquitos', region: 'Loreto', lat: -3.749, lon: -73.253 },
-    { name: 'Moyobamba', region: 'San Martín', lat: -6.034, lon: -76.972 },
-    { name: 'Pucallpa', region: 'Ucayali', lat: -8.379, lon: -74.554 },
-    { name: 'Huánuco', region: 'Huánuco', lat: -9.930, lon: -76.242 },
-    { name: 'Cerro de Pasco', region: 'Pasco', lat: -10.686, lon: -76.256 },
-    { name: 'La Oroya', region: 'Junín', lat: -11.519, lon: -75.900 },
-    { name: 'Lima', region: 'Lima', lat: -12.046, lon: -77.043 },
-    { name: 'Huancayo', region: 'Junín', lat: -12.065, lon: -75.205 },
-    { name: 'Ayacucho', region: 'Ayacucho', lat: -13.158, lon: -74.224 },
-    { name: 'Ica', region: 'Ica', lat: -14.068, lon: -75.729 },
-    { name: 'Cusco', region: 'Cusco', lat: -13.532, lon: -71.967 },
-    { name: 'Puerto Maldonado', region: 'Madre de Dios', lat: -12.593, lon: -69.189 },
-    { name: 'Arequipa', region: 'Arequipa', lat: -16.409, lon: -71.537 },
-    { name: 'Puno', region: 'Puno', lat: -15.840, lon: -70.022 },
-    { name: 'Moquegua', region: 'Moquegua', lat: -17.194, lon: -70.935 },
-    { name: 'Tacna', region: 'Tacna', lat: -18.006, lon: -70.246 }
-  ];
-  var WHO_PM25 = 15, ECA_PM25 = 50;
-  var TZ = 'America/Lima';
-
-  // Status: color never alone, always with shape + label
-  var PM_STATUS = [
-    { max: WHO_PM25, key: 'good', label: 'Buena', long: 'Dentro de la guía OMS', shape: 'circle' },
-    { max: ECA_PM25, key: 'warning', label: 'Moderada', long: 'Sobre la guía OMS, bajo el ECA', shape: 'tri' },
-    { max: Infinity, key: 'critical', label: 'Mala', long: 'Sobre el ECA Perú', shape: 'sq' }
-  ];
-  var UV_STATUS = [
-    { max: 2.99, key: 'good', label: 'Bajo' },
-    { max: 5.99, key: 'warning', label: 'Moderado' },
-    { max: 7.99, key: 'serious', label: 'Alto' },
-    { max: 10.99, key: 'critical', label: 'Muy alto' },
-    { max: Infinity, key: 'critical', label: 'Extremo' }
-  ];
-  function pmStatus(v) { for (var i = 0; i < PM_STATUS.length; i++) if (v <= PM_STATUS[i].max) return PM_STATUS[i]; }
-  function uvStatus(v) { for (var i = 0; i < UV_STATUS.length; i++) if (v <= UV_STATUS[i].max) return UV_STATUS[i]; }
-  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  function fmt(v, d) { return v == null || isNaN(v) ? '–' : v.toLocaleString('es-PE', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); }
-  function swatch(st) {
-    var cls = st.shape === 'tri' ? 'sw tri' : st.shape === 'sq' ? 'sw sq' : 'sw';
-    var style = st.shape === 'tri' ? 'color:var(--' + st.key + ')' : 'background:var(--' + st.key + ')';
-    return '<i class="' + cls + '" style="' + style + '" aria-hidden="true"></i>';
-  }
-
-  // Current hour in Lima as "YYYY-MM-DDTHH"
-  function limaHour() {
-    var p = {};
-    new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23' })
-      .formatToParts(new Date()).forEach(function (x) { p[x.type] = x.value; });
-    return p.year + '-' + p.month + '-' + p.day + 'T' + p.hour;
-  }
-  var DAYS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
-  function dayLabel(iso, i) {
-    if (i === 0) return 'Hoy';
-    var d = new Date(iso + 'T12:00:00Z');
-    return DAYS[d.getUTCDay()] + ' ' + d.getUTCDate();
-  }
-
-  // ---------- Data ----------
-  var state = { air: null, wx: null, idx: CITIES.findIndex(function (c) { return c.name === 'Lima'; }) };
-
-  function fetchJSON(url) {
-    return fetch(url).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
-  }
-  function load() {
-    var lat = CITIES.map(function (c) { return c.lat; }).join(',');
-    var lon = CITIES.map(function (c) { return c.lon; }).join(',');
-    var airUrl = 'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat + '&longitude=' + lon +
-      '&hourly=pm2_5,pm10&past_days=1&forecast_days=2&timezone=' + encodeURIComponent(TZ);
-    var wxUrl = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon +
-      '&daily=precipitation_sum,precipitation_probability_max,uv_index_max,temperature_2m_max,temperature_2m_min' +
-      '&forecast_days=7&timezone=' + encodeURIComponent(TZ);
-    return Promise.all([fetchJSON(airUrl), fetchJSON(wxUrl)]).then(function (res) {
-      var air = Array.isArray(res[0]) ? res[0] : [res[0]];
-      var wx = Array.isArray(res[1]) ? res[1] : [res[1]];
-      var now = limaHour();
-      state.air = air.map(function (a) { return summarizeAir(a.hourly, now); });
-      state.wx = wx.map(function (w) { return w.daily; });
-    });
-  }
-  function summarizeAir(h, now) {
-    var i = -1;
-    for (var k = 0; k < h.time.length; k++) if (h.time[k].slice(0, 13) <= now) i = k;
-    function mean24(arr) {
-      var vals = arr.slice(Math.max(0, i - 23), i + 1).filter(function (v) { return v != null; });
-      return vals.length >= 18 ? vals.reduce(function (s, v) { return s + v; }, 0) / vals.length : null;
-    }
-    var from = Math.max(0, i - 23), to = Math.min(h.time.length, i + 25);
-    return {
-      pm25: mean24(h.pm2_5), pm10: mean24(h.pm10),
-      series: h.time.slice(from, to).map(function (t, j) { return { t: t, v: h.pm2_5[from + j], past: from + j <= i }; }),
-      nowIndex: i - from
-    };
-  }
-
-  // ---------- Map ----------
-  var map, markers = [], tiles;
-  function initMap() {
-    map = L.map('map', { zoomControl: true, attributionControl: true, scrollWheelZoom: false })
-      .fitBounds([[-18.4, -81.4], [-0.1, -68.6]]);
-    setTiles();
-    if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { setTiles(); paintMarkers(); });
-    CITIES.forEach(function (c, i) {
-      var m = L.circleMarker([c.lat, c.lon], { radius: 8, weight: 2, fillOpacity: 1 }).addTo(map);
-      m.on('click', function () { select(i); });
-      m.bindTooltip(c.name, { direction: 'top', offset: [0, -8] });
-      markers.push(m);
-    });
-    document.getElementById('map-legend').innerHTML = PM_STATUS.map(function (s) {
-      return '<span>' + swatch({ key: s.key }) + s.label + ' · ' + s.long + '</span>';
-    }).join('') + '<span><i class="sw" style="background:var(--ref)" aria-hidden="true"></i>Sin datos</span>';
-  }
-  function setTiles() {
-    var dark = css('color-scheme') === 'dark';
-    if (tiles) map.removeLayer(tiles);
-    tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/' + (dark ? 'dark_all' : 'light_all') + '/{z}/{x}/{y}{r}.png', {
-      maxZoom: 12, subdomains: 'abcd',
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>'
-    }).addTo(map);
-  }
-  function paintMarkers() {
-    markers.forEach(function (m, i) {
-      var a = state.air && state.air[i];
-      var st = a && a.pm25 != null ? pmStatus(a.pm25) : null;
-      m.setStyle({
-        color: i === state.idx ? css('--ink') : css('--ring'),
-        weight: i === state.idx ? 3 : 2,
-        fillColor: st ? css('--' + st.key) : css('--ref'),
-        radius: i === state.idx ? 11 : 8
-      });
-      m.setTooltipContent(CITIES[i].name + (a && a.pm25 != null ? ': ' + fmt(a.pm25) + ' µg/m³' : ''));
-      if (i === state.idx) m.bringToFront();
-    });
-  }
-
-  // ---------- Panels ----------
-  function renderNow() {
-    var c = CITIES[state.idx], a = state.air[state.idx], w = state.wx[state.idx];
-    document.getElementById('city-title').textContent = c.name;
-    document.getElementById('city-sub').textContent = 'Región ' + c.region + ' · ahora y hoy';
-    var pmSt = a.pm25 != null ? pmStatus(a.pm25) : null;
-    var uv = w.uv_index_max[0], uvSt = uv != null ? uvStatus(uv) : null;
-    var rain = w.precipitation_sum[0], prob = w.precipitation_probability_max[0];
-    document.getElementById('tiles').innerHTML =
-      '<div class="tiles">' +
-        tile('PM2.5 · promedio 24 h', fmt(a.pm25), 'µg/m³',
-          pmSt ? '<span class="status">' + swatch(pmSt) + 'Aire ' + pmSt.label.toLowerCase() + '</span>' : '<span class="note">Sin datos suficientes</span>',
-          'PM10: ' + fmt(a.pm10) + ' µg/m³') +
-        tile('Índice UV máximo hoy', fmt(uv, 1), '',
-          uvSt ? '<span class="status">' + swatch({ key: uvSt.key }) + uvSt.label + '</span>' : '',
-          uv >= 8 ? 'Evita el sol de 10 a 16 h' : uv >= 3 ? 'Usa protector solar' : 'Protección mínima') +
-        tile('Lluvia hoy', fmt(rain, 1), 'mm',
-          '', 'Probabilidad máx.: ' + fmt(prob) + ' %' + ' · ' + fmt(w.temperature_2m_min[0]) + '° a ' + fmt(w.temperature_2m_max[0]) + '°C') +
-      '</div>';
-  }
-  function tile(k, v, unit, status, note) {
-    return '<div class="tile"><div class="k">' + k + '</div><div class="v">' + v + (unit ? '<small>' + unit + '</small>' : '') +
-      '</div>' + status + (note ? '<div class="note">' + note + '</div>' : '') + '</div>';
-  }
-
-  // Shared tooltip helper
-  function tipFor(box) {
-    var t = box.querySelector('.tip');
-    if (!t) { t = document.createElement('div'); t.className = 'tip'; t.setAttribute('role', 'status'); box.appendChild(t); }
-    return t;
-  }
-
-  function renderPM() {
-    var a = state.air[state.idx], box = document.getElementById('pm-chart');
-    var pts = a.series.filter(function (p) { return p.v != null; });
-    if (pts.length < 2) { box.innerHTML = '<div class="msg">No hay datos horarios de PM2.5 para esta ciudad.</div>'; document.getElementById('pm-table').innerHTML = ''; return; }
-    var W = Math.max(300, box.clientWidth || 560), H = W < 480 ? 200 : 220, m = { t: 14, r: 12, b: 26, l: 34 };
-    var iw = W - m.l - m.r, ih = H - m.t - m.b, n = a.series.length;
-    var maxV = Math.max(ECA_PM25 * 1.12, Math.max.apply(null, pts.map(function (p) { return p.v; })) * 1.1);
-    var step = maxV > 150 ? 50 : maxV > 80 ? 20 : 10;
-    maxV = Math.ceil(maxV / step) * step;
-    function x(i) { return m.l + (n === 1 ? 0 : i / (n - 1) * iw); }
-    function y(v) { return m.t + ih - v / maxV * ih; }
-    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="PM2.5 por hora en ' + esc(CITIES[state.idx].name) + '">';
-    for (var g = 0; g <= maxV; g += step) {
-      s += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y(g) + '" y2="' + y(g) + '" stroke="var(--grid)" stroke-width="1"/>' +
-           '<text x="' + (m.l - 6) + '" y="' + (y(g) + 4) + '" text-anchor="end">' + g + '</text>';
-    }
-    [[WHO_PM25, 'OMS 15'], [ECA_PM25, 'ECA 50']].forEach(function (r) {
-      s += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y(r[0]) + '" y2="' + y(r[0]) + '" stroke="var(--ref)" stroke-width="1.5" stroke-dasharray="4 4"/>' +
-           '<text x="' + (W - m.r) + '" y="' + (y(r[0]) - 5) + '" text-anchor="end">' + r[1] + '</text>';
-    });
-    // now marker
-    var nx = x(a.nowIndex);
-    s += '<line x1="' + nx + '" x2="' + nx + '" y1="' + m.t + '" y2="' + (m.t + ih) + '" stroke="var(--muted)" stroke-width="1"/>' +
-         '<text x="' + (nx + 4) + '" y="' + (m.t + 10) + '" class="lbl">Ahora</text>' +
-         '<text x="' + (nx - 4) + '" y="' + (m.t + 10) + '" text-anchor="end">pasado</text>';
-    // x labels every 6 h
-    a.series.forEach(function (p, i) {
-      if (+p.t.slice(11, 13) % (W < 480 ? 12 : 6) === 0) s += '<text x="' + x(i) + '" y="' + (H - 8) + '" text-anchor="middle">' + p.t.slice(11, 13) + 'h</text>';
-    });
-    // line: solid past, dashed forecast
-    function path(filter) {
-      var d = '', pen = false;
-      a.series.forEach(function (p, i) {
-        if (p.v == null || !filter(p, i)) { pen = false; return; }
-        d += (pen ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(p.v).toFixed(1); pen = true;
-      });
-      return d;
-    }
-    s += '<path d="' + path(function (p, i) { return i <= a.nowIndex; }) + '" fill="none" stroke="var(--pm)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
-    s += '<path d="' + path(function (p, i) { return i >= a.nowIndex; }) + '" fill="none" stroke="var(--pm)" stroke-width="2" stroke-dasharray="2 4" stroke-linecap="round"/>';
-    s += '<line class="xh" x1="0" x2="0" y1="' + m.t + '" y2="' + (m.t + ih) + '" stroke="var(--ink-2)" stroke-width="1" opacity="0"/>' +
-         '<circle class="dot" r="5" fill="var(--pm)" stroke="var(--surface)" stroke-width="2" opacity="0"/>' +
-         '<rect x="' + m.l + '" y="' + m.t + '" width="' + iw + '" height="' + ih + '" fill="transparent" class="hit"/>';
-    s += '</svg>';
-    box.innerHTML = s;
-    var svg = box.querySelector('svg'), tip = tipFor(box), xh = svg.querySelector('.xh'), dot = svg.querySelector('.dot');
-    function move(ev) {
-      var r = svg.getBoundingClientRect(), sx = (ev.clientX - r.left) / r.width * W;
-      var i = Math.max(0, Math.min(n - 1, Math.round((sx - m.l) / iw * (n - 1))));
-      var p = a.series[i];
-      xh.setAttribute('x1', x(i)); xh.setAttribute('x2', x(i)); xh.setAttribute('opacity', 1);
-      if (p.v != null) { dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(p.v)); dot.setAttribute('opacity', 1); } else dot.setAttribute('opacity', 0);
-      tip.innerHTML = '<b>' + fmt(p.v, 1) + ' µg/m³</b><br>' + p.t.slice(8, 10) + '/' + p.t.slice(5, 7) + ' ' + p.t.slice(11, 16) + (i > a.nowIndex ? ' · pronóstico' : '');
-      tip.style.left = (x(i) / W * r.width) + 'px';
-      tip.style.top = ((p.v != null ? y(p.v) : m.t) / H * r.height - 10) + 'px';
-      tip.style.opacity = 1;
-    }
-    function leave() { tip.style.opacity = 0; xh.setAttribute('opacity', 0); dot.setAttribute('opacity', 0); }
-    svg.addEventListener('pointermove', move);
-    svg.addEventListener('pointerdown', move);
-    svg.addEventListener('pointerleave', leave);
-
-    document.getElementById('pm-table').innerHTML = '<table><thead><tr><th>Hora</th><th class="n">PM2.5 (µg/m³)</th><th>Tipo</th></tr></thead><tbody>' +
-      a.series.map(function (p, i) {
-        return '<tr><td>' + p.t.slice(8, 10) + '/' + p.t.slice(5, 7) + ' ' + p.t.slice(11, 16) + '</td><td class="n">' + fmt(p.v, 1) + '</td><td>' + (i > a.nowIndex ? 'Pronóstico' : 'Estimado') + '</td></tr>';
-      }).join('') + '</tbody></table>';
-  }
-
-  function renderRain() {
-    var w = state.wx[state.idx], box = document.getElementById('rain-chart');
-    var days = w.time.map(function (t, i) { return { t: t, label: dayLabel(t, i), v: w.precipitation_sum[i], p: w.precipitation_probability_max[i] }; });
-    var W = Math.max(300, box.clientWidth || 560), H = 200, m = { t: 22, r: 8, b: 26, l: 34 };
-    var iw = W - m.l - m.r, ih = H - m.t - m.b;
-    var maxRaw = Math.max.apply(null, days.map(function (d) { return d.v || 0; }));
-    var step = maxRaw > 50 ? 20 : maxRaw > 20 ? 10 : maxRaw > 8 ? 5 : maxRaw > 3 ? 2 : 1;
-    var maxV = Math.max(step * 2, Math.ceil(maxRaw * 1.1 / step) * step);
-    var bw = iw / days.length, barW = Math.min(36, bw - 2);
-    function y(v) { return m.t + ih - v / maxV * ih; }
-    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Lluvia diaria en ' + esc(CITIES[state.idx].name) + '">';
-    for (var g = 0; g <= maxV; g += step) {
-      s += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y(g) + '" y2="' + y(g) + '" stroke="var(--grid)" stroke-width="1"/>' +
-           '<text x="' + (m.l - 6) + '" y="' + (y(g) + 4) + '" text-anchor="end">' + g + '</text>';
-    }
-    var maxI = days.reduce(function (b, d, i) { return (d.v || 0) > (days[b].v || 0) ? i : b; }, 0);
-    days.forEach(function (d, i) {
-      var cx = m.l + bw * i + bw / 2, v = d.v || 0, h = v / maxV * ih, x0 = cx - barW / 2, yb = m.t + ih;
-      if (h > 0.5) {
-        var r = Math.min(4, h, barW / 2);
-        s += '<path d="M' + x0 + ' ' + yb + 'V' + (yb - h + r) + 'Q' + x0 + ' ' + (yb - h) + ' ' + (x0 + r) + ' ' + (yb - h) +
-             'H' + (x0 + barW - r) + 'Q' + (x0 + barW) + ' ' + (yb - h) + ' ' + (x0 + barW) + ' ' + (yb - h + r) + 'V' + yb + 'Z" fill="var(--rain)"/>';
-      }
-      if (i === maxI && v >= 0.1) s += '<text x="' + cx + '" y="' + (yb - h - 6) + '" text-anchor="middle" class="lbl">' + fmt(v, 1) + ' mm</text>';
-      s += '<text x="' + cx + '" y="' + (H - 8) + '" text-anchor="middle">' + d.label + '</text>';
-      s += '<rect class="hit" data-i="' + i + '" x="' + (m.l + bw * i) + '" y="' + m.t + '" width="' + bw + '" height="' + ih + '" fill="transparent"/>';
-    });
-    s += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + (m.t + ih) + '" y2="' + (m.t + ih) + '" stroke="var(--line)" stroke-width="1"/>';
-    s += '</svg>';
-    if (maxRaw < 0.1) s += '<div class="note" style="font-size:.85rem;color:var(--muted);margin-top:6px">No se espera lluvia esta semana.</div>';
-    box.innerHTML = s;
-    var svg = box.querySelector('svg'), tip = tipFor(box);
-    svg.querySelectorAll('.hit').forEach(function (el) {
-      function show() {
-        var i = +el.getAttribute('data-i'), d = days[i], r = svg.getBoundingClientRect();
-        var cx = m.l + bw * i + bw / 2, h = (d.v || 0) / maxV * ih;
-        tip.innerHTML = '<b>' + d.label + ': ' + fmt(d.v, 1) + ' mm</b><br>Probabilidad máx.: ' + fmt(d.p) + ' %';
-        tip.style.left = (cx / W * r.width) + 'px';
-        tip.style.top = ((m.t + ih - h) / H * r.height - 10) + 'px';
-        tip.style.opacity = 1;
-      }
-      el.addEventListener('pointerenter', show);
-      el.addEventListener('pointerdown', show);
-      el.addEventListener('pointerleave', function () { tip.style.opacity = 0; });
-    });
-    document.getElementById('rain-table').innerHTML = '<table><thead><tr><th>Día</th><th class="n">Lluvia (mm)</th><th class="n">Prob. máx. (%)</th><th class="n">UV máx.</th></tr></thead><tbody>' +
-      days.map(function (d, i) {
-        return '<tr><td>' + d.label + '</td><td class="n">' + fmt(d.v, 1) + '</td><td class="n">' + fmt(d.p) + '</td><td class="n">' + fmt(w.uv_index_max[i], 1) + '</td></tr>';
-      }).join('') + '</tbody></table>';
-  }
-
-  function select(i) {
-    state.idx = i;
-    document.getElementById('city').value = String(i);
-    try { localStorage.setItem('greendata-city', CITIES[i].name); } catch (e) {}
-    if (!state.air) return;
-    paintMarkers(); renderNow(); renderPM(); renderRain();
-  }
-
-  function showError() {
-    var html = '<div class="msg">No se pudieron cargar los datos. Revisa tu conexión e inténtalo de nuevo.<br><button type="button">Reintentar</button></div>';
-    document.getElementById('city-title').textContent = 'Sin conexión con los datos';
-    ['tiles', 'pm-chart', 'rain-chart'].forEach(function (id) { document.getElementById(id).innerHTML = html; });
-    document.querySelectorAll('.msg button').forEach(function (b) { b.addEventListener('click', start); });
-  }
-
-  function start() {
-    ['tiles', 'pm-chart', 'rain-chart'].forEach(function (id) { document.getElementById(id).innerHTML = '<div class="skeleton"></div>'; });
-    document.getElementById('city-title').textContent = 'Cargando datos…';
-    load().then(function () {
-      document.getElementById('updated').textContent = 'Actualizado: ' + new Date().toLocaleString('es-PE', { timeZone: TZ, day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' (hora de Lima)';
-      select(state.idx);
-    }).catch(function (e) { console.error(e); showError(); });
-  }
-
-  // ---------- Init ----------
-  var sel = document.getElementById('city');
-  sel.innerHTML = CITIES.map(function (c, i) { return { c: c, i: i }; })
-    .sort(function (a, b) { return a.c.name.localeCompare(b.c.name, 'es'); })
-    .map(function (o) { return '<option value="' + o.i + '">' + esc(o.c.name) + ' (' + esc(o.c.region) + ')</option>'; }).join('');
-  try {
-    var saved = localStorage.getItem('greendata-city');
-    var si = CITIES.findIndex(function (c) { return c.name === saved; });
-    if (si >= 0) state.idx = si;
-  } catch (e) {}
-  sel.value = String(state.idx);
-  sel.addEventListener('change', function () { select(+sel.value); });
-  var lastW = window.innerWidth, rt;
-  window.addEventListener('resize', function () {
-    if (window.innerWidth === lastW || !state.air) return;
-    lastW = window.innerWidth; clearTimeout(rt);
-    rt = setTimeout(function () { renderPM(); renderRain(); }, 150);
-  });
-  initMap();
-  paintMarkers();
-  start();
-})();
-</script>
+<script src="maptools.js"></script>
+<script src="app.js"></script>
+<script src="ui.js"></script>
+<script src="ux.js"></script>
 </body>
 </html>
