@@ -78,10 +78,16 @@
         </button>
       </div>
       <div id="panel-body">
+        <p class="step-h"><span class="step-n">1</span>What do you want to see?</p>
         <div class="layer-groups" id="layers" role="radiogroup" aria-label="Choose a layer"></div>
-        <div class="layer-info" id="layer-info"></div>
-        <img class="legend-img" id="legend" alt="" hidden>
+        <div class="seeing">
+          <p class="seeing-h">What you are seeing</p>
+          <div class="layer-info" id="layer-info"></div>
+          <div class="scale-words" id="scale-words" hidden></div>
+          <img class="legend-img" id="legend" alt="" hidden>
+        </div>
         <div class="time">
+          <p class="step-h"><span class="step-n">2</span>Which day?</p>
           <div class="time-row">
             <button class="icon-btn play" id="play" aria-label="Animate the last 14 days" title="Animate the last 14 days">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path id="play-icon" d="M8 5v14l11-7z" fill="currentColor"/></svg>
@@ -89,7 +95,10 @@
             <input type="range" id="date-range" min="0" max="60" value="60" aria-label="Image date">
             <output id="date-label" for="date-range"></output>
           </div>
+          <p class="step-tip">Move the slider to go back in time, or press play to watch the last 14 days.</p>
+          <p class="step-h"><span class="step-n">3</span>Compare and show</p>
           <label class="check"><input type="checkbox" id="compare" checked> Compare with one year ago</label>
+          <p class="step-tip">Then drag the white line on the map: left is one year ago, right is today.</p>
           <div class="overlay-toggles">
             <label class="check"><input type="checkbox" id="ov-cities" checked> Cities (air quality)</label>
             <label class="check"><input type="checkbox" id="ov-rivers" checked> Rivers (discharge)</label>

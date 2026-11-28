@@ -685,4 +685,13 @@
     fold(document.querySelector('.proj-note'), t('About the method'));
     fold(document.querySelector('.footer .sources'), t('Sources and disclaimer'));
   })();
+
+  // ------------------------------------------------------------------ the profile photo in the top bar opens TikTok
+  (function () {
+    var brand = document.querySelector('.nav-in > .brand'), img = brand && brand.querySelector('.nav-avatar');
+    if (!img) return;
+    var a = el('a', 'avatar-link'); a.href = 'https://www.tiktok.com/@hendy.greendata'; a.target = '_blank'; a.rel = 'noopener';
+    a.setAttribute('aria-label', t('Hendy in Green Data on TikTok')); a.title = 'TikTok · @hendy.greendata';
+    brand.parentNode.insertBefore(a, brand); a.appendChild(img);
+  })();
 })();

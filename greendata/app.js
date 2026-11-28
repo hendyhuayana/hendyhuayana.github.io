@@ -271,6 +271,12 @@
       info: '<b>Particles in the atmosphere: wildfire smoke, dust and pollution.</b> In the dry season, Amazon fire smoke can blanket eastern Peru.',
       meta: 'MODIS MAIAC · NASA · 1 km · daily' }
   };
+  // plain words for the two ends of each colour scale
+  var SCALE_WORDS = {
+    sst_anom: ['Colder than normal', 'Warmer than normal'], sst: ['Cold water', 'Warm water'], chl: ['Little plankton', 'A lot of plankton'],
+    rain: ['Light rain', 'Heavy rain'], soil: ['Dry soil', 'Wet soil'], snow: ['No snow', 'Full snow cover'],
+    ndvi: ['Little or no vegetation', 'Dense, healthy vegetation'], lst: ['Cool ground', 'Hot ground'], aod: ['Clean air', 'Thick smoke or dust']
+  };
   var MAX_BACK = 60;
 
   var map, satNow, satCmp, labelsLayer, cmpPane;
@@ -370,6 +376,8 @@
     var lg = $('legend');
     if (L0.legend) { lg.src = 'https://gibs.earthdata.nasa.gov/legends/' + L0.legend; lg.alt = t('Legend for {0}', t(L0.label)); lg.hidden = false; }
     else { lg.hidden = true; lg.removeAttribute('src'); }
+    var sw = $('scale-words'), W = SCALE_WORDS[key];
+    if (W) { sw.innerHTML = '<span>◀ ' + esc(t(W[0])) + '</span><span>' + esc(t(W[1])) + ' ▶</span>'; sw.hidden = false; } else { sw.hidden = true; sw.innerHTML = ''; }
     if (satNow) map.removeLayer(satNow);
     if (satCmp) map.removeLayer(satCmp);
     satNow = null; satCmp = null;
