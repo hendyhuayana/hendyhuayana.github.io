@@ -354,9 +354,9 @@
     // one compact list grouped by theme, instead of eleven buttons
     $('layers').innerHTML = '<select id="layer-sel" aria-label="' + esc(t('Choose a layer')) + '">' + GROUPS.map(function (g) {
       return '<optgroup label="' + esc(t(g.name)) + '">' + g.layers.map(function (k) {
-        return '<option value="' + k + '"' + (k === sat.key ? ' selected' : '') + '>' + esc(t(LAYERS[k].label)) + '</option>';
+        return '<option value="' + k + '" title="' + esc(t('Source:') + ' ' + t(LAYERS[k].meta)) + '"' + (k === sat.key ? ' selected' : '') + '>' + esc(t(LAYERS[k].label)) + '</option>';
       }).join('') + '</optgroup>';
-    }).join('') + '</select>';
+    }).join('') + '</select><span class="src-tip" tabindex="0" role="button" id="src-tip" aria-describedby="src-tip-box">i<span class="src-tip-box" role="tooltip" id="src-tip-box"></span></span>';
     $('layer-sel').addEventListener('change', function (e) { setLayer(e.target.value); });
     var dr = $('date-range'); dr.max = MAX_BACK; dr.value = MAX_BACK - sat.back;
     dr.addEventListener('input', function () { stopPlay(); sat.back = MAX_BACK - (+dr.value); updateDates(); });
@@ -385,6 +385,8 @@
   function setLayer(key, first) {
     sat.key = key;
     var ls = $('layer-sel'); if (ls && ls.value !== key) ls.value = key;
+    var tb = $('src-tip-box'); if (tb) tb.innerHTML = '<b>' + esc(t('Source:')) + '</b> ' + esc(t(LAYERS[key].meta)) + '<br><span>' + esc(t('Data from NASA GIBS (open data)')) + '</span>';
+    if (ls) ls.title = t('Source:') + ' ' + t(LAYERS[key].meta);
     var L0 = LAYERS[key];
     $('layer-info').innerHTML = t(L0.info) + '<span class="meta"><b>' + esc(t('Source:')) + '</b> ' + esc(t(L0.meta)) + '</span>';
     var lg = $('legend');
@@ -577,7 +579,10 @@
     { name: 'Rímac', place: 'Chosica, Lima', lat: -11.93, lon: -76.7 },
     { name: 'Santa', place: 'Áncash', lat: -8.92, lon: -78.6 },
     { name: 'Piura', place: 'Piura', lat: -5.03, lon: -80.68 },
-    { name: 'Tumbes', place: 'Tumbes', lat: -3.52, lon: -80.5 }
+    { name: 'Tumbes', place: 'Tumbes', lat: -3.52, lon: -80.5 },
+    { name: 'Guayas', place: 'Guayaquil, Ecuador', lat: -1.95, lon: -79.85 },
+    { name: 'Magdalena', place: 'Barrancabermeja, Colombia', lat: 7.07, lon: -73.88 },
+    { name: 'Mamoré', place: 'Trinidad, Bolivia', lat: -14.8, lon: -64.95 }
   ];
   var rivers = null, riverIdx = 0, riverMarkers = L.layerGroup();
 
@@ -704,7 +709,19 @@
     { name: 'Arequipa', region: 'Arequipa', lat: -16.409, lon: -71.537 },
     { name: 'Puno', region: 'Puno', lat: -15.840, lon: -70.022 },
     { name: 'Moquegua', region: 'Moquegua', lat: -17.194, lon: -70.935 },
-    { name: 'Tacna', region: 'Tacna', lat: -18.006, lon: -70.246 }
+    { name: 'Tacna', region: 'Tacna', lat: -18.006, lon: -70.246 },
+    // neighbouring countries also hit by El Niño
+    { name: 'Guayaquil', region: 'Ecuador', lat: -2.170, lon: -79.922 },
+    { name: 'Quito', region: 'Ecuador', lat: -0.180, lon: -78.468 },
+    { name: 'Manta', region: 'Ecuador', lat: -0.967, lon: -80.709 },
+    { name: 'Bogotá', region: 'Colombia', lat: 4.711, lon: -74.072 },
+    { name: 'Medellín', region: 'Colombia', lat: 6.244, lon: -75.581 },
+    { name: 'Cali', region: 'Colombia', lat: 3.452, lon: -76.532 },
+    { name: 'La Paz', region: 'Bolivia', lat: -16.500, lon: -68.150 },
+    { name: 'Santa Cruz', region: 'Bolivia', lat: -17.784, lon: -63.181 },
+    { name: 'Arica', region: 'Chile', lat: -18.478, lon: -70.321 },
+    { name: 'Antofagasta', region: 'Chile', lat: -23.650, lon: -70.400 },
+    { name: 'Santiago', region: 'Chile', lat: -33.449, lon: -70.669 }
   ];
   var WHO_PM25 = 15, ECA_PM25 = 50;
   var PM_STATUS = [

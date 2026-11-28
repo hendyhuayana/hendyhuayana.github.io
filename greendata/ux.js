@@ -129,6 +129,7 @@
       add(D, 'data', t(d[1]), d[2], function () { window.open(BASE + 'data/' + d[0], '_blank', 'noopener'); }, 'download data ' + d[1]);
     });
     if (isHome) add(t('Actions'), 'data', t('Share this view'), t('Copy a link to this layer, date, city and river'), share, 'share link copy');
+    add(t('Actions'), 'section', t('Welcome & guide'), t('What this site is for'), function () { welcome(); }, 'guide help welcome purpose bienvenida guia');
     add(t('Actions'), 'section', t('Connect on LinkedIn'), '', function () { window.open('https://www.linkedin.com/in/hendy-huayana/', '_blank', 'noopener'); }, 'linkedin contact');
     var LN = { en: 'English', es: 'Español', pt: 'Português', fr: 'Français', de: 'Deutsch', zh: '中文' };
     Object.keys(LN).forEach(function (k) {
@@ -361,7 +362,7 @@
     var seen = false;
     try { seen = localStorage.getItem('gd-tour') === '1'; } catch (e) { seen = true; }
     var qs = new URLSearchParams(location.search);
-    if (qs.get('tour') === '1' || (!seen && qs.get('tour') !== '0' && !location.hash && !navigator.webdriver)) {
+    if (qs.get('tour') === '1') {
       var heroEl = $('satellite'), started = false;
       var tryTour = function () {
         if (started) return;
@@ -694,5 +695,59 @@
     var a = el('a', 'avatar-link'); a.href = 'https://www.tiktok.com/@hendy.greendata'; a.target = '_blank'; a.rel = 'noopener';
     a.setAttribute('aria-label', t('Hendy in Green Data on TikTok')); a.title = 'TikTok · @hendy.greendata';
     brand.parentNode.insertBefore(a, brand); a.appendChild(img);
+  })();
+
+  // ------------------------------------------------------------------ welcome window: purpose of the site + a short guide (first visit, or from the search / footer)
+  function welcome() {
+    if ($('gd-welcome')) return;
+    var home = isHome ? '' : BASE + 'index.html';
+    function href(h) { return h.charAt(0) === '#' ? (isHome ? h : withLang(home + h)) : withLang(BASE + h); }
+    var G = [
+      ['#satellite', 'Live observatory', 'Satellite maps of the ocean, rain, vegetation and fires, with El Niño, rivers and climate to 2050.'],
+      ['#expertise', 'My topics', 'The environmental topics I am passionate about, each with a live example.'],
+      ['research/', 'Scientific research', 'My studies, explained in plain language. Papers and apps will be shared soon.'],
+      ['environment/', 'Environmental data', 'Biodiversity, soil, air and water for any place in the world, from open data.'],
+      ['#contact', 'Collaborate', 'Write to me about research, papers and conferences.']
+    ];
+    var box = el('div', 'gd-welcome'); box.id = 'gd-welcome';
+    box.innerHTML = '<div class="gw-back" data-close></div><div class="gw-box" role="dialog" aria-modal="true" aria-labelledby="gw-h">' +
+      '<button type="button" class="gw-x" data-close aria-label="' + esc(t('Close')) + '">×</button>' +
+      '<p class="gw-kicker">' + esc(t('Welcome')) + '</p>' +
+      '<h2 id="gw-h">' + (function () { var k = 'Hello! This is Hendy in Green Data', v = t(k); return v === k ? 'Hello! This is <span class="hl">Hendy in Green Data</span>' : v; })() + '</h2>' +
+      '<p class="gw-purpose">' + esc(t('This site has educational and scientific purposes and is open to research collaborations. It shares open environmental data and my research in plain language, so that anyone can explore and learn.')) + '</p>' +
+      '<p class="gw-guide-h">' + esc(t('Quick guide')) + '</p><ol class="gw-guide">' + G.map(function (g, i) {
+        return '<li><a href="' + href(g[0]) + '" data-go><span class="gw-n">' + (i + 1) + '</span><span><b>' + esc(t(g[1])) + '</b><small>' + esc(t(g[2])) + '</small></span></a></li>';
+      }).join('') + '</ol>' +
+      '<p class="gw-note">' + esc(t('Data come from open sources (NASA, NOAA, Copernicus, iNaturalist, GBIF and others) and are not official measurements.')) + '</p>' +
+      '<div class="gw-btns">' + (isHome ? '<button type="button" class="btn ghost gw-tour">' + esc(t('Take the quick tour')) + '</button>' : '') +
+      '<button type="button" class="btn gw-go" data-close>' + esc(t('Start exploring')) + '</button></div></div>';
+    document.body.appendChild(box);
+    document.documentElement.classList.add('pal-open');
+    var prev = document.activeElement;
+    function close() {
+      try { localStorage.setItem('gd-welcome', '1'); } catch (e) {}
+      box.classList.remove('open'); document.documentElement.classList.remove('pal-open');
+      setTimeout(function () { box.remove(); }, reduce ? 0 : 200);
+      document.removeEventListener('keydown', key, true);
+      if (prev && prev.focus) prev.focus();
+    }
+    function key(e) { if (e.key === 'Escape') { e.preventDefault(); close(); } }
+    document.addEventListener('keydown', key, true);
+    box.addEventListener('click', function (e) {
+      if (e.target.closest('[data-close]')) { close(); return; }
+      var a = e.target.closest('a[data-go]');
+      if (a) { close(); var h = a.getAttribute('href'); if (h.charAt(0) === '#') { e.preventDefault(); setTimeout(function () { scrollToId(h.slice(1)); }, 50); } }
+      if (e.target.closest('.gw-tour')) { close(); scrollToId('satellite'); setTimeout(startTour, 700); }
+    });
+    requestAnimationFrame(function () { box.classList.add('open'); box.querySelector('.gw-go').focus({ preventScroll: true }); box.querySelector('.gw-box').scrollTop = 0; });
+  }
+  window.gdWelcome = welcome;
+  (function () {
+    var seen = false; try { seen = localStorage.getItem('gd-welcome') === '1'; } catch (e) { seen = true; }
+    var qs = new URLSearchParams(location.search);
+    if (qs.get('welcome') === '1' || (!seen && !navigator.webdriver && qs.get('welcome') !== '0')) setTimeout(welcome, 600);
+    // a "Guide" link in the footer to open it again
+    var fine = document.querySelector('.footer .fine');
+    if (fine) { var g = el('button', 'gw-link'); g.type = 'button'; g.textContent = t('Welcome & guide'); g.addEventListener('click', welcome); fine.insertAdjacentElement('afterend', g); }
   })();
 })();
