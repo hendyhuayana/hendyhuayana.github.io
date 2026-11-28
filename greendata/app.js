@@ -351,13 +351,13 @@
   }
 
   function buildLayerUI() {
-    // one compact list grouped by theme, instead of eleven buttons
-    $('layers').innerHTML = '<select id="layer-sel" aria-label="' + esc(t('Choose a layer')) + '">' + GROUPS.map(function (g) {
-      return '<optgroup label="' + esc(t(g.name)) + '">' + g.layers.map(function (k) {
-        return '<option value="' + k + '" title="' + esc(t('Source:') + ' ' + t(LAYERS[k].meta)) + '"' + (k === sat.key ? ' selected' : '') + '>' + esc(t(LAYERS[k].label)) + '</option>';
-      }).join('') + '</optgroup>';
-    }).join('') + '</select><span class="src-tip" tabindex="0" role="button" id="src-tip" aria-describedby="src-tip-box">i<span class="src-tip-box" role="tooltip" id="src-tip-box"></span></span>';
-    $('layer-sel').addEventListener('change', function (e) { setLayer(e.target.value); });
+    // all layers visible, in a tidy grid: one row per theme
+    $('layers').innerHTML = '<div class="lg-grid" role="radiogroup" aria-label="' + esc(t('Choose a layer')) + '">' + GROUPS.map(function (g) {
+      return '<p class="lg-name">' + esc(t(g.name)) + '</p><div class="chips">' + g.layers.map(function (k) {
+        return '<button type="button" class="chip" role="radio" data-k="' + k + '" aria-checked="' + (k === sat.key) + '" title="' + esc(t('Source:') + ' ' + t(LAYERS[k].meta)) + '">' + esc(t(LAYERS[k].label)) + '</button>';
+      }).join('') + '</div>';
+    }).join('') + '</div>';
+    $('layers').addEventListener('click', function (e) { var c = e.target.closest('.chip'); if (c) setLayer(c.getAttribute('data-k')); });
     var dr = $('date-range'); dr.max = MAX_BACK; dr.value = MAX_BACK - sat.back;
     dr.addEventListener('input', function () { stopPlay(); sat.back = MAX_BACK - (+dr.value); updateDates(); });
     $('compare').addEventListener('change', function (e) { sat.compare = e.target.checked; updateDates(); });
@@ -384,9 +384,8 @@
 
   function setLayer(key, first) {
     sat.key = key;
-    var ls = $('layer-sel'); if (ls && ls.value !== key) ls.value = key;
-    var tb = $('src-tip-box'); if (tb) tb.innerHTML = '<b>' + esc(t('Source:')) + '</b> ' + esc(t(LAYERS[key].meta)) + '<br><span>' + esc(t('Data from NASA GIBS (open data)')) + '</span>';
-    if (ls) ls.title = t('Source:') + ' ' + t(LAYERS[key].meta);
+    document.querySelectorAll('#layers .chip').forEach(function (c) { c.setAttribute('aria-checked', c.getAttribute('data-k') === key); });
+    var ls = null;
     var L0 = LAYERS[key];
     $('layer-info').innerHTML = t(L0.info) + '<span class="meta"><b>' + esc(t('Source:')) + '</b> ' + esc(t(L0.meta)) + '</span>';
     var lg = $('legend');

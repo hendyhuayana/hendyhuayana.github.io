@@ -669,8 +669,8 @@
       tg.setAttribute('aria-expanded', 'false'); body.hidden = true;
       var head = tg.closest('.panel-head'), cur = el('span', 'panel-cur');
       head.insertBefore(cur, tg);
-      var upd = function () { var c = $('layer-sel'); cur.textContent = c ? c.options[c.selectedIndex].textContent : ''; };
-      upd(); document.addEventListener('change', function (e) { if (e.target.id === 'layer-sel') upd(); });
+      var upd = function () { var c = document.querySelector('#layers .chip[aria-checked="true"]'); cur.textContent = c ? c.textContent : ''; };
+      upd(); new MutationObserver(upd).observe($('layers'), { attributes: true, subtree: true, attributeFilter: ['aria-checked'] });
       var oldSet = window.gdApp && window.gdApp.showLayer;
       head.addEventListener('click', function (e) { if (e.target !== tg && !tg.contains(e.target)) tg.click(); });
     }
@@ -714,13 +714,12 @@
       '<button type="button" class="gw-x" data-close aria-label="' + esc(t('Close')) + '">×</button>' +
       '<p class="gw-kicker">' + esc(t('Welcome')) + '</p>' +
       '<h2 id="gw-h">' + (function () { var k = 'Hello! This is Hendy in Green Data', v = t(k); return v === k ? 'Hello! This is <span class="hl">Hendy in Green Data</span>' : v; })() + '</h2>' +
-      '<p class="gw-purpose">' + esc(t('This site has educational and scientific purposes and is open to research collaborations. It shares open environmental data and my research in plain language, so that anyone can explore and learn.')) + '</p>' +
-      '<p class="gw-guide-h">' + esc(t('Quick guide')) + '</p><ol class="gw-guide">' + G.map(function (g, i) {
-        return '<li><a href="' + href(g[0]) + '" data-go><span class="gw-n">' + (i + 1) + '</span><span><b>' + esc(t(g[1])) + '</b><small>' + esc(t(g[2])) + '</small></span></a></li>';
+      '<p class="gw-purpose">' + esc(t('A site for educational and scientific purposes, open to research collaborations.')) + '</p>' +
+      '<ol class="gw-guide">' + G.map(function (g, i) {
+        return '<li><a href="' + href(g[0]) + '" data-go title="' + esc(t(g[2])) + '"><span class="gw-n">' + (i + 1) + '</span>' + esc(t(g[1])) + '</a></li>';
       }).join('') + '</ol>' +
-      '<p class="gw-note">' + esc(t('Data come from open sources (NASA, NOAA, Copernicus, iNaturalist, GBIF and others) and are not official measurements.')) + '</p>' +
-      '<div class="gw-btns">' + (isHome ? '<button type="button" class="btn ghost gw-tour">' + esc(t('Take the quick tour')) + '</button>' : '') +
-      '<button type="button" class="btn gw-go" data-close>' + esc(t('Start exploring')) + '</button></div></div>';
+      '<div class="gw-btns"><button type="button" class="btn ghost gw-go" data-close>' + esc(t('Explore on my own')) + '</button>' +
+      (isHome ? '<button type="button" class="btn gw-tour">' + esc(t('Start the tour')) + '</button>' : '') + '</div></div>';
     document.body.appendChild(box);
     document.documentElement.classList.add('pal-open');
     var prev = document.activeElement;
@@ -739,7 +738,7 @@
       if (a) { close(); var h = a.getAttribute('href'); if (h.charAt(0) === '#') { e.preventDefault(); setTimeout(function () { scrollToId(h.slice(1)); }, 50); } }
       if (e.target.closest('.gw-tour')) { close(); scrollToId('satellite'); setTimeout(startTour, 700); }
     });
-    requestAnimationFrame(function () { box.classList.add('open'); box.querySelector('.gw-go').focus({ preventScroll: true }); box.querySelector('.gw-box').scrollTop = 0; });
+    requestAnimationFrame(function () { box.classList.add('open'); (box.querySelector('.gw-tour') || box.querySelector('.gw-go')).focus({ preventScroll: true }); box.querySelector('.gw-box').scrollTop = 0; });
   }
   window.gdWelcome = welcome;
   (function () {
