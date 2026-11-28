@@ -119,6 +119,116 @@
    "soc": 9.6,
    "lat": -16.35,
    "lon": -71.6
+  },
+  "galapagos": {
+   "clay": 27.3,
+   "nitrogen": 3.31,
+   "phh2o": 6.3,
+   "sand": 43.3,
+   "silt": 29.3,
+   "soc": 50.5,
+   "lat": -0.69,
+   "lon": -90.33
+  },
+  "manaus": {
+   "clay": 42.2,
+   "nitrogen": 2.35,
+   "phh2o": 4.4,
+   "sand": 34.5,
+   "silt": 23.3,
+   "soc": 26.9,
+   "lat": -2.95,
+   "lon": -60.05
+  },
+  "monteverde": {
+   "clay": 37.8,
+   "nitrogen": 5.99,
+   "phh2o": 5.8,
+   "sand": 31.3,
+   "silt": 30.9,
+   "soc": 73.3,
+   "lat": 10.3,
+   "lon": -84.8
+  },
+  "patagonia": {
+   "clay": 16.4,
+   "nitrogen": 11.06,
+   "phh2o": 5.6,
+   "sand": 53.6,
+   "silt": 30.0,
+   "soc": 225.2,
+   "lat": -51.0,
+   "lon": -73.0
+  },
+  "yellowstone": {
+   "clay": 11.1,
+   "nitrogen": 4.52,
+   "phh2o": 5.3,
+   "sand": 50.1,
+   "silt": 38.8,
+   "soc": 69.6,
+   "lat": 44.6,
+   "lon": -110.5
+  },
+  "blackforest": {
+   "clay": 19.8,
+   "nitrogen": 6.81,
+   "phh2o": 4.4,
+   "sand": 47.3,
+   "silt": 32.8,
+   "soc": 101.9,
+   "lat": 48.0,
+   "lon": 8.2
+  },
+  "serengeti": {
+   "clay": 31.0,
+   "nitrogen": 2.52,
+   "phh2o": 7.5,
+   "sand": 47.8,
+   "silt": 21.2,
+   "soc": 27.6,
+   "lat": -2.33,
+   "lon": 34.83
+  },
+  "andasibe": {
+   "clay": 24.6,
+   "nitrogen": 3.74,
+   "phh2o": 4.8,
+   "sand": 50.6,
+   "silt": 24.8,
+   "soc": 56.0,
+   "lat": -18.93,
+   "lon": 48.42
+  },
+  "sagarmatha": {
+   "clay": 13.2,
+   "nitrogen": 6.49,
+   "phh2o": 5.5,
+   "sand": 60.9,
+   "silt": 25.9,
+   "soc": 86.2,
+   "lat": 27.8,
+   "lon": 86.7
+  },
+  "borneo": {
+   "clay": 39.0,
+   "nitrogen": 5.02,
+   "phh2o": 5.4,
+   "sand": 29.5,
+   "silt": 31.5,
+   "soc": 84.0,
+   "lat": 6.0,
+   "lon": 116.55
+  },
+  "daintree": {
+   "clay": 30.5,
+   "nitrogen": 2.92,
+   "phh2o": 4.9,
+   "sand": 43.6,
+   "silt": 25.9,
+   "soc": 61.5,
+   "lat": -16.17,
+   "lon": 145.42
   }
  },
  "source": "SoilGrids 2.0 (ISRIC), 0-5 cm, 250 m, CC BY 4.0",
