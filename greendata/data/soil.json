@@ -39,6 +39,16 @@
    "soc": 49.7,
    "lat": -11.36,
    "lon": -77.37
+  },
+  "paracas": {
+   "clay": 6.4,
+   "nitrogen": 3.09,
+   "phh2o": 7.7,
+   "sand": 79.8,
+   "silt": 13.8,
+   "soc": 61.4,
+   "lat": -13.82,
+   "lon": -76.25
   }
  },
  "source": "SoilGrids 2.0 (ISRIC), 0-5 cm, 250 m, CC BY 4.0"

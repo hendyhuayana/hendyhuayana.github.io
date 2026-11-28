@@ -233,9 +233,23 @@
       '<option value="custom" hidden>' + esc(t('Point chosen on the map')) + '</option>';
     sel.addEventListener('change', function () { var p = PLACES.find(function (x) { return x.id === sel.value; }); if (p) setPoint(p.lat, p.lon, p); });
 
-    map = L.map('env-map', { zoomControl: true, scrollWheelZoom: false, attributionControl: true }).setView([-9.5, -75.5], 5);
+    map = L.map('env-map', { zoomControl: true, scrollWheelZoom: false, attributionControl: true, zoomSnap: 0.25 }).setView([-9.5, -75.5], 5);
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 13, attribution: 'Esri, HERE, Garmin, © OpenStreetMap' }).addTo(map);
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', { maxZoom: 13 }).addTo(map);
+    // department boundaries (INEI via github.com/juaneladio/peru-geojson, MPL-2.0)
+    getJSON('../data/peru_departments.geojson', 1).then(function (g) {
+      var deps = L.geoJSON(g, {
+        style: { color: '#d7f36b', weight: 1.2, opacity: .7, fillColor: '#b6e34f', fillOpacity: .03 },
+        onEachFeature: function (f, layer) {
+          layer.bindTooltip(f.properties.name, { className: 'gd-tip dep-tip', sticky: true, direction: 'top' });
+          layer.on('mouseover', function () { layer.setStyle({ weight: 2.4, opacity: 1, fillOpacity: .12 }); });
+          layer.on('mouseout', function () { deps.resetStyle(layer); });
+          layer.on('click', function (e) { setPoint(+e.latlng.lat.toFixed(4), +e.latlng.lng.toFixed(4), null); });
+        }
+      }).addTo(map);
+      deps.bringToBack();
+      map.fitBounds(deps.getBounds(), { padding: [10, 10] });
+    }).catch(function () {});
     PLACES.forEach(function (p) {
       L.circleMarker([p.lat, p.lon], { radius: 6, weight: 2, color: '#0b1411', fillColor: '#b6e34f', fillOpacity: 1 })
         .bindTooltip(t(p.name), { className: 'gd-tip', direction: 'top', offset: [0, -6] })

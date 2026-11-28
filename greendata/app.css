@@ -1122,3 +1122,10 @@ html, body { overflow-x: clip; }
 @media (max-width: 1440px) and (min-width: 721px) { .search-btn .search-l, .search-btn kbd { display: none; } .search-btn { width: 36px; height: 36px; padding: 0; justify-content: center; } .topmenu { margin-left: 18px; } .tm-top { padding: 9px 9px; } }
 @media (max-width: 1200px) and (min-width: 721px) { .nav-in .nm .tagline { display: none; } .tm-top { font-size: .84rem; padding: 8px 7px; } }
 @media (max-width: 860px) { .env-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .env-kpi .v { font-size: 1.4rem; } .env-place b { font-size: 1.05rem; } }
+/* environmental data page: full width, big map */
+section.env.wrap { max-width: 1680px; padding-left: clamp(16px, 3vw, 48px); padding-right: clamp(16px, 3vw, 48px); }
+.env .sec-head { max-width: none; }
+.env-grid { grid-template-columns: minmax(380px, 44%) minmax(0, 1fr); gap: 28px; }
+.env-map { height: calc(100vh - 230px); min-height: 520px; max-height: 860px; }
+.dep-tip { font-weight: 700; }
+@media (max-width: 860px) { .env-grid { grid-template-columns: minmax(0, 1fr); } .env-map { height: 62vh; min-height: 360px; } }
