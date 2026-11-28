@@ -79,7 +79,7 @@
       </div>
       <div id="panel-body">
         <p class="step-h"><span class="step-n">1</span>What do you want to see?</p>
-        <div class="layer-groups" id="layers" role="radiogroup" aria-label="Choose a layer"></div>
+        <div class="layer-groups" id="layers"></div>
         <div class="seeing">
           <p class="seeing-h">What you are seeing</p>
           <div class="layer-info" id="layer-info"></div>
@@ -95,10 +95,9 @@
             <input type="range" id="date-range" min="0" max="60" value="60" aria-label="Image date">
             <output id="date-label" for="date-range"></output>
           </div>
-          <p class="step-tip">Move the slider to go back in time, or press play to watch the last 14 days.</p>
           <p class="step-h"><span class="step-n">3</span>Compare and show</p>
           <label class="check"><input type="checkbox" id="compare" checked> Compare with one year ago</label>
-          <p class="step-tip">Then drag the white line on the map: left is one year ago, right is today.</p>
+          <p class="step-tip">Drag the white line on the map: left is one year ago, right is today.</p>
           <div class="overlay-toggles">
             <label class="check"><input type="checkbox" id="ov-cities" checked> Cities (air quality)</label>
             <label class="check"><input type="checkbox" id="ov-rivers" checked> Rivers (discharge)</label>
@@ -127,10 +126,10 @@
     </div>
     <div class="expertise">
       <article class="xp" id="xp-climate"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4 3 27h26z"/><path d="M16 12v7M16 23v.5"/></svg></span><h3>Climate Risk</h3><p>I love understanding how hazard, exposure and vulnerability come together, so that people can prepare before a disaster.</p><ul><li>Part of the team behind OEFA's El Niño 2026–2027 risk framework, applied to regulated facilities and the Northern Peruvian Oil Pipeline</li><li>AHP weighting and consistency checks, open-sourced in Python</li></ul><a href="#nino">See El Niño live →</a></article>
-      <article class="xp" id="xp-geo"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8l8-3 8 3 8-3v19l-8 3-8-3-8 3z"/><path d="M12 5v19M20 8v19"/></svg></span><h3>Geospatial Analysis</h3><p>I am fascinated by how maps and spatial data turn a territory into stories and answers.</p><ul><li>Institutional geospatial database and ArcGIS Enterprise dashboards at OEFA</li><li>District-level reports automated with ArcPy, working with PostGIS and Oracle SDE</li></ul><a href="#cities">Explore city data →</a></article>
+      <article class="xp" id="xp-geo"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8l8-3 8 3 8-3v19l-8 3-8-3-8 3z"/><path d="M12 5v19M20 8v19"/></svg></span><h3>Geospatial Analysis</h3><p>I am fascinated by how maps and spatial data turn a territory into stories and answers.</p><ul><li>Institutional geospatial database and ArcGIS Enterprise dashboards at OEFA</li><li>District-level reports automated with ArcPy, working with PostGIS and Oracle SDE</li></ul><a href="environment/#air">Explore city data →</a></article>
       <article class="xp" id="xp-rs"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="12.5" y="12.5" width="7" height="7" rx="1.2" transform="rotate(45 16 16)"/><path d="M11 11 6.5 6.5M8.5 4.2 4.2 8.5l4.3 4.3 4.3-4.3z"/><path d="M21 21l4.5 4.5M23.5 19.2l4.3 4.3-4.3 4.3-4.3-4.3z"/><path d="M20.5 6.5a5 5 0 0 1 5 5M20.5 2.8a8.7 8.7 0 0 1 8.7 8.7"/></svg></span><h3>Remote Sensing</h3><p>Seeing the planet from space never stops amazing me: from Andean glaciers to rain over the Amazon.</p><ul><li>Sentinel-2, Landsat and GPM IMERG workflows; Random Forest land-cover classification</li><li>Research on iron oxides in deglaciated Andean areas</li></ul><a href="#satellite">Open the satellite map →</a></article>
       <article class="xp" id="xp-ews"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 5a7 7 0 0 0-7 7v5l-2.5 4h19L23 17v-5a7 7 0 0 0-7-7z"/><path d="M13 25a3 3 0 0 0 6 0"/><path d="M25.5 6.5a8 8 0 0 1 2.5 5M6.5 6.5A8 8 0 0 0 4 11.5"/></svg></span><h3>Early Warning Systems</h3><p>I care about alerts arriving in time, before the rain turns into floods or debris flows.</p><ul><li>Daily early-warning workflow at OEFA: terrain susceptibility × GPM 24/48 h rainfall for floods, mass movements and debris flows</li><li>Support for the SANDRA environmental risk alert system</li></ul><a href="#rivers">See river forecasts →</a></article>
-      <article class="xp" id="xp-air"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h15a3.5 3.5 0 1 0-3.5-3.5"/><path d="M4 17h21a3.5 3.5 0 1 1-3.5 3.5"/><path d="M4 23h9"/></svg></span><h3>Air Quality & Environmental Monitoring</h3><p>I believe everyone deserves to know what they breathe, with data that is clear and reliable.</p><ul><li>Quality control of water, air and soil monitoring data; indicators for the public AppICA dashboard</li><li>Supported the consolidation of Lima's 2008–2020 air-quality records and the specification of low-cost sensors (ATU)</li></ul><a href="#cities">Check air quality →</a></article>
+      <article class="xp" id="xp-air"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h15a3.5 3.5 0 1 0-3.5-3.5"/><path d="M4 17h21a3.5 3.5 0 1 1-3.5 3.5"/><path d="M4 23h9"/></svg></span><h3>Air Quality & Environmental Monitoring</h3><p>I believe everyone deserves to know what they breathe, with data that is clear and reliable.</p><ul><li>Quality control of water, air and soil monitoring data; indicators for the public AppICA dashboard</li><li>Supported the consolidation of Lima's 2008–2020 air-quality records and the specification of low-cost sensors (ATU)</li></ul><a href="environment/#air">Check air quality →</a></article>
       <article class="xp" id="xp-fire"><span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 28c-5.5 0-9-3.6-9-8.4 0-4.6 3.4-7.4 4.8-11.6 1.6 2.2 2.4 4 2.4 6 2-1.2 3.4-4.4 3.2-9 4.6 3 8.6 8.4 8.6 14.6 0 4.8-3.5 8.4-10 8.4z"/><path d="M16 28c-2.4 0-4-1.6-4-3.8 0-2.4 2-3.6 2.8-5.6 2 1.4 5.2 3 5.2 5.8 0 2.2-1.6 3.6-4 3.6z"/></svg></span><h3>Wildfire Monitoring</h3><p>Wildfires fascinate me: I follow them from space every day to understand where they start and how they spread.</p><ul><li>Daily VIIRS active-fire layer on this observatory; licensed drone pilot</li></ul><a href="#satellite" data-layer="fire">See active fires →</a></article>
     </div>
   </section>
@@ -224,37 +223,7 @@
   </section>
 
   <!-- CITIES -->
-  <section class="wrap section sec-light" id="cities" aria-labelledby="ciu-h">
-    <div class="sec-head">
-      <p class="kicker"><span class="k-num">05</span>Air &amp; weather</p>
-      <h2 id="ciu-h">How clean is the air in <span class="hl">Peru's cities</span>?</h2>
-      <div class="picker">
-        <label for="city">City</label>
-        <select id="city"></select>
-        <span class="updated" id="updated" aria-live="polite"></span>
-      </div>
-    </div>
-    <div class="city-grid">
-      <div class="card" id="now">
-        <h3 class="card-h" id="city-title">Loading…</h3>
-        <p class="card-sub" id="city-sub">&nbsp;</p>
-        <div id="tiles"><div class="skeleton"></div></div>
-      </div>
-      <div class="card">
-        <h3 class="card-h">Fine particles PM2.5 · 48 hours</h3>
-        <p class="card-sub">24 h estimated + 24 h forecast, in µg/m³.</p>
-        <div class="chart" id="pm-chart"><div class="skeleton"></div></div>
-        <div class="chart-legend"><span><i class="ln"></i>Hourly PM2.5</span><span><i class="ln dash"></i>WHO guideline (15) and Peru's standard (50), 24 h mean</span></div>
-        <details class="table"><summary>Show as a table</summary><div id="pm-table"></div></details>
-      </div>
-      <div class="card">
-        <h3 class="card-h">Rainfall · next 7 days</h3>
-        <p class="card-sub">Daily accumulated precipitation, in mm.</p>
-        <div class="chart" id="rain-chart"><div class="skeleton"></div></div>
-        <details class="table"><summary>Show as a table</summary><div id="rain-table"></div></details>
-      </div>
-    </div>
-  </section>
+
 
   <!-- PORTFOLIO -->
   <section class="cta" id="about" aria-labelledby="about-h">

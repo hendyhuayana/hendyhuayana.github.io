@@ -351,15 +351,13 @@
   }
 
   function buildLayerUI() {
-    $('layers').innerHTML = GROUPS.map(function (g) {
-      return '<div><p class="lg-name">' + t(g.name) + '</p><div class="chips">' + g.layers.map(function (k) {
-        return '<button class="chip" role="radio" data-k="' + k + '" aria-checked="' + (k === sat.key) + '">' + esc(t(LAYERS[k].label)) + '</button>';
-      }).join('') + '</div></div>';
-    }).join('');
-    $('layers').addEventListener('click', function (e) {
-      var b = e.target.closest('.chip'); if (!b) return;
-      setLayer(b.getAttribute('data-k'));
-    });
+    // one compact list grouped by theme, instead of eleven buttons
+    $('layers').innerHTML = '<select id="layer-sel" aria-label="' + esc(t('Choose a layer')) + '">' + GROUPS.map(function (g) {
+      return '<optgroup label="' + esc(t(g.name)) + '">' + g.layers.map(function (k) {
+        return '<option value="' + k + '"' + (k === sat.key ? ' selected' : '') + '>' + esc(t(LAYERS[k].label)) + '</option>';
+      }).join('') + '</optgroup>';
+    }).join('') + '</select>';
+    $('layer-sel').addEventListener('change', function (e) { setLayer(e.target.value); });
     var dr = $('date-range'); dr.max = MAX_BACK; dr.value = MAX_BACK - sat.back;
     dr.addEventListener('input', function () { stopPlay(); sat.back = MAX_BACK - (+dr.value); updateDates(); });
     $('compare').addEventListener('change', function (e) { sat.compare = e.target.checked; updateDates(); });
@@ -386,9 +384,9 @@
 
   function setLayer(key, first) {
     sat.key = key;
-    document.querySelectorAll('#layers .chip').forEach(function (c) { c.setAttribute('aria-checked', c.getAttribute('data-k') === key); });
+    var ls = $('layer-sel'); if (ls && ls.value !== key) ls.value = key;
     var L0 = LAYERS[key];
-    $('layer-info').innerHTML = t(L0.info) + '<span class="meta">' + esc(t(L0.meta)) + '</span>';
+    $('layer-info').innerHTML = t(L0.info) + '<span class="meta"><b>' + esc(t('Source:')) + '</b> ' + esc(t(L0.meta)) + '</span>';
     var lg = $('legend');
     if (L0.legend) { lg.src = 'https://gibs.earthdata.nasa.gov/legends/' + L0.legend; lg.alt = t('Legend for {0}', t(L0.label)); lg.hidden = false; }
     else { lg.hidden = true; lg.removeAttribute('src'); }
@@ -494,7 +492,7 @@
 
   // ---------------------------------------------------------------- plain-language help under each chart
   // explain(chart, sentence, tips): "In simple terms" + a folding "How to read this chart?" list
-  function explain(anchor, simple, tips) {
+  function explain(anchor, simple, tips, src) {
     if (!anchor) return;
     var id = anchor.id + '-ex', ex = $(id);
     if (!ex) {
@@ -505,7 +503,10 @@
     ex.querySelector('.ex-simple').innerHTML = '<b>' + t('In simple terms:') + '</b> ' + simple;
     ex.querySelector('summary').textContent = t('How to read this chart?');
     ex.querySelector('ul').innerHTML = tips.map(function (x) { return '<li>' + t(x) + '</li>'; }).join('');
+    var sl = ex.querySelector('.src-line');
+    if (src) { if (!sl) { sl = document.createElement('p'); sl.className = 'src-line'; ex.appendChild(sl); } sl.innerHTML = '<b>' + esc(t('Source:')) + '</b> ' + src; }
   }
+  function srcLink(href, text) { return '<a href="' + href + '" target="_blank" rel="noopener">' + esc(text) + '</a>'; }
 
   function renderEnso() {
     if (!enso) return;
@@ -516,7 +517,8 @@
         : t('Today the sea off northern Peru is {0} °C compared with normal. The highest value since 1981 was {1} °C, in {2}.', '<strong>' + signed(last[1], 1) + '</strong>', signed(rec[1], 1), rec[0].slice(0, 4)),
         ['Each line is the ocean temperature compared with normal: above 0 means warmer, below 0 means colder.',
          'The red line is the sea off Peru and Ecuador (Niño 1+2); the dashed line is the central Pacific (Niño 3.4).',
-         'The tall peaks are El Niño years, like 1983, 1998 and 2017, when heavy rains hit northern Peru.']);
+         'The tall peaks are El Niño years, like 1983, 1998 and 2017, when heavy rains hit northern Peru.'],
+        srcLink('https://www.cpc.ncep.noaa.gov/data/indices/', 'NOAA Climate Prediction Center') + ' · OISST v2.1 · ' + esc(t('updated every week')));
     })();
     var rows = enso.weekly.rows;
     if (ensoRange !== 'all') {
@@ -646,7 +648,8 @@
       t(R.name), '<strong>' + qfmt(r.q[r.now]) + '</strong>', fmt(Math.abs(dif)), qfmt(r.fmax)),
       ['The solid line shows how much water passed each day over the last 90 days.',
        'After the “Today” line, the dotted line is the forecast and the green band is its most likely range.',
-       'm³/s means cubic metres of water passing every second: 1 m³ is 1,000 litres.']);
+       'm³/s means cubic metres of water passing every second: 1 m³ is 1,000 litres.'],
+      srcLink('https://global-flood.emergency.copernicus.eu/', 'GloFAS (Copernicus)') + ' ' + esc(t('via')) + ' ' + srcLink('https://open-meteo.com/en/docs/flood-api', 'Open-Meteo') + ' · CC BY 4.0');
     var ticks = [];
     r.t.forEach(function (t, i) { if (t.slice(8, 10) === '01') ticks.push({ i: i, label: MONTHS[+t.slice(5, 7) - 1] }); });
     var lo = r.p25.map(function (v, i) { return i >= r.now ? v : null; }), hi = r.p75.map(function (v, i) { return i >= r.now ? v : null; });
@@ -761,7 +764,7 @@
       var now = limaHour();
       city.air = res.air.map(function (a) { return summarizeAir(a.hourly, now); });
       city.wx = res.wx.map(function (w) { return w.daily; });
-      $('updated').textContent = t('Updated: {0} (Lima time)', res.updated.toLocaleString(LOC, { timeZone: TZ, day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }));
+      if ($('updated')) $('updated').textContent = t('Updated: {0} (Lima time)', res.updated.toLocaleString(LOC, { timeZone: TZ, day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }));
       var over = city.air.filter(function (a) { return a.pm25 != null && a.pm25 > WHO_PM25; }).length;
       var valid = city.air.filter(function (a) { return a.pm25 != null; }).length;
       $('kpi-air').innerHTML = '<div class="k">' + t('Cities above the WHO air guideline') + '</div>' +
@@ -771,17 +774,24 @@
     }).catch(function (e) {
       console.error(e);
       var html = '<div class="msg">' + t('Could not load air quality and weather data.') + '<br><button type="button" class="retry">' + t('Retry') + '</button></div>';
-      ['tiles', 'pm-chart', 'rain-chart'].forEach(function (id) { $(id).innerHTML = html; });
-      $('city-title').textContent = t('Data unavailable');
+      ['tiles', 'pm-chart', 'rain-chart'].forEach(function (id) { if ($(id)) $(id).innerHTML = html; });
+      if ($('city-title')) $('city-title').textContent = t('Data unavailable');
       $('kpi-air').innerHTML = '<div class="k">' + t('Air quality') + '</div><div class="s">' + t('CAMS is unavailable.') + '</div>';
       document.querySelectorAll('.retry').forEach(function (b) { b.addEventListener('click', loadCities); });
     });
   }
+  // the full air & weather view lives on the environmental data page
+  function openAir(i) {
+    var c = CITIES[i], u = 'environment/?lat=' + c.lat + '&lon=' + c.lon + '&name=' + encodeURIComponent(c.name) + '&sub=' + encodeURIComponent(c.region);
+    if (window.GD_LANG && window.GD_LANG !== 'en') u += '&lang=' + window.GD_LANG;
+    location.href = u + '#air';
+  }
   function selectCity(i, scroll) {
     city.idx = i;
-    $('city').value = String(i);
+    if ($('city')) $('city').value = String(i);
     try { localStorage.setItem('gd-city', CITIES[i].name); } catch (e) {}
     paintCityMarkers();
+    if (!$('cities')) { if (scroll) openAir(i); return; }
     if (!city.air) return;
     renderNow(); renderPM(); renderRain();
     if (scroll) $('cities').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
@@ -921,12 +931,14 @@
     explain($('stripes'), t('Each bar is one year: blue was cooler than the 1981–2010 average and red was warmer. In the models, {1} of the last 10 years in {0} were warmer than average, and by the 2040s they project about {2} °C more.', proj.city, '<strong>' + warmK + '</strong>', '<strong>' + signed(t1 - t0, 1) + '</strong>'),
       ['Read it from left to right, like a timeline from 1960 to 2049.',
        'Blue means cooler than the 1981–2010 average and red means warmer; the darker the colour, the bigger the difference.',
-       'The white line marks today: everything to its right is a projection, not a measurement.']);
+       'The white line marks today: everything to its right is a projection, not a measurement.'],
+      'CMIP6 HighResMIP (EC-Earth3P-HR, MRI-AGCM3-2-S) ' + esc(t('via')) + ' ' + srcLink('https://open-meteo.com/en/docs/climate-api', 'Open-Meteo Climate API'));
     explain($('proj-chart'), v === 0 ? t('In {0} the average temperature would rise from {1} °C (1981–2010) to {2} °C in the 2040s.', proj.city, fmt(t0, 1), '<strong>' + fmt(t1, 1) + '</strong>')
       : t('In {0} the models project a rainfall change of {1}% by the 2040s, but they often disagree, so take it with caution.', proj.city, '<strong>' + signed(dp, 0) + '</strong>'),
       ['The line is the average of two climate models; the shaded area shows how much they differ.',
        'The dashed horizontal line is the 1981–2010 average, used as the reference.',
-       'To the right of “Today” the values are projections under a high-emissions scenario.']);
+       'To the right of “Today” the values are projections under a high-emissions scenario.'],
+      'CMIP6 HighResMIP (EC-Earth3P-HR, MRI-AGCM3-2-S) ' + esc(t('via')) + ' ' + srcLink('https://open-meteo.com/en/docs/climate-api', 'Open-Meteo Climate API'));
     $('proj-kpis').innerHTML =
       '<div class="proj-kpi"><div class="k">' + esc(t('{0} · warming by the 2040s', proj.city)) + '</div><div class="v">' + signed(t1 - t0, 1) + '<small>°C</small></div>' +
       '<div class="s">' + t('2040–2049 vs {0}–{1} ({2} → {3} °C)', B[0], B[1], fmt(t0, 1), fmt(t1, 1)) + '</div></div>' +
@@ -1015,7 +1027,7 @@
   }
 
   // ---------------------------------------------------------------- init
-  var sel = $('city');
+  var sel = $('city') || document.createElement('select');
   sel.innerHTML = CITIES.map(function (c, i) { return { c: c, i: i }; })
     .sort(function (a, b) { return a.c.name.localeCompare(b.c.name, 'es'); })
     .map(function (o) { return '<option value="' + o.i + '">' + esc(o.c.name) + ' (' + esc(o.c.region) + ')</option>'; }).join('');
@@ -1065,7 +1077,7 @@
     lastW = window.innerWidth; clearTimeout(rt);
     rt = setTimeout(function () {
       renderEnso(); renderRiver(); if (proj.data && proj.city) renderProj();
-      if (city.air) { renderPM(); renderRain(); }
+      if (city.air && $('cities')) { renderPM(); renderRain(); }
     }, 150);
   });
   if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {

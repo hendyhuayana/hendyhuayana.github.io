@@ -104,7 +104,7 @@
     var S = t('Sections');
     [['#satellite', 'Satellite map', 'map space nasa'], ['#expertise', 'My topics', 'expertise skills areas passion'], ['#nino', 'Ocean & climate', 'el nino enso sea'],
      ['#rivers', 'Rivers', 'water discharge flood'], ['#projections', 'Climate projections', 'cmip6 2050 warming stripes'],
-     ['#cities', 'Air & weather', 'pm2.5 uv rain air quality'], ['#about', 'About', 'cv profile'], ['#experience', 'Experience', 'jobs oefa work'],
+     ['environment/#air', 'Air & weather', 'pm2.5 uv rain air quality'], ['#about', 'About', 'cv profile'], ['#experience', 'Experience', 'jobs oefa work'],
      ['#skills', 'Skills & tools', 'python arcgis gee'], ['#contact', 'Contact', 'email linkedin collaboration papers conferences']].forEach(function (s) {
       add(S, 'section', t(s[1]), '', link(s[0]), s[1] + ' ' + s[2]);
     });
@@ -122,7 +122,7 @@
     if (rivers) rivers.forEach(function (r, i) { add(t('Rivers'), 'river', t('{0} River', t(r.name)), r.place, function () { A.showRiver(i); }, r.name + ' river'); });
     if (!A) { // on other pages, still offer the main places
       add(t('Satellite layers'), 'layer', t('Active fires (VIIRS)'), t('Satellite map'), function () { location.href = withLang(BASE + 'index.html?layer=fire#satellite'); }, 'fire');
-      add(t('Cities'), 'city', 'Lima', t('Air quality'), function () { location.href = withLang(BASE + 'index.html?city=Lima#cities'); }, 'air');
+      add(t('Cities'), 'city', 'Lima', t('Air quality'), function () { location.href = withLang(BASE + 'environment/#air'); }, 'air');
     }
     var D = t('Open data');
     [['enso.json', 'El Niño indices · JSON', 'NOAA CPC · 1981–'], ['climate.json', 'Climate projections by city · JSON', 'CMIP6 · 1960–2049'], ['peru.geojson', 'Peru boundary · GeoJSON', 'Natural Earth']].forEach(function (d) {
@@ -268,7 +268,7 @@
         ['#nino', 'El Niño since 1981', 'Weekly NOAA indices you can explore, read as a table or download.']] },
       { id: 'curious', tab: 'I’m curious', cards: [
         ['#satellite', 'Peru from space', 'Compare today’s satellite images with the same day one year ago.'],
-        ['#cities', 'The air in your city', 'Live PM2.5, UV and rain for cities across Peru.'],
+        ['environment/#air', 'The air in your city', 'Live PM2.5, UV and rain for cities across Peru.'],
         ['#rivers', 'Rivers today', 'How much water the big rivers carry, with a 30-day forecast.']] }
     ];
     var sec = el('section', 'wrap section paths sec-light'); sec.id = 'start'; sec.setAttribute('aria-labelledby', 'paths-h');
@@ -544,7 +544,7 @@
     var chev = '<svg class="tm-chev" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
     var MENU = [
       { label: 'My topics', go: '#expertise', items: [['#xp-climate', 'Climate Risk'], ['#xp-geo', 'Geospatial Analysis'], ['#xp-rs', 'Remote Sensing'], ['#xp-ews', 'Early Warning'], ['#xp-air', 'Air Quality'], ['#xp-fire', 'Wildfire']] },
-      { label: 'Observatory', go: '#satellite', items: [['#satellite', 'Satellite map'], ['#nino', 'Ocean & climate'], ['#rivers', 'Rivers'], ['#projections', 'Climate projections'], ['#cities', 'Air & weather']] },
+      { label: 'Observatory', go: '#satellite', items: [['#satellite', 'Satellite map'], ['#nino', 'Ocean & climate'], ['#rivers', 'Rivers'], ['#projections', 'Climate projections'], ['environment/#air', 'Air & weather']] },
       { label: 'Scientific research', go: 'research/', items: [['research/', 'Scientific research'], ['research/quiulacocha/', 'Quiulacocha case study']] },
       { label: 'Environmental data', go: 'environment/', items: [] },
       { label: 'About', href: '#about' }
@@ -668,8 +668,9 @@
       tg.setAttribute('aria-expanded', 'false'); body.hidden = true;
       var head = tg.closest('.panel-head'), cur = el('span', 'panel-cur');
       head.insertBefore(cur, tg);
-      var upd = function () { var c = document.querySelector('#layers .chip[aria-checked="true"]'); cur.textContent = c ? c.textContent : ''; };
-      upd(); new MutationObserver(upd).observe($('layers'), { attributes: true, subtree: true, attributeFilter: ['aria-checked'] });
+      var upd = function () { var c = $('layer-sel'); cur.textContent = c ? c.options[c.selectedIndex].textContent : ''; };
+      upd(); document.addEventListener('change', function (e) { if (e.target.id === 'layer-sel') upd(); });
+      var oldSet = window.gdApp && window.gdApp.showLayer;
       head.addEventListener('click', function (e) { if (e.target !== tg && !tg.contains(e.target)) tg.click(); });
     }
   })();
