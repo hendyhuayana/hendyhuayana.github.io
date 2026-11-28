@@ -1,11 +1,11 @@
-# Thesis results · how to fill `thesis_results.json`
+# Research results · how to fill `thesis_results.json`
 
-The **Quiulacocha thesis** section of the page reads **every number** from
+The **Quiulacocha research** section of the page reads **every number** from
 `greendata/data/thesis_results.json`. Nothing is hard-coded in the page.
 
 - While a block has no data, it stays hidden.
 - While **no result block** has data, the section shows
-  **"Results coming soon — thesis in progress"**.
+  **"Results coming soon — research in progress"**.
 - Leave a value as `null` (no quotes) when you don't have it yet. Don't write `0` for "unknown".
 - Use a **dot** for decimals (`0.25`, not `0,25`) and no units inside the numbers.
 - Check the file is valid JSON before you commit (for example at <https://jsonlint.com>).
@@ -90,8 +90,8 @@ Leave any factor you didn't vary or record as `null`; it won't be shown.
 - `limitations`: list of short sentences, e.g.
   `["Lab-scale jar tests", "Two sampling points on one date"]`.
   If empty, the page shows general limitations without numbers.
-- `status`: set to `"final"` when the thesis is approved. The badge changes
-  from "Thesis in progress" to "Thesis results".
+- `status`: set to `"final"` when the results are final. The badge changes
+  from "Research in progress" to "Research results".
 - `updated`: date of the last update, `YYYY-MM-DD`.
 
 ## Demo mode

@@ -114,7 +114,7 @@
     var R = t('Research');
     add(R, 'research', t('Scientific research'), '', function () { location.href = withLang(BASE + 'research/'); }, 'Research');
     add(R, 'data', t('Environmental data'), t('Biodiversity, soil, air and water'), function () { location.href = withLang(BASE + 'environment/'); }, 'biota soil air water species biodiversity suelo especies');
-    add(R, 'research', t('Quiulacocha case study'), t('Ongoing research'), function () { location.href = withLang(BASE + 'research/quiulacocha/'); }, 'thesis tesis mine drainage metals');
+    add(R, 'research', t('Quiulacocha case study'), t('Ongoing research'), function () { location.href = withLang(BASE + 'research/quiulacocha/'); }, 'research mine drainage metals quiulacocha');
     var A = window.gdApp;
     var layers = A ? A.layers : null, cities = A ? A.cities : null, rivers = A ? A.rivers : null;
     if (layers) layers.forEach(function (l) { add(t('Satellite layers'), 'layer', l.label, t('Satellite map'), function () { A.showLayer(l.key); }, l.key); });
