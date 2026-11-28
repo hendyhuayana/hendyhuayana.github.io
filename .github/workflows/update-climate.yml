@@ -6,7 +6,7 @@ on:
       - scripts/update_climate.py
       - .github/workflows/update-climate.yml
   schedule:
-    - cron: "23 4,16 * * *"   # twice a day until every city is complete, then a no-op
+    - cron: "23 * * * *"   # hourly until every city is complete (about 8 runs), then a no-op
   workflow_dispatch:
 
 permissions:

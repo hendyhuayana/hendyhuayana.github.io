@@ -467,8 +467,33 @@
     });
   }
 
+
+  // ---------------------------------------------------------------- plain-language help under each chart
+  // explain(chart, sentence, tips): "In simple terms" + a folding "How to read this chart?" list
+  function explain(anchor, simple, tips) {
+    if (!anchor) return;
+    var id = anchor.id + '-ex', ex = $(id);
+    if (!ex) {
+      ex = document.createElement('div'); ex.className = 'explainer'; ex.id = id;
+      ex.innerHTML = '<p class="ex-simple"></p><details class="ex-how"><summary></summary><ul></ul></details>';
+      anchor.insertAdjacentElement('afterend', ex);
+    }
+    ex.querySelector('.ex-simple').innerHTML = '<b>' + t('In simple terms:') + '</b> ' + simple;
+    ex.querySelector('summary').textContent = t('How to read this chart?');
+    ex.querySelector('ul').innerHTML = tips.map(function (x) { return '<li>' + t(x) + '</li>'; }).join('');
+  }
+
   function renderEnso() {
     if (!enso) return;
+    (function () {
+      var all = enso.weekly.rows, last = all[all.length - 1], rec = all.reduce(function (b, r) { return r[1] > b[1] ? r : b; }, all[0]);
+      explain($('enso-chart'), last[1] >= rec[1] - 0.05
+        ? t('Today the sea off northern Peru is {0} °C above normal, the highest value since 1981.', '<strong>' + signed(last[1], 1) + '</strong>')
+        : t('Today the sea off northern Peru is {0} °C compared with normal. The highest value since 1981 was {1} °C, in {2}.', '<strong>' + signed(last[1], 1) + '</strong>', signed(rec[1], 1), rec[0].slice(0, 4)),
+        ['Each line is the ocean temperature compared with normal: above 0 means warmer, below 0 means colder.',
+         'The red line is the sea off Peru and Ecuador (Niño 1+2); the dashed line is the central Pacific (Niño 3.4).',
+         'The tall peaks are El Niño years, like 1983, 1998 and 2017, when heavy rains hit northern Peru.']);
+    })();
     var rows = enso.weekly.rows;
     if (ensoRange !== 'all') {
       var cut = new Date(utcToday().getTime() - (+ensoRange) * 365.25 * DAY).toISOString().slice(0, 10);
@@ -591,6 +616,13 @@
     var r = rivers[riverIdx], R = RIVERS[riverIdx];
     $('river-title').textContent = t('{0} River · {1}', t(R.name), R.place);
     $('river-sub').textContent = t('Today: {0} m³/s · 90-day mean: {1} m³/s · forecast peak: {2} m³/s', qfmt(r.q[r.now]), qfmt(r.mean90), qfmt(r.fmax));
+    var dif = r.mean90 ? (r.q[r.now] - r.mean90) / r.mean90 * 100 : 0;
+    explain($('river-chart'), t(dif >= 0 ? 'Today the {0} River carries {1} m³/s, {2}% more than its average over the last 90 days. The forecast suggests it could reach about {3} m³/s in the coming weeks.'
+      : 'Today the {0} River carries {1} m³/s, {2}% less than its average over the last 90 days. The forecast suggests it could reach about {3} m³/s in the coming weeks.',
+      t(R.name), '<strong>' + qfmt(r.q[r.now]) + '</strong>', fmt(Math.abs(dif)), qfmt(r.fmax)),
+      ['The solid line shows how much water passed each day over the last 90 days.',
+       'After the “Today” line, the dotted line is the forecast and the green band is its most likely range.',
+       'm³/s means cubic metres of water passing every second: 1 m³ is 1,000 litres.']);
     var ticks = [];
     r.t.forEach(function (t, i) { if (t.slice(8, 10) === '01') ticks.push({ i: i, label: MONTHS[+t.slice(5, 7) - 1] }); });
     var lo = r.p25.map(function (v, i) { return i >= r.now ? v : null; }), hi = r.p75.map(function (v, i) { return i >= r.now ? v : null; });
@@ -686,11 +718,26 @@
       '&hourly=pm2_5,pm10&past_days=1&forecast_days=2&timezone=' + encodeURIComponent(TZ);
     var wxUrl = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon +
       '&daily=precipitation_sum,precipitation_probability_max,uv_index_max,temperature_2m_max,temperature_2m_min&forecast_days=7&timezone=' + encodeURIComponent(TZ);
-    return Promise.all([fetchJSON(airUrl), fetchJSON(wxUrl)]).then(function (res) {
+    // 1) the copy GitHub Actions saves every 3 hours (data/air.json); 2) live Open-Meteo if that copy is old;
+    // 3) the old copy if Open-Meteo is busy. Visitors rarely need to call the API themselves.
+    var MAX_AGE = 4 * 3600e3;
+    function live() {
+      return Promise.all([fetchJSON(airUrl), fetchJSON(wxUrl)]).then(function (res) {
+        return { air: Array.isArray(res[0]) ? res[0] : [res[0]], wx: Array.isArray(res[1]) ? res[1] : [res[1]], updated: new Date() };
+      });
+    }
+    var fileP = fetchJSON('data/air.json?h=' + Math.floor(Date.now() / 3600e3)).then(function (d) {
+      if (!d || !d.air || d.air.length !== CITIES.length) throw new Error('bad air.json');
+      return { air: d.air, wx: d.wx, updated: new Date(d.updated) };
+    });
+    return fileP.then(function (f) {
+      if (Date.now() - f.updated.getTime() < MAX_AGE) return f;
+      return live().catch(function () { return f; });
+    }, function () { return live(); }).then(function (res) {
       var now = limaHour();
-      city.air = (Array.isArray(res[0]) ? res[0] : [res[0]]).map(function (a) { return summarizeAir(a.hourly, now); });
-      city.wx = (Array.isArray(res[1]) ? res[1] : [res[1]]).map(function (w) { return w.daily; });
-      $('updated').textContent = t('Updated: {0} (Lima time)', new Date().toLocaleString(LOC, { timeZone: TZ, day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }));
+      city.air = res.air.map(function (a) { return summarizeAir(a.hourly, now); });
+      city.wx = res.wx.map(function (w) { return w.daily; });
+      $('updated').textContent = t('Updated: {0} (Lima time)', res.updated.toLocaleString(LOC, { timeZone: TZ, day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }));
       var over = city.air.filter(function (a) { return a.pm25 != null && a.pm25 > WHO_PM25; }).length;
       var valid = city.air.filter(function (a) { return a.pm25 != null; }).length;
       $('kpi-air').innerHTML = '<div class="k">' + t('Cities above the WHO air guideline') + '</div>' +
@@ -748,6 +795,11 @@
   function renderPM() {
     var a = city.air[city.idx], box = $('pm-chart');
     if (a.series.filter(function (p) { return p.v != null; }).length < 2) { box.innerHTML = '<div class="msg">' + t('No hourly PM2.5 data for this city.') + '</div>'; $('pm-table').innerHTML = ''; return; }
+    var pst = a.pm25 != null ? pmStatus(a.pm25) : null;
+    if (pst) explain(box, t('In {0}, the air had an average of {1} µg/m³ of fine particles over the last 24 hours ({2}). The WHO recommends staying below 15.', CITIES[city.idx].name, '<strong>' + fmt(a.pm25) + '</strong>', t(pst.long)),
+      ['The line shows fine particles (PM2.5) hour by hour: the lower, the cleaner the air.',
+       'The dashed lines are the WHO guideline (15) and Peru’s standard (50).',
+       'After “Now”, the dotted line is the forecast for the next 24 hours.']);
     var narrow = (box.clientWidth || 600) < 420;
     var ticks = [];
     a.series.forEach(function (p, i) { if (+p.t.slice(11, 13) % (narrow ? 12 : 6) === 0) ticks.push({ i: i, label: p.t.slice(11, 16) }); });
@@ -763,7 +815,13 @@
   }
   function renderRain() {
     var w = city.wx[city.idx];
-    var labels = w.time.map(function (t, i) { if (i === 0) return t('Today'); var d = new Date(t + 'T12:00:00Z'); return DAYS[d.getUTCDay()] + ' ' + d.getUTCDate(); });
+    var labels = w.time.map(function (day, i) { if (i === 0) return t('Today'); var d = new Date(day + 'T12:00:00Z'); return DAYS[d.getUTCDay()] + ' ' + d.getUTCDate(); });
+    var tot = w.precipitation_sum.reduce(function (x, v) { return x + (v || 0); }, 0), mi = 0;
+    w.precipitation_sum.forEach(function (v, i) { if ((v || 0) > (w.precipitation_sum[mi] || 0)) mi = i; });
+    explain($('rain-chart'), tot < 0.1 ? t('No rain is expected in {0} over the next 7 days.', CITIES[city.idx].name)
+      : t('About {1} mm of rain are expected in {0} over the next 7 days; the rainiest day would be {2}, with {3} mm.', CITIES[city.idx].name, '<strong>' + fmt(tot, 1) + '</strong>', labels[mi].toLowerCase(), fmt(w.precipitation_sum[mi], 1)),
+      ['Each bar is one day; the taller the bar, the more rain.',
+       '1 mm of rain means 1 litre of water on each square metre of ground.']);
     barChart($('rain-chart'), {
       values: w.precipitation_sum, labels: labels, label: t('Daily rainfall in {0}', CITIES[city.idx].name),
       tip: function (i) { return '<b>' + labels[i] + ': ' + fmt(w.precipitation_sum[i], 1) + ' mm</b><br>' + t('Max probability: {0}%', fmt(w.precipitation_probability_max[i])); }
@@ -816,7 +874,7 @@
     svg += '</svg>';
     box.innerHTML = svg;
     $('stripes-title').textContent = t('Warming stripes · {0}', city);
-    $('stripes-legend').innerHTML = '<span>' + signed(-lim, 1) + ' °C</span><i style="background:linear-gradient(90deg,' + STRIPES.join(',') + ')"></i><span>' + signed(lim, 1) + ' °C</span>';
+    $('stripes-legend').innerHTML = '<span>' + t('Cooler') + ' ' + signed(-lim, 1) + ' °C</span><i style="background:linear-gradient(90deg,' + STRIPES.join(',') + ')"></i><span>' + signed(lim, 1) + ' °C ' + t('Warmer') + '</span>';
     var svgEl = box.querySelector('svg'), tip = tipFor(box);
     svgEl.addEventListener('pointermove', function (e) {
       var r = svgEl.getBoundingClientRect(), i = Math.max(0, Math.min(n - 1, Math.floor((e.clientX - r.left) / r.width * n)));
@@ -834,6 +892,17 @@
     var T = projSeries(c, 0), P = projSeries(c, 1), B = d.baseline;
     var t0 = avgYears(T, B[0], B[1]), t1 = avgYears(T, 2040, 2049), p0 = avgYears(P, B[0], B[1]), p1 = avgYears(P, 2040, 2049);
     var dp = p0 ? (p1 - p0) / p0 * 100 : null;
+    var nowY = new Date().getUTCFullYear(), warmK = 0;
+    T.years.forEach(function (y, i) { if (y >= nowY - 10 && y < nowY && T.mean[i] != null && T.mean[i] > t0) warmK++; });
+    explain($('stripes'), t('Each bar is one year: blue was cooler than the 1981–2010 average and red was warmer. In the models, {1} of the last 10 years in {0} were warmer than average, and by the 2040s they project about {2} °C more.', proj.city, '<strong>' + warmK + '</strong>', '<strong>' + signed(t1 - t0, 1) + '</strong>'),
+      ['Read it from left to right, like a timeline from 1960 to 2049.',
+       'Blue means cooler than the 1981–2010 average and red means warmer; the darker the colour, the bigger the difference.',
+       'The white line marks today: everything to its right is a projection, not a measurement.']);
+    explain($('proj-chart'), v === 0 ? t('In {0} the average temperature would rise from {1} °C (1981–2010) to {2} °C in the 2040s.', proj.city, fmt(t0, 1), '<strong>' + fmt(t1, 1) + '</strong>')
+      : t('In {0} the models project a rainfall change of {1}% by the 2040s, but they often disagree, so take it with caution.', proj.city, '<strong>' + signed(dp, 0) + '</strong>'),
+      ['The line is the average of two climate models; the shaded area shows how much they differ.',
+       'The dashed horizontal line is the 1981–2010 average, used as the reference.',
+       'To the right of “Today” the values are projections under a high-emissions scenario.']);
     $('proj-kpis').innerHTML =
       '<div class="proj-kpi"><div class="k">' + esc(t('{0} · warming by the 2040s', proj.city)) + '</div><div class="v">' + signed(t1 - t0, 1) + '<small>°C</small></div>' +
       '<div class="s">' + t('2040–2049 vs {0}–{1} ({2} → {3} °C)', B[0], B[1], fmt(t0, 1), fmt(t1, 1)) + '</div></div>' +

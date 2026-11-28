@@ -217,7 +217,7 @@
     var img = d.idw_map_image;
     if (img && /^img\/[\w.\-\/]+\.(png|jpe?g|webp)$/i.test(img)) { $('thesis-idw-img').src = BASE + img; $('thesis-idw').hidden = false; any = true; }
     $('thesis-soon').hidden = any;
-    $('thesis-badge').textContent = tr(d.status === 'final' ? 'Thesis results' : any ? 'Preliminary results · thesis in progress' : 'Thesis in progress');
+    $('thesis-badge').textContent = tr(d.status === 'final' ? 'Research results' : any ? 'Preliminary results · research in progress' : 'Research in progress');
     var lim = (d.limitations || []).filter(function (x) { return typeof x === 'string' && x.trim(); });
     if (lim.length) $('thesis-limits').innerHTML = lim.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('');
   }

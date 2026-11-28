@@ -113,7 +113,7 @@
     });
     var R = t('Research');
     add(R, 'research', t('Scientific research'), '', function () { location.href = withLang(BASE + 'research/'); }, 'Research');
-    add(R, 'research', t('Quiulacocha case study'), t('Undergraduate thesis'), function () { location.href = withLang(BASE + 'research/quiulacocha/'); }, 'thesis tesis mine drainage metals');
+    add(R, 'research', t('Quiulacocha case study'), t('Ongoing research'), function () { location.href = withLang(BASE + 'research/quiulacocha/'); }, 'thesis tesis mine drainage metals');
     var A = window.gdApp;
     var layers = A ? A.layers : null, cities = A ? A.cities : null, rivers = A ? A.rivers : null;
     if (layers) layers.forEach(function (l) { add(t('Satellite layers'), 'layer', l.label, t('Satellite map'), function () { A.showLayer(l.key); }, l.key); });
@@ -128,7 +128,6 @@
       add(D, 'data', t(d[1]), d[2], function () { window.open(BASE + 'data/' + d[0], '_blank', 'noopener'); }, 'download data ' + d[1]);
     });
     if (isHome) add(t('Actions'), 'data', t('Share this view'), t('Copy a link to this layer, date, city and river'), share, 'share link copy');
-    add(t('Actions'), 'section', t('Collaborations'), '', link('#collaborations'), 'collaborations partners');
     add(t('Actions'), 'section', t('Connect on LinkedIn'), '', function () { window.open('https://www.linkedin.com/in/hendy-huayana/', '_blank', 'noopener'); }, 'linkedin contact');
     var LN = { en: 'English', es: 'Español', pt: 'Português', fr: 'Français', de: 'Deutsch', zh: '中文' };
     Object.keys(LN).forEach(function (k) {
@@ -231,7 +230,7 @@
   var spyTick = false;
   var spy = function () {
     spyTick = false;
-    var links = [].slice.call(document.querySelectorAll('#site-nav a[href^="#"], .topmenu a[href^="#"]')).filter(function (a) { return $(a.getAttribute('href').slice(1)); });
+    var links = [].slice.call(document.querySelectorAll('#site-nav a[href^="#"]')).filter(function (a) { return $(a.getAttribute('href').slice(1)); });
     var line = window.innerHeight * 0.35, best = null, bestTop = -Infinity;
     links.forEach(function (a) {
       var vis = a.closest('.tm-panel') ? a.closest('.tm-item').getClientRects().length : a.getClientRects().length;
@@ -241,7 +240,15 @@
       if (r.top <= line && r.bottom > 80 && r.top > bestTop) { best = a; bestTop = r.top; }
     });
     links.forEach(function (a) { if (a === best) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); });
-    document.querySelectorAll('.topmenu .tm-item').forEach(function (li) { li.classList.toggle('is-current', !!(best && li.contains(best))); });
+    var tops = [].slice.call(document.querySelectorAll('.topmenu a.tm-top[data-cover]')), pick = null, pickTop = -Infinity;
+    tops.forEach(function (a) {
+      a.getAttribute('data-cover').split(' ').forEach(function (id) {
+        var el2 = id && $(id); if (!el2) return;
+        var r2 = el2.getBoundingClientRect();
+        if (r2.height && r2.top <= line && r2.bottom > 80 && r2.top > pickTop) { pick = a; pickTop = r2.top; }
+      });
+    });
+    document.querySelectorAll('.topmenu .tm-item').forEach(function (li) { li.classList.toggle('is-current', !!(pick && li.contains(pick))); });
   };
   window.addEventListener('scroll', function () { if (!spyTick) { spyTick = true; requestAnimationFrame(spy); } }, { passive: true });
   window.addEventListener('resize', spy);
@@ -255,7 +262,7 @@
         ['#projections', 'Climate to 2050', 'CMIP6 projections and warming stripes for Peruvian cities.'],
         ['#satellite', 'Satellite layers explained', 'What each layer shows, from ocean heat to active fires, in plain language.']] },
       { id: 'research', tab: 'I do research', cards: [
-        ['research/quiulacocha/', 'Quiulacocha case study', 'Can fruit peels remove heavy metals from acid mine drainage? My thesis, as an app.'],
+        ['research/quiulacocha/', 'Quiulacocha case study', 'Can fruit peels remove heavy metals from acid mine drainage? My research, as an app.'],
         ['research/', 'Papers & conferences', 'My research, presentations and talks in one place.'],
         ['#nino', 'El Niño since 1981', 'Weekly NOAA indices you can explore, read as a table or download.']] },
       { id: 'curious', tab: 'I’m curious', cards: [
@@ -530,17 +537,19 @@
     // desktop menu with dropdowns (the phone keeps the ☰ menu)
     var chev = '<svg class="tm-chev" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
     var MENU = [
-      { label: 'My topics', items: [['#xp-climate', 'Climate Risk'], ['#xp-geo', 'Geospatial Analysis'], ['#xp-rs', 'Remote Sensing'], ['#xp-ews', 'Early Warning'], ['#xp-air', 'Air Quality'], ['#xp-fire', 'Wildfire']] },
-      { label: 'Observatory', items: [['#satellite', 'Satellite map'], ['#nino', 'Ocean & climate'], ['#rivers', 'Rivers'], ['#projections', 'Climate projections'], ['#cities', 'Air & weather']] },
-      { label: 'Research', items: [['research/', 'Scientific research'], ['research/quiulacocha/', 'Quiulacocha case study']] },
+      { label: 'My topics', go: '#expertise', items: [['#xp-climate', 'Climate Risk'], ['#xp-geo', 'Geospatial Analysis'], ['#xp-rs', 'Remote Sensing'], ['#xp-ews', 'Early Warning'], ['#xp-air', 'Air Quality'], ['#xp-fire', 'Wildfire']] },
+      { label: 'Observatory', go: '#satellite', items: [['#satellite', 'Satellite map'], ['#nino', 'Ocean & climate'], ['#rivers', 'Rivers'], ['#projections', 'Climate projections'], ['#cities', 'Air & weather']] },
+      { label: 'Research', go: 'research/', items: [['research/', 'Scientific research'], ['research/quiulacocha/', 'Quiulacocha case study']] },
       { label: 'About', href: '#about' }
     ];
     var tm = el('nav', 'topmenu'); tm.setAttribute('aria-label', t('Sections'));
     var ul = el('ul');
     MENU.forEach(function (m, i) {
       var li = el('li', 'tm-item');
-      if (m.href) {
-        li.innerHTML = '<a class="tm-top" href="' + href(m.href) + '">' + esc(t(m.label)) + '</a>';
+      var direct = m.href || m.go;
+      if (direct) {
+        var cover = (m.items || []).map(function (x) { return x[0]; }).concat([direct]).filter(function (h) { return h.charAt(0) === '#'; }).map(function (h) { return h.slice(1); });
+        li.innerHTML = '<a class="tm-top" href="' + href(direct) + '" data-cover="' + cover.join(' ') + '">' + esc(t(m.label)) + '</a>';
       } else {
         li.innerHTML = '<button type="button" class="tm-top" aria-expanded="false" aria-controls="tm-p' + i + '">' + esc(t(m.label)) + chev + '</button>' +
           '<div class="tm-panel" id="tm-p' + i + '"><ul>' + m.items.map(function (x) { return '<li><a href="' + href(x[0]) + '">' + esc(t(x[1])) + '</a></li>'; }).join('') + '</ul></div>';
@@ -607,7 +616,7 @@
     document.addEventListener('click', function (e) { if (openLi && !openLi.contains(e.target)) close(openLi); });
   })();
 
-  // ------------------------------------------------------------------ contact: email + WhatsApp buttons, and collaborations (home)
+  // ------------------------------------------------------------------ contact: email + WhatsApp buttons (home)
   (function () {
     var contact = $('contact'); if (!contact) return;
     var row = contact.querySelector('.cta-row');
@@ -624,21 +633,6 @@
       row.insertBefore(waA, row.firstChild); row.insertBefore(mailA, row.firstChild);
       var li = row.querySelector('a[href*="linkedin"]'); if (li) li.classList.add('ghost');
     }
-    // collaborations, just before the contact block
-    var COL = [
-      ['UTEC', 'Universidad de Ingeniería y Tecnología', 'Environmental engineering lab: the jar tests of my thesis'],
-      ['UNFV', 'Universidad Nacional Federico Villarreal (UNFV)', 'My university · volunteer lecturer in spatial databases'],
-      ['IGP', 'Instituto Geofísico del Perú', 'Ciencia Climática · science interpreter'],
-      ['Y & J', 'Yajhaira & Jhilary', 'Thesis co-authors'],
-      ['YPN', 'Esri Young Professionals Network', 'Community Ambassador 2026']
-    ];
-    var box = el('div', 'collabs'); box.id = 'collaborations';
-    box.innerHTML = '<h3 class="block-h">' + esc(t('Collaborations')) + '</h3><p class="sec-lede">' + esc(t('People and institutions I research and learn with.')) + '</p>' +
-      '<ul class="collab-grid">' + COL.map(function (c) {
-        return '<li><span class="collab-mark" aria-hidden="true">' + esc(c[0]) + '</span><b>' + esc(t(c[1])) + '</b><span>' + esc(t(c[2])) + '</span></li>';
-      }).join('') + '</ul>';
-    contact.parentNode.insertBefore(box, contact);
-    if (window.gdReveal) window.gdReveal(box);
   })();
 
   // ------------------------------------------------------------------ phone: lighter page (home)

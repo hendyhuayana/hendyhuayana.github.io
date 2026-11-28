@@ -104,8 +104,9 @@ def main():
                     minute_used, minute_start = 0, time.monotonic()
                 try:
                     res = fetch(city, model, y0, y1)
-                except urllib.error.HTTPError as e:
-                    print(f"{city['name']} {model} {y0}-{y1}: HTTP {e.code}, stopping this run")
+                except (urllib.error.URLError, OSError) as e:
+                    # rate limit or a dropped connection: keep what we have and continue next run
+                    print(f"{city['name']} {model} {y0}-{y1}: {getattr(e, 'code', e)}, stopping this run")
                     stop = True
                     break
                 years.update(annualize(res["daily"]))
