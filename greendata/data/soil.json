@@ -1,0 +1,15 @@
+{
+ "places": {
+  "huascaran": {
+   "clay": 21.1,
+   "nitrogen": 4.85,
+   "phh2o": 6.5,
+   "sand": 43.0,
+   "silt": 35.9,
+   "soc": 87.2,
+   "lat": -9.04,
+   "lon": -77.62
+  }
+ },
+ "source": "SoilGrids 2.0 (ISRIC), 0-5 cm, 250 m, CC BY 4.0"
+}

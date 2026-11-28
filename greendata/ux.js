@@ -113,6 +113,7 @@
     });
     var R = t('Research');
     add(R, 'research', t('Scientific research'), '', function () { location.href = withLang(BASE + 'research/'); }, 'Research');
+    add(R, 'data', t('Environmental data'), t('Biodiversity, soil, air and water'), function () { location.href = withLang(BASE + 'environment/'); }, 'biota soil air water species biodiversity suelo especies');
     add(R, 'research', t('Quiulacocha case study'), t('Ongoing research'), function () { location.href = withLang(BASE + 'research/quiulacocha/'); }, 'thesis tesis mine drainage metals');
     var A = window.gdApp;
     var layers = A ? A.layers : null, cities = A ? A.cities : null, rivers = A ? A.rivers : null;
@@ -423,12 +424,6 @@
   (function () {
     var foot = document.querySelector('.footer'), wrap = foot && foot.querySelector('.wrap');
     if (!wrap) return;
-    var BADGES = [['Esri Young Professionals Network', 'Community Ambassador 2026'], ['Women in GIS', 'Member'], ['Women Techmakers', 'Member'],
-      ['GEO Mountains', 'Network'], ['Mountain Research Initiative', 'Expert database']];
-    var top = el('div', 'foot-top');
-    top.innerHTML = '<ul class="foot-badges">' + BADGES.map(function (b) { return '<li><b>' + esc(b[0]) + '</b><span>' + esc(t(b[1])) + '</span></li>'; }).join('') + '</ul>' +
-      '<p class="foot-claim">' + esc(t('Communities and networks I am part of')) + '</p>';
-    wrap.insertBefore(top, wrap.firstChild);
     var SOC = [
       ['https://www.linkedin.com/in/hendy-huayana/', 'LinkedIn', '<path d="M6 9.5v8M6 6.2v.1M10 17.5v-8M10 13c0-2 1.2-3.5 3-3.5s3 1.2 3 3.5v4.5"/><rect x="2.5" y="2.5" width="19" height="19" rx="4"/>'],
       ['https://github.com/hendyhuayana', 'GitHub', '<path d="M9 19c-4 1.3-4-2-6-2.5M15 21.5v-3.6c0-1 .1-1.5-.5-2.1 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1-.3-3.4 1.3a11.6 11.6 0 0 0-6.2 0C6.6 3.1 5.5 3.4 5.5 3.4a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.8c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2.1v3.6"/>'],
@@ -538,11 +533,6 @@
     makeCarousel(grid, head, h.textContent, 'a');
   })();
 
-  // lime band before the footer, on every page
-  (function () {
-    var f = document.querySelector('.footer'); if (!f) return;
-    var band = el('div', 'lime-band'); band.setAttribute('aria-hidden', 'true'); f.parentNode.insertBefore(band, f);
-  })();
 
   // ------------------------------------------------------------------ top bar: announcement strip + desktop menu with dropdowns
   (function () {
@@ -557,6 +547,7 @@
       { label: 'My topics', go: '#expertise', items: [['#xp-climate', 'Climate Risk'], ['#xp-geo', 'Geospatial Analysis'], ['#xp-rs', 'Remote Sensing'], ['#xp-ews', 'Early Warning'], ['#xp-air', 'Air Quality'], ['#xp-fire', 'Wildfire']] },
       { label: 'Observatory', go: '#satellite', items: [['#satellite', 'Satellite map'], ['#nino', 'Ocean & climate'], ['#rivers', 'Rivers'], ['#projections', 'Climate projections'], ['#cities', 'Air & weather']] },
       { label: 'Scientific research', go: 'research/', items: [['research/', 'Scientific research'], ['research/quiulacocha/', 'Quiulacocha case study']] },
+      { label: 'Environmental data', go: 'environment/', items: [] },
       { label: 'About', href: '#about' }
     ];
     var tm = el('nav', 'topmenu'); tm.setAttribute('aria-label', t('Sections'));
@@ -572,6 +563,7 @@
           '<div class="tm-panel" id="tm-p' + i + '"><ul>' + m.items.map(function (x) { return '<li><a href="' + href(x[0]) + '">' + esc(t(x[1])) + '</a></li>'; }).join('') + '</ul></div>';
       }
       if (m.label === 'Scientific research' && /\/research\//.test(location.pathname)) li.classList.add('is-page');
+      if (m.label === 'Environmental data' && /\/environment\//.test(location.pathname)) li.classList.add('is-page');
       ul.appendChild(li);
     });
     tm.appendChild(ul);
@@ -586,7 +578,7 @@
     if (drawerNav) {
       var dm = el('div', 'dm');
       dm.innerHTML = MENU.map(function (m, i) {
-        if (m.href) return '<a class="dm-top" href="' + href(m.href) + '">' + esc(t(m.label)) + '</a>';
+        if (m.href || !(m.items && m.items.length)) return '<a class="dm-top" href="' + href(m.href || m.go) + '">' + esc(t(m.label)) + '</a>';
         return '<div class="dm-group"><button type="button" class="dm-top" aria-expanded="false" aria-controls="dm-p' + i + '">' + esc(t(m.label)) + chev + '</button>' +
           '<div class="dm-panel" id="dm-p' + i + '" hidden>' + m.items.map(function (x) { return '<a href="' + href(x[0]) + '">' + esc(t(x[1])) + '</a>'; }).join('') + '</div></div>';
       }).join('') + '<a class="btn dm-cta" href="' + href('#contact') + '">' + esc(t('Contact')) + '</a>';
