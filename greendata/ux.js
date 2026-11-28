@@ -745,7 +745,7 @@
       '<button type="button" class="gw-x" data-close aria-label="' + esc(t('Close')) + '">×</button>' +
       '<p class="gw-purpose">' + esc(t('Hello! This is a site with educational and scientific purposes, open to academic research collaborations, talks and more.')) + '</p>' +
       '<div class="gw-btns"><button type="button" class="btn ghost gw-go" data-close>' + esc(t('Explore on my own')) + '</button>' +
-      (isHome ? '<button type="button" class="btn gw-tour">' + esc(t('Start the tour')) + '</button>' : '') + '</div></div>';
+      (isHome ? '<button type="button" class="btn gw-tour">' + esc(t('See the guide')) + '</button>' : '') + '</div></div>';
     document.body.appendChild(box);
     document.documentElement.classList.add('pal-open');
     var prev = document.activeElement;
