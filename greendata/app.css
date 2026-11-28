@@ -1050,7 +1050,7 @@ html, body { overflow-x: clip; }
 .car-card.is-center .car-mark { animation: car-nudge 1.8s ease-in-out infinite; }
 .car-dots i { position: relative; overflow: hidden; }
 .car-dots i.on { background: rgba(182,227,79,.3); }
-.car-dots i.on::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--lime); transform-origin: left; animation: car-fill 4.5s linear forwards; }
+.car-dots i.on::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--lime); transform-origin: left; animation: car-fill 3.2s linear forwards; }
 .car-root.hold .car-dots i.on::after, .car-root:focus-within .car-dots i.on::after { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) {
   .car-card.is-center, .car-card.is-center .svc-ico, .car-card.is-center .car-mark { animation: none; }
@@ -1129,3 +1129,5 @@ section.env.wrap { max-width: 1680px; padding-left: clamp(16px, 3vw, 48px); padd
 .env-map { height: calc(100vh - 230px); min-height: 520px; max-height: 860px; }
 .dep-tip { font-weight: 700; }
 @media (max-width: 860px) { .env-grid { grid-template-columns: minmax(0, 1fr); } .env-map { height: 62vh; min-height: 360px; } }
+/* footer wordmark: smaller, centred */
+.foot-giant { max-width: 760px; margin: 0 auto; padding: 22px 16px 4px; }
