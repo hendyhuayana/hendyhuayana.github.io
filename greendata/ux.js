@@ -555,7 +555,7 @@
     var MENU = [
       { label: 'My topics', go: '#expertise', items: [['#xp-climate', 'Climate Risk'], ['#xp-geo', 'Geospatial Analysis'], ['#xp-rs', 'Remote Sensing'], ['#xp-ews', 'Early Warning'], ['#xp-air', 'Air Quality'], ['#xp-fire', 'Wildfire']] },
       { label: 'Observatory', go: '#satellite', items: [['#satellite', 'Satellite map'], ['#nino', 'Ocean & climate'], ['#rivers', 'Rivers'], ['#projections', 'Climate projections'], ['#cities', 'Air & weather']] },
-      { label: 'Research', go: 'research/', items: [['research/', 'Scientific research'], ['research/quiulacocha/', 'Quiulacocha case study']] },
+      { label: 'Scientific research', go: 'research/', items: [['research/', 'Scientific research'], ['research/quiulacocha/', 'Quiulacocha case study']] },
       { label: 'About', href: '#about' }
     ];
     var tm = el('nav', 'topmenu'); tm.setAttribute('aria-label', t('Sections'));
@@ -570,7 +570,7 @@
         li.innerHTML = '<button type="button" class="tm-top" aria-expanded="false" aria-controls="tm-p' + i + '">' + esc(t(m.label)) + chev + '</button>' +
           '<div class="tm-panel" id="tm-p' + i + '"><ul>' + m.items.map(function (x) { return '<li><a href="' + href(x[0]) + '">' + esc(t(x[1])) + '</a></li>'; }).join('') + '</ul></div>';
       }
-      if (m.label === 'Research' && /\/research\//.test(location.pathname)) li.classList.add('is-page');
+      if (m.label === 'Scientific research' && /\/research\//.test(location.pathname)) li.classList.add('is-page');
       ul.appendChild(li);
     });
     tm.appendChild(ul);
