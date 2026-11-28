@@ -270,7 +270,6 @@
     state.label = place ? place.name : found ? found.name : ''; state.sub = found ? found.sub : '';
     if (zoom && map) map.setView([lat, lon], zoom, { animate: !reduce });
     $('env-place').value = place ? place.id : 'custom';
-    document.querySelectorAll('.env-chip').forEach(function (c) { c.setAttribute('aria-pressed', !!place && c.dataset.id === place.id); });
     if (marker) marker.setLatLng([lat, lon]);
     if (map && !zoom) map.panTo([lat, lon], { animate: !reduce });
     show();
@@ -282,13 +281,9 @@
     sel.innerHTML = '<optgroup label="' + esc(t('Peru')) + '">' + opts(PLACES.filter(function (p) { return !p.world; })) + '</optgroup>' +
       '<optgroup label="' + esc(t('Around the world')) + '">' + opts(PLACES.filter(function (p) { return p.world; })) + '</optgroup>' +
       '<option value="custom" hidden>' + esc(t('Point chosen on the map')) + '</option>';
-    // featured places as chips
-    var chips = $('env-chips');
-    chips.innerHTML = PLACES.map(function (p) { return '<button type="button" class="env-chip" data-id="' + p.id + '" aria-pressed="' + (p.id === state.placeId) + '">' + esc(t(p.name)) + '<small>' + esc(t(p.region)) + '</small></button>'; }).join('');
-    chips.addEventListener('click', function (e) { var b = e.target.closest('.env-chip'); if (!b) return; sel.value = b.dataset.id; sel.dispatchEvent(new Event('change')); });
     sel.addEventListener('change', function () { var p = PLACES.find(function (x) { return x.id === sel.value; }); if (p) setPoint(p.lat, p.lon, p, null, 9); });
 
-    map = L.map('env-map', { zoomControl: true, scrollWheelZoom: false, attributionControl: true, zoomSnap: 0.25, minZoom: 2, worldCopyJump: true }).setView([10, -30], 2);
+    map = L.map('env-map', { zoomControl: true, scrollWheelZoom: false, attributionControl: true, zoomSnap: 0.25, minZoom: 2, worldCopyJump: true }).setView([-10, -60], 3);
     var baseLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 13, attribution: 'Esri, HERE, Garmin, © OpenStreetMap' }).addTo(map);
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', { maxZoom: 13 }).addTo(map);
     // department boundaries (INEI via github.com/juaneladio/peru-geojson, MPL-2.0)
@@ -346,14 +341,6 @@
     });
     list.addEventListener('mousedown', function (e) { var li = e.target.closest('li[role="option"]'); if (li) { e.preventDefault(); choose(found[+li.id.split('-')[1]]); } });
     inp.addEventListener('blur', function () { setTimeout(closeList, 150); });
-
-    // the map is optional: opened on demand
-    var mt = $('env-maptoggle'), mw = $('env-mapwrap');
-    mt.addEventListener('click', function () {
-      var open = mw.hidden; mw.hidden = !open; mt.setAttribute('aria-expanded', open);
-      mt.textContent = t(open ? 'Hide the map' : 'Choose on the map');
-      if (open) setTimeout(function () { map.invalidateSize(); map.setView([state.lat, state.lon], Math.max(map.getZoom(), 4)); }, 30);
-    });
 
     var tabs = [].slice.call(document.querySelectorAll('.env-tabs [role="tab"]'));
     function pick(b, focus) {

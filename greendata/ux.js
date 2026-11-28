@@ -741,9 +741,8 @@
       ['#contact', 'Collaborate', 'Write to me about research, papers and conferences.']
     ];
     var box = el('div', 'gd-welcome'); box.id = 'gd-welcome';
-    box.innerHTML = '<div class="gw-back" data-close></div><div class="gw-box" role="dialog" aria-modal="true" aria-labelledby="gw-h">' +
+    box.innerHTML = '<div class="gw-back" data-close></div><div class="gw-box" role="dialog" aria-modal="true" aria-label="Hendy in Green Data">' +
       '<button type="button" class="gw-x" data-close aria-label="' + esc(t('Close')) + '">×</button>' +
-      '<h2 id="gw-h">' + (function () { var k = 'Hello! This is Hendy in Green Data', v = t(k); return v === k ? 'Hello! This is <span class="hl">Hendy in Green Data</span>' : v; })() + '</h2>' +
       '<p class="gw-purpose">' + esc(t('Hello! This is a site with educational and scientific purposes, open to academic research collaborations, talks and more.')) + '</p>' +
       '<div class="gw-btns"><button type="button" class="btn ghost gw-go" data-close>' + esc(t('Explore on my own')) + '</button>' +
       (isHome ? '<button type="button" class="btn gw-tour">' + esc(t('Start the tour')) + '</button>' : '') + '</div></div>';

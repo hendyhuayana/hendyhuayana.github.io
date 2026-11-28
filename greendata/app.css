@@ -1367,3 +1367,35 @@ section.env.wrap { max-width: 1320px; padding-left: 24px !important; padding-rig
   .env-chip { flex: none; }
 }
 select.sr { position: absolute !important; width: 1px !important; height: 1px !important; min-width: 0 !important; padding: 0 !important; border: 0 !important; overflow: hidden; clip: rect(0 0 0 0); }
+.gw-purpose { margin-top: 18px; padding-right: 30px; font-size: 1.05rem; line-height: 1.55; color: #fff; }
+
+/* ===== Environmental data: big map with a floating panel (like the observatory) ===== */
+.env.section { padding-bottom: 18px; }
+.env-stage { position: relative; height: calc(100vh - 60px); min-height: 640px; max-height: 920px; background: #0b241a; border-top: 1px solid var(--hud-line); border-bottom: 1px solid var(--hud-line); }
+.env-stage .env-map { position: absolute; inset: 0; height: auto !important; min-height: 0 !important; max-height: none !important; border: 0; border-radius: 0; }
+.env-float { position: absolute; z-index: 600; top: 16px; right: 16px; bottom: 16px; width: min(470px, calc(100% - 32px)); display: flex; flex-direction: column; border-radius: 18px; background: rgba(10,33,22,.94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--hud-line); overflow: hidden; }
+.env-float-head { padding: 16px 16px 12px; border-bottom: 1px solid var(--hud-line); }
+.env-float .env-step { font-size: .86rem; margin: 0 0 8px; }
+.env-float .env-step .step-n { width: 22px; height: 22px; font-size: .74rem; }
+.env-float .env-step + .env-search { margin-bottom: 8px; }
+.env-float .env-search input { height: 44px; font-size: .9rem; }
+.env-float .env-lbl { display: block; margin: 0 0 6px; font-size: .7rem; letter-spacing: .08em; }
+.env-float select { width: 100%; min-width: 0; margin-bottom: 12px; padding: 9px 34px 9px 12px; border-radius: 12px; color-scheme: dark; background-color: #153d2c; color: #fff; }
+.env-float .env-tabs { display: grid !important; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 0; }
+.env-float .env-tabs button { align-items: center; padding: 9px 4px !important; border-radius: 10px !important; }
+.env-float .env-tabs button b { font-size: .74rem; letter-spacing: .02em; }
+.env-float .env-panel { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; border: 0; border-radius: 0; background: none; box-shadow: none; overscroll-behavior: contain; }
+.env-float .env-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.env-float .env-kpi .v { font-size: 1.4rem; }
+.env-float .env-bars li { grid-template-columns: 110px 1fr 40px; font-size: .82rem; }
+.env-float .sp-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.env-float .sp-t b { font-size: .78rem; }
+.env-float .rain-bars { height: 120px; gap: 4px; }
+@media (max-width: 860px) {
+  .env-stage { height: auto; min-height: 0; max-height: none; display: flex; flex-direction: column; }
+  .env-stage .env-map { position: relative; height: 55vh !important; min-height: 320px !important; }
+  .env-float { position: relative; inset: auto; width: auto; border-radius: 0; border-left: 0; border-right: 0; }
+  .env-float .env-panel { overflow: visible; }
+  .env-float .sp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.env-float .env-tabs button b { font-size: .68rem; letter-spacing: 0; }

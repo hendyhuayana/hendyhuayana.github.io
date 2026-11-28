@@ -50,42 +50,34 @@
       <p class="sec-lede">Choose a place, or tap anywhere on the map, and explore its biodiversity, soil, air and water with open data from around the world.</p>
     </div>
 
-    <div class="env-grid">
-      <div class="env-side">
-        <p class="env-step"><span class="step-n">1</span>Choose a place</p>
-        <div class="env-find">
-          <div class="env-search">
-            <svg class="env-search-ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-            <input type="search" id="env-search" placeholder="Search any place in the world: Galápagos, Bogotá, Cusco…" aria-label="Search any place in the world" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="env-results" aria-autocomplete="list">
-            <ul id="env-results" class="env-results" role="listbox" hidden></ul>
-          </div>
-          <button type="button" class="btn ghost env-maptoggle" id="env-maptoggle" aria-expanded="false" aria-controls="env-mapwrap">Choose on the map</button>
-        </div>
-        <p class="env-or">or try one of these:</p>
-        <div class="env-chips" id="env-chips"></div>
-        <label class="sr" for="env-place">Featured places</label>
-        <select id="env-place" class="sr"></select>
-        <div class="env-mapwrap" id="env-mapwrap" hidden>
-          <div class="env-map" id="env-map" role="application" aria-label="Map: tap to choose a point"></div>
-          <p class="env-hint">Tip: tap the map to explore any point in the world.</p>
-        </div>
-      </div>
+  </section>
 
-      <div class="env-main">
+  <section class="env-stage" aria-label="Environmental data map">
+    <div class="env-map" id="env-map" role="application" aria-label="Map: tap to choose a point"></div>
+    <aside class="env-float" aria-label="Environmental data">
+      <div class="env-float-head">
+        <p class="env-step"><span class="step-n">1</span>Choose a place</p>
+        <div class="env-search">
+          <svg class="env-search-ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input type="search" id="env-search" placeholder="Search any place in the world: Galápagos, Bogotá, Cusco…" aria-label="Search any place in the world" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="env-results" aria-autocomplete="list">
+          <ul id="env-results" class="env-results" role="listbox" hidden></ul>
+        </div>
+        <label class="env-lbl" for="env-place">or a featured place · or tap the map</label>
+        <select id="env-place"></select>
         <p class="env-step"><span class="step-n">2</span>What do you want to know?</p>
         <div class="env-tabs" role="tablist" aria-label="Environmental component">
-          <button type="button" role="tab" id="tab-biota" aria-controls="panel-env" aria-selected="true" data-tab="biota"><b>Biodiversity</b><small>Which plants and animals live there</small></button>
-          <button type="button" role="tab" id="tab-soil" aria-controls="panel-env" aria-selected="false" data-tab="soil" tabindex="-1"><b>Soil</b><small>Acidity, carbon and texture</small></button>
-          <button type="button" role="tab" id="tab-air" aria-controls="panel-env" aria-selected="false" data-tab="air" tabindex="-1"><b>Air</b><small>Pollution, UV and rain</small></button>
-          <button type="button" role="tab" id="tab-water" aria-controls="panel-env" aria-selected="false" data-tab="water" tabindex="-1"><b>Water</b><small>River flow and forecast</small></button>
-        </div>
-        <p class="env-step env-step-3"><span class="step-n">3</span>Results</p>
-        <div class="env-panel card" id="panel-env" role="tabpanel" aria-labelledby="tab-biota" aria-live="polite">
-          <div class="skeleton tall"></div>
+          <button type="button" role="tab" id="tab-biota" aria-controls="panel-env" aria-selected="true" data-tab="biota"><b>Biodiversity</b></button>
+          <button type="button" role="tab" id="tab-soil" aria-controls="panel-env" aria-selected="false" data-tab="soil" tabindex="-1"><b>Soil</b></button>
+          <button type="button" role="tab" id="tab-air" aria-controls="panel-env" aria-selected="false" data-tab="air" tabindex="-1"><b>Air</b></button>
+          <button type="button" role="tab" id="tab-water" aria-controls="panel-env" aria-selected="false" data-tab="water" tabindex="-1"><b>Water</b></button>
         </div>
       </div>
-    </div>
+      <div class="env-panel" id="panel-env" role="tabpanel" aria-labelledby="tab-biota" aria-live="polite">
+        <div class="skeleton tall"></div>
+      </div>
+    </aside>
   </section>
+
 </main>
 
 <footer class="footer">
