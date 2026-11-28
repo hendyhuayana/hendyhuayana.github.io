@@ -748,9 +748,6 @@
       '<p class="gw-kicker">' + esc(t('Welcome')) + '</p>' +
       '<h2 id="gw-h">' + (function () { var k = 'Hello! This is Hendy in Green Data', v = t(k); return v === k ? 'Hello! This is <span class="hl">Hendy in Green Data</span>' : v; })() + '</h2>' +
       '<p class="gw-purpose">' + esc(t('A site for educational and scientific purposes, open to research collaborations.')) + '</p>' +
-      '<ol class="gw-guide">' + G.map(function (g, i) {
-        return '<li><a href="' + href(g[0]) + '" data-go title="' + esc(t(g[2])) + '"><span class="gw-n">' + (i + 1) + '</span>' + esc(t(g[1])) + '</a></li>';
-      }).join('') + '</ol>' +
       '<div class="gw-btns"><button type="button" class="btn ghost gw-go" data-close>' + esc(t('Explore on my own')) + '</button>' +
       (isHome ? '<button type="button" class="btn gw-tour">' + esc(t('Start the tour')) + '</button>' : '') + '</div></div>';
     document.body.appendChild(box);
